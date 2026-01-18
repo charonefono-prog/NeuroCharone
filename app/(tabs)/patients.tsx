@@ -197,7 +197,7 @@ export default function PatientsScreen() {
               filteredPatients.map((patient) => (
                 <TouchableOpacity
                   key={patient.id}
-                  onPress={() => router.push(`/patient/${patient.id}` as any)}
+                  onPress={() => router.push(`/(patient)/${patient.id}` as any)}
                   activeOpacity={0.7}
                   style={{
                     backgroundColor: colors.surface,

@@ -145,3 +145,10 @@
 - [x] Adicionar campos: duração, intensidade, observações
 - [x] Integrar com AsyncStorage para salvar sessão
 - [x] Atualizar histórico após registro
+
+## Problemas Reportados pelo Usuário
+- [x] Corrigir navegação - não consegue abrir detalhes do paciente
+- [x] Criar formulário de cadastro de plano terapêutico
+- [x] Implementar visualização 3D do capacete com marcação interativa
+- [x] Integrar visualização do capacete no formulário de sessão
+- [x] Adicionar imagem do capacete nas áreas de seleção

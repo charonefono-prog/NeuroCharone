@@ -13,6 +13,7 @@ import {
   type Session,
 } from "@/lib/local-storage";
 import { AddSessionModal } from "@/components/add-session-modal";
+import { AddPlanModal } from "@/components/add-plan-modal";
 
 type Tab = "info" | "plan" | "history";
 
@@ -26,6 +27,7 @@ export default function PatientDetailScreen() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("info");
   const [showAddSessionModal, setShowAddSessionModal] = useState(false);
+  const [showAddPlanModal, setShowAddPlanModal] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -268,9 +270,31 @@ export default function PatientDetailScreen() {
 
             {activeTab === "plan" && (
               <View style={{ gap: 16 }}>
-                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
-                  Plano Terapêutico
-                </Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                    Plano Terapêutico
+                  </Text>
+                  {!activePlan && (
+                    <TouchableOpacity
+                      onPress={() => setShowAddPlanModal(true)}
+                      activeOpacity={0.7}
+                      style={{
+                        backgroundColor: colors.primary,
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
+                      <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                        Criar
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
 
                 {activePlan ? (
                   <View
@@ -488,6 +512,14 @@ export default function PatientDetailScreen() {
           onSuccess={loadData}
         />
       )}
+
+      {/* Modal de Criar Plano */}
+      <AddPlanModal
+        visible={showAddPlanModal}
+        patientId={id!}
+        onClose={() => setShowAddPlanModal(false)}
+        onSuccess={loadData}
+      />
     </ScreenContainer>
   );
 }

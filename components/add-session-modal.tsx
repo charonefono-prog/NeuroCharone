@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
 import { saveSession } from "@/lib/local-storage";
-import { helmetRegions } from "@/shared/helmet-data";
+import { Helmet3DSelector } from "./helmet-3d-selector";
 import * as Haptics from "expo-haptics";
 
 interface AddSessionModalProps {
@@ -23,21 +23,6 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Todos os pontos disponíveis do capacete
-  const allPoints = helmetRegions.flatMap((region) => region.points);
-
-  const togglePoint = (pointName: string) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    
-    setSelectedPoints((prev) =>
-      prev.includes(pointName)
-        ? prev.filter((p) => p !== pointName)
-        : [...prev, pointName]
-    );
-  };
 
   const handleSave = async () => {
     setError("");
@@ -118,7 +103,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
             backgroundColor: colors.background,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            maxHeight: "90%",
+            maxHeight: "95%",
           }}
         >
           <ScrollView contentContainerStyle={{ padding: 24, gap: 20 }}>
@@ -147,50 +132,12 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
               </View>
             ) : null}
 
-            {/* Seleção de Pontos */}
-            <View style={{ gap: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
-                Pontos de Estimulação * ({selectedPoints.length} selecionados)
-              </Text>
-              
-              {helmetRegions.map((region) => (
-                <View key={region.name} style={{ gap: 8 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.muted }}>
-                    {region.name}
-                  </Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {region.points.map((pointName) => {
-                      const isSelected = selectedPoints.includes(pointName);
-                      return (
-                        <TouchableOpacity
-                          key={pointName}
-                          onPress={() => togglePoint(pointName)}
-                          activeOpacity={0.7}
-                          style={{
-                            paddingHorizontal: 16,
-                            paddingVertical: 10,
-                            borderRadius: 8,
-                            backgroundColor: isSelected ? colors.primary : colors.surface,
-                            borderWidth: 1,
-                            borderColor: isSelected ? colors.primary : colors.border,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 14,
-                              fontWeight: "600",
-                              color: isSelected ? "#FFFFFF" : colors.foreground,
-                            }}
-                          >
-                            {pointName}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                </View>
-              ))}
-            </View>
+            {/* Visualização 3D do Capacete */}
+            <Helmet3DSelector
+              selectedPoints={selectedPoints}
+              onPointsChange={setSelectedPoints}
+              title="Pontos de Estimulação *"
+            />
 
             {/* Campos */}
             <View style={{ gap: 16 }}>
