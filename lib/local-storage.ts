@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addAuditLog } from "./audit-log";
 
 // Tipos de dados
 export interface Patient {
@@ -74,6 +75,15 @@ export async function savePatient(patient: Omit<Patient, "id" | "createdAt" | "u
     };
     patients.push(newPatient);
     await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
+    
+    // Log de auditoria
+    await addAuditLog({
+      entityType: "patient",
+      entityId: newPatient.id,
+      action: "patient_created",
+      metadata: { patientName: newPatient.fullName },
+    });
+    
     return newPatient;
   } catch (error) {
     console.error("Error saving patient:", error);
@@ -87,12 +97,33 @@ export async function updatePatient(id: string, updates: Partial<Patient>): Prom
     const index = patients.findIndex((p) => p.id === id);
     if (index === -1) return null;
 
+    const oldPatient = patients[index];
     patients[index] = {
       ...patients[index],
       ...updates,
       updatedAt: new Date().toISOString(),
     };
     await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
+    
+    // Log de auditoria com mudanças
+    const changes = Object.keys(updates)
+      .filter((key) => key !== "updatedAt")
+      .map((key) => ({
+        field: key,
+        oldValue: oldPatient[key as keyof Patient],
+        newValue: updates[key as keyof Patient],
+      }));
+    
+    if (changes.length > 0) {
+      await addAuditLog({
+        entityType: "patient",
+        entityId: id,
+        action: "patient_updated",
+        changes,
+        metadata: { patientName: patients[index].fullName },
+      });
+    }
+    
     return patients[index];
   } catch (error) {
     console.error("Error updating patient:", error);
@@ -103,8 +134,20 @@ export async function updatePatient(id: string, updates: Partial<Patient>): Prom
 export async function deletePatient(id: string): Promise<boolean> {
   try {
     const patients = await getPatients();
+    const patient = patients.find((p) => p.id === id);
     const filtered = patients.filter((p) => p.id !== id);
     await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(filtered));
+    
+    // Log de auditoria
+    if (patient) {
+      await addAuditLog({
+        entityType: "patient",
+        entityId: id,
+        action: "patient_deleted",
+        metadata: { patientName: patient.fullName },
+      });
+    }
+    
     return true;
   } catch (error) {
     console.error("Error deleting patient:", error);
@@ -139,6 +182,18 @@ export async function savePlan(plan: Omit<TherapeuticPlan, "id" | "createdAt" | 
     };
     plans.push(newPlan);
     await AsyncStorage.setItem(KEYS.PLANS, JSON.stringify(plans));
+    
+    // Log de auditoria
+    await addAuditLog({
+      entityType: "plan",
+      entityId: newPlan.id,
+      action: "plan_created",
+      metadata: { 
+        patientId: newPlan.patientId,
+        objective: newPlan.objective,
+      },
+    });
+    
     return newPlan;
   } catch (error) {
     console.error("Error saving plan:", error);
@@ -173,6 +228,19 @@ export async function saveSession(session: Omit<Session, "id" | "createdAt" | "u
     };
     sessions.push(newSession);
     await AsyncStorage.setItem(KEYS.SESSIONS, JSON.stringify(sessions));
+    
+    // Log de auditoria
+    await addAuditLog({
+      entityType: "session",
+      entityId: newSession.id,
+      action: "session_created",
+      metadata: { 
+        patientId: newSession.patientId,
+        sessionDate: newSession.sessionDate,
+        stimulatedPoints: newSession.stimulatedPoints,
+      },
+    });
+    
     return newSession;
   } catch (error) {
     console.error("Error saving session:", error);

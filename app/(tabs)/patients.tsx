@@ -9,7 +9,8 @@ import { AdvancedFiltersModal, type AdvancedFilters } from "@/components/advance
 import { filterPatients, countActiveFilters, getDefaultFilters, type PatientWithData } from "@/lib/patient-filters";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import { Platform } from "react-native";
+import { Platform, Alert } from "react-native";
+import { exportPatientsToCSV } from "@/lib/csv-export";
 
 export default function PatientsScreen() {
   const colors = useColors();
@@ -26,6 +27,23 @@ export default function PatientsScreen() {
   useEffect(() => {
     loadPatients();
   }, []);
+
+  const handleExportCSV = async () => {
+    try {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+      const filePath = await exportPatientsToCSV(patients);
+      if (filePath) {
+        Alert.alert("Sucesso", "Dados exportados com sucesso!");
+      } else {
+        Alert.alert("Erro", "Não foi possível exportar os dados.");
+      }
+    } catch (error) {
+      console.error("Erro ao exportar:", error);
+      Alert.alert("Erro", "Ocorreu um erro ao exportar os dados.");
+    }
+  };
 
   const loadPatients = async () => {
     try {
@@ -140,21 +158,38 @@ export default function PatientsScreen() {
                 {filteredPatients.length} paciente(s) encontrado(s)
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => setShowFiltersModal(true)}
-              activeOpacity={0.7}
-              style={{
-                backgroundColor: activeFiltersCount > 0 ? colors.primary : colors.surface,
-                paddingHorizontal: 16,
-                paddingVertical: 10,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: activeFiltersCount > 0 ? colors.primary : colors.border,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <TouchableOpacity
+                onPress={handleExportCSV}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: colors.surface,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                  Exportar
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowFiltersModal(true)}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: activeFiltersCount > 0 ? colors.primary : colors.surface,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: activeFiltersCount > 0 ? colors.primary : colors.border,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
               <IconSymbol
                 name="chevron.left.forwardslash.chevron.right"
                 size={20}
@@ -176,7 +211,8 @@ export default function PatientsScreen() {
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Indicador de Filtros Ativos */}

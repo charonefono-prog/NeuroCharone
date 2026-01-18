@@ -230,3 +230,23 @@
 - [x] Adicionar opção de configurar antecedência do lembrete
 - [x] Implementar notificação push para sessões
 - [x] Adicionar gerenciamento de lembretes na tela de sessões
+
+## Exportação de Dados em Excel/CSV
+- [x] Criar função de exportação de pacientes em CSV
+- [x] Criar função de exportação de sessões em CSV
+- [x] Criar função de exportação de estatísticas em CSV
+- [x] Adicionar botão de exportar na tela de pacientes
+- [ ] Adicionar botão de exportar na tela de sessões
+- [ ] Adicionar botão de exportar nas estatísticas avançadas
+- [x] Implementar compartilhamento do arquivo CSV
+
+## Histórico de Alterações (Auditoria)
+- [x] Criar schema de histórico de alterações
+- [x] Implementar função de registro de alterações
+- [x] Adicionar histórico ao criar paciente
+- [x] Adicionar histórico ao editar paciente
+- [x] Adicionar histórico ao excluir paciente
+- [x] Adicionar histórico ao criar plano terapêutico
+- [x] Adicionar histórico ao criar sessão
+- [x] Criar componente de visualização de histórico
+- [x] Integrar visualização de histórico na tela de detalhes do paciente

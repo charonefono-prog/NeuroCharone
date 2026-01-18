@@ -16,11 +16,12 @@ import { AddSessionModal } from "@/components/add-session-modal";
 import { AddPlanModal } from "@/components/add-plan-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
 import { TreatmentChart } from "@/components/treatment-chart";
+import { AuditHistory } from "@/components/audit-history";
 import { generatePatientReport } from "@/lib/pdf-generator";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history";
+type Tab = "info" | "plan" | "history" | "audit";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -231,6 +232,7 @@ export default function PatientDetailScreen() {
               { key: "info" as Tab, label: "Informações" },
               { key: "plan" as Tab, label: "Plano" },
               { key: "history" as Tab, label: "Histórico" },
+              { key: "audit" as Tab, label: "Auditoria" },
             ].map((tab) => (
               <TouchableOpacity
                 key={tab.key}
@@ -577,6 +579,13 @@ export default function PatientDetailScreen() {
                     </Text>
                   </View>
                 )}
+              </View>
+            )}
+
+            {/* Aba de Auditoria */}
+            {activeTab === "audit" && (
+              <View style={{ padding: 16 }}>
+                <AuditHistory entityType="patient" entityId={id} />
               </View>
             )}
           </View>
