@@ -91,7 +91,7 @@ export function LoginScreen() {
               textAlign: "center",
             }}
           >
-            NeuroMap
+            NeuroLaserMap
           </Text>
           <Text
             style={{
@@ -100,7 +100,7 @@ export function LoginScreen() {
               textAlign: "center",
             }}
           >
-            Mapeamento de Neuromodulação
+            Mapeamento de Neuromodulação a Laser
           </Text>
         </View>
 

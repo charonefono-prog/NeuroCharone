@@ -34,7 +34,7 @@ export function TreatmentChart({ sessions }: TreatmentChartProps) {
   );
 
   // Calcular estatísticas
-  const durations = sortedSessions.map((s) => s.duration);
+  const durations = sortedSessions.map((s) => s.durationMinutes);
   const maxDuration = Math.max(...durations);
   const minDuration = Math.min(...durations);
   const avgDuration = durations.reduce((a, b) => a + b, 0) / durations.length;
@@ -128,7 +128,7 @@ export function TreatmentChart({ sessions }: TreatmentChartProps) {
 
         <View style={{ gap: 8 }}>
           {sortedSessions.slice(-10).map((session, index) => {
-            const percentage = (session.duration / maxDuration) * 100;
+            const percentage = (session.durationMinutes / maxDuration) * 100;
             const date = new Date(session.sessionDate);
             const dateStr = date.toLocaleDateString("pt-BR", {
               day: "2-digit",
@@ -140,7 +140,7 @@ export function TreatmentChart({ sessions }: TreatmentChartProps) {
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                   <Text style={{ fontSize: 12, color: colors.muted }}>{dateStr}</Text>
                   <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-                    {session.duration} min
+                    {session.durationMinutes} min
                   </Text>
                 </View>
                 <View

@@ -35,9 +35,9 @@ export interface Session {
   patientId: string;
   planId: string;
   sessionDate: string;
-  duration: number;
+  durationMinutes: number; // Duração em minutos
   stimulatedPoints: string[];
-  intensity?: string;
+  joules?: number; // Energia aplicada em Joules
   observations?: string;
   patientReactions?: string;
   nextSessionDate?: string;
@@ -233,9 +233,9 @@ export async function initializeSampleData(): Promise<void> {
     patientId: patient1.id,
     planId: "1",
     sessionDate: yesterday.toISOString(),
-    duration: 30,
+    durationMinutes: 30,
     stimulatedPoints: ["F3", "F7"],
-    intensity: "Média (5mA)",
+    joules: 5,
     observations: "Paciente relatou leve melhora no humor",
     patientReactions: "Bem tolerado, sem efeitos adversos",
   });
@@ -244,9 +244,9 @@ export async function initializeSampleData(): Promise<void> {
     patientId: patient2.id,
     planId: "2",
     sessionDate: today.toISOString(),
-    duration: 25,
+    durationMinutes: 25,
     stimulatedPoints: ["F4", "T3", "T4"],
-    intensity: "Baixa (3mA)",
+    joules: 3,
     observations: "Primeira sessão, paciente ansioso mas cooperativo",
     patientReactions: "Leve formigamento, sem desconforto",
   });

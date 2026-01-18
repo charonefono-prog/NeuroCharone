@@ -61,7 +61,7 @@ export default function HomeScreen() {
           {/* Header */}
           <View style={{ gap: 8 }}>
             <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
-              NeuroMap
+              NeuroLaserMap
             </Text>
             <Text style={{ fontSize: 16, color: colors.muted }}>
               Bem-vindo ao sistema de mapeamento de neuromodulação

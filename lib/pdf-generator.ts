@@ -13,7 +13,7 @@ export async function generatePatientReport(data: ReportData): Promise<void> {
 
   // Calcular estatísticas
   const totalSessions = sessions.length;
-  const durations = sessions.map((s) => s.duration);
+  const durations = sessions.map((s) => s.durationMinutes);
   const avgDuration = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
   const maxDuration = durations.length > 0 ? Math.max(...durations) : 0;
   const minDuration = durations.length > 0 ? Math.min(...durations) : 0;
@@ -315,7 +315,7 @@ export async function generatePatientReport(data: ReportData): Promise<void> {
         <div class="list-item">
           <div class="list-item-header">
             <span class="list-item-date">${new Date(session.sessionDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</span>
-            <span class="list-item-duration">${session.duration} minutos</span>
+            <span class="list-item-duration">${session.durationMinutes} minutos</span>
           </div>
           <div class="list-item-points">
             <strong>Pontos:</strong> ${session.stimulatedPoints.join(", ")}
@@ -337,7 +337,7 @@ export async function generatePatientReport(data: ReportData): Promise<void> {
   ` : ""}
 
   <div class="footer">
-    <p><strong>NeuroMap</strong> - Aplicativo de Mapeamento de Neuromodulação</p>
+    <p><strong>NeuroLaserMap</strong> - Aplicativo de Mapeamento de Neuromodulação a Laser</p>
     <p style="margin-top: 8px;">Desenvolvido por Carlos Charone - CREFONO: 9-10025-5</p>
     <p style="margin-top: 8px;">Este relatório é confidencial e destinado exclusivamente ao uso profissional.</p>
   </div>

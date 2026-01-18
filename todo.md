@@ -176,3 +176,17 @@
 - [x] Integrar filtros na tela de pacientes
 - [x] Adicionar indicador visual de filtros ativos
 - [x] Implementar botão de limpar todos os filtros
+
+## Correções de Campos e Unidades
+- [x] Alterar campo "Intensidade" para "Joules" em todos os formulários
+- [x] Adicionar campo "Minutos" para duração da aplicação
+- [x] Atualizar formulário de sessão com Joules e Minutos
+- [x] Atualizar formulário de plano terapêutico com Joules e Minutos
+- [x] Adicionar função específica de cada ponto do capacete (baseado no manual)
+- [ ] Exibir função do ponto ao clicar no capacete
+- [x] Atualizar visualização de sessões com Joules e Minutos
+
+## Alteração de Nome do Aplicativo
+- [x] Alterar nome de "NeuroMap" para "NeuroLaserMap" no app.config.ts
+- [x] Atualizar nome em todas as telas e componentes
+- [x] Atualizar documentação (design.md, README, etc)

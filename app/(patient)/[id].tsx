@@ -534,7 +534,7 @@ export default function PatientDetailScreen() {
                               {formatDate(session.sessionDate)}
                             </Text>
                             <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
-                              {session.duration} min
+                              {session.durationMinutes} min
                             </Text>
                           </View>
 

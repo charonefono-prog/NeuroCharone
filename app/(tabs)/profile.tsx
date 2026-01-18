@@ -100,7 +100,7 @@ export default function ProfileScreen() {
             }}
           >
             <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Sobre o NeuroMap
+              Sobre o NeuroLaserMap
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted, lineHeight: 20 }}>
               Sistema profissional para mapeamento de neuromodulação craniana, permitindo registro de

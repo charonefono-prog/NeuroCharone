@@ -123,7 +123,7 @@ export default function SessionsScreen() {
                       }}
                     >
                       <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
-                        {session.duration} min
+                        {session.durationMinutes} min
                       </Text>
                     </View>
                   </View>
@@ -152,14 +152,14 @@ export default function SessionsScreen() {
                     </View>
                   </View>
 
-                  {/* Intensidade */}
-                  {session.intensity && (
+                  {/* Joules */}
+                  {session.joules && (
                     <View style={{ gap: 4 }}>
                       <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                        Intensidade
+                        Joules
                       </Text>
                       <Text style={{ fontSize: 14, color: colors.foreground }}>
-                        {session.intensity}
+                        {session.joules} J
                       </Text>
                     </View>
                   )}

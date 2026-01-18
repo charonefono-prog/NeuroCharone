@@ -16,8 +16,8 @@ interface AddSessionModalProps {
 
 export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess }: AddSessionModalProps) {
   const colors = useColors();
-  const [duration, setDuration] = useState("");
-  const [intensity, setIntensity] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("");
+  const [joules, setJoules] = useState("");
   const [observations, setObservations] = useState("");
   const [patientReactions, setPatientReactions] = useState("");
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
@@ -33,8 +33,13 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
       return;
     }
 
-    if (!duration.trim() || isNaN(Number(duration)) || Number(duration) <= 0) {
+    if (!durationMinutes.trim() || isNaN(Number(durationMinutes)) || Number(durationMinutes) <= 0) {
       setError("Duração inválida (digite apenas números)");
+      return;
+    }
+
+    if (joules.trim() && (isNaN(Number(joules)) || Number(joules) <= 0)) {
+      setError("Joules inválido (digite apenas números)");
       return;
     }
 
@@ -45,9 +50,9 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
         patientId,
         planId,
         sessionDate: new Date().toISOString(),
-        duration: Number(duration),
+        durationMinutes: Number(durationMinutes),
         stimulatedPoints: selectedPoints,
-        intensity: intensity.trim() || undefined,
+        joules: joules.trim() ? Number(joules) : undefined,
         observations: observations.trim() || undefined,
         patientReactions: patientReactions.trim() || undefined,
       });
@@ -57,8 +62,8 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
       }
 
       // Limpar formulário
-      setDuration("");
-      setIntensity("");
+      setDurationMinutes("");
+      setJoules("");
       setObservations("");
       setPatientReactions("");
       setSelectedPoints([]);
@@ -75,8 +80,8 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   };
 
   const handleCancel = () => {
-    setDuration("");
-    setIntensity("");
+    setDurationMinutes("");
+    setJoules("");
     setObservations("");
     setPatientReactions("");
     setSelectedPoints([]);
@@ -147,8 +152,8 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
                   Duração (minutos) *
                 </Text>
                 <TextInput
-                  value={duration}
-                  onChangeText={setDuration}
+                  value={durationMinutes}
+                  onChangeText={setDurationMinutes}
                   placeholder="Ex: 30"
                   placeholderTextColor={colors.muted}
                   keyboardType="numeric"
@@ -164,16 +169,17 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
                 />
               </View>
 
-              {/* Intensidade */}
+              {/* Joules */}
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                  Intensidade
+                  Joules (opcional)
                 </Text>
                 <TextInput
-                  value={intensity}
-                  onChangeText={setIntensity}
-                  placeholder="Ex: Média (5mA)"
+                  value={joules}
+                  onChangeText={setJoules}
+                  placeholder="Ex: 5"
                   placeholderTextColor={colors.muted}
+                  keyboardType="numeric"
                   style={{
                     backgroundColor: colors.surface,
                     borderWidth: 1,
