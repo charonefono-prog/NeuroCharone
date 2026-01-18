@@ -63,7 +63,7 @@
 - [ ] Criar template de relatório de progresso
 - [ ] Criar template de relatório de sessões por período
 - [ ] Implementar geração de PDF dos relatórios
-- [ ] Adicionar dados do profissional nos relatórios (Carlos Charone - CREFITO 9-10025-5)
+- [ ] Adicionar dados do profissional nos relatórios (Carlos Charone - CREFONO 9-10025-5)
 - [ ] Implementar funcionalidade de compartilhamento de PDF
 
 ## Configurações e Perfil
@@ -112,3 +112,6 @@
 ## Correções Urgentes
 - [x] Corrigir problema de autenticação - botão de login não funciona
 - [x] Implementar tela de login funcional ou remover proteção de autenticação para testes
+
+## Correções de Texto
+- [x] Corrigir todas as referências de CREFITO para CREFONO

@@ -111,7 +111,7 @@ export default function HomeScreen() {
               Desenvolvido por Carlos Charone
             </Text>
             <Text className="text-xs text-muted text-center">
-              CREFITO: 9-10025-5
+              CREFONO: 9-10025-5
             </Text>
           </View>
         </View>

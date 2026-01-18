@@ -14,7 +14,7 @@ export const users = mysqlTable("users", {
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   // Campos profissionais adicionais
   specialty: varchar("specialty", { length: 255 }),
-  professionalId: varchar("professionalId", { length: 100 }), // CRM, CREFITO, etc
+  professionalId: varchar("professionalId", { length: 100 }), // CRM, CREFONO, etc
   phone: varchar("phone", { length: 50 }),
   photoUrl: text("photoUrl"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

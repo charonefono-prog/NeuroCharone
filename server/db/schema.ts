@@ -8,7 +8,7 @@ export const users = mysqlTable("users", {
   password: varchar("password", { length: 255 }).notNull(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   specialty: varchar("specialty", { length: 255 }),
-  professionalId: varchar("professional_id", { length: 100 }), // CRM, CREFITO, etc
+  professionalId: varchar("professional_id", { length: 100 }), // CRM, CREFONO, etc
   phone: varchar("phone", { length: 50 }),
   photoUrl: text("photo_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

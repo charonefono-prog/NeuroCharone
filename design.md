@@ -203,7 +203,7 @@ Aplicativo móvel profissional para mapeamento de neuromodulação craniana, per
 - Informações profissionais:
   - Nome completo
   - Especialidade
-  - Registro profissional (CRM/CREFITO)
+  - Registro profissional (CRM/CREFONO)
   - Email
   - Telefone
 - Configurações do app:
@@ -305,5 +305,5 @@ Aplicativo móvel profissional para mapeamento de neuromodulação craniana, per
 
 ## Assinatura do Aplicativo
 - Desenvolvido por: Carlos Charone
-- CREFITO: 9-10025-5
+- CREFONO: 9-10025-5
 - Informações exibidas em: Tela de login, relatórios PDF, tela "Sobre"

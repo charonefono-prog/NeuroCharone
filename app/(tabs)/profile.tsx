@@ -100,7 +100,7 @@ export default function ProfileScreen() {
                 Carlos Charone
               </Text>
               <Text className="text-xs text-muted mt-1">
-                CREFITO: 9-10025-5
+                CREFONO: 9-10025-5
               </Text>
             </View>
           </View>
