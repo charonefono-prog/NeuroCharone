@@ -152,3 +152,16 @@
 - [x] Implementar visualização 3D do capacete com marcação interativa
 - [x] Integrar visualização do capacete no formulário de sessão
 - [x] Adicionar imagem do capacete nas áreas de seleção
+
+## Novas Funcionalidades Solicitadas
+- [x] Criar modal de edição de pacientes
+- [x] Adicionar botão de editar na tela de detalhes do paciente
+- [x] Implementar gráficos de evolução do tratamento
+- [x] Adicionar visualização gráfica na aba de histórico
+- [x] Implementar exportação de relatórios em HTML
+- [x] Adicionar botão de compartilhar relatório
+
+## Informações das Regiões Cerebrais
+- [x] Adicionar descrições detalhadas de cada região cerebral
+- [x] Criar modal informativo ao tocar em região/ponto
+- [x] Incluir funções e indicações terapêuticas de cada área

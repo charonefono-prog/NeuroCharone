@@ -14,6 +14,11 @@ import {
 } from "@/lib/local-storage";
 import { AddSessionModal } from "@/components/add-session-modal";
 import { AddPlanModal } from "@/components/add-plan-modal";
+import { EditPatientModal } from "@/components/edit-patient-modal";
+import { TreatmentChart } from "@/components/treatment-chart";
+import { generatePatientReport } from "@/lib/pdf-generator";
+import * as Haptics from "expo-haptics";
+import { Platform } from "react-native";
 
 type Tab = "info" | "plan" | "history";
 
@@ -28,10 +33,41 @@ export default function PatientDetailScreen() {
   const [activeTab, setActiveTab] = useState<Tab>("info");
   const [showAddSessionModal, setShowAddSessionModal] = useState(false);
   const [showAddPlanModal, setShowAddPlanModal] = useState(false);
+  const [showEditPatientModal, setShowEditPatientModal] = useState(false);
+  const [generatingReport, setGeneratingReport] = useState(false);
 
   useEffect(() => {
     loadData();
   }, [id]);
+
+  const handleGenerateReport = async () => {
+    if (!patient) return;
+
+    try {
+      setGeneratingReport(true);
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+
+      await generatePatientReport({
+        patient,
+        plan: activePlan || null,
+        sessions,
+      });
+
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    } catch (error) {
+      console.error("Error generating report:", error);
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+      alert("Erro ao gerar relatório. Tente novamente.");
+    } finally {
+      setGeneratingReport(false);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -136,9 +172,27 @@ export default function PatientDetailScreen() {
               gap: 12,
             }}
           >
-            <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-              <IconSymbol name="chevron.right" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
+                <IconSymbol name="chevron.right" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleGenerateReport}
+                disabled={generatingReport}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: "#FFFFFF30",
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 12,
+                  opacity: generatingReport ? 0.6 : 1,
+                }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                  {generatingReport ? "Gerando..." : "📄 Relatório"}
+                </Text>
+              </TouchableOpacity>
+            </View>
             
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
               <View style={{ flex: 1 }}>
@@ -207,9 +261,29 @@ export default function PatientDetailScreen() {
           <View style={{ padding: 24, gap: 20 }}>
             {activeTab === "info" && (
               <View style={{ gap: 16 }}>
-                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
-                  Informações Pessoais
-                </Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                    Informações Pessoais
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setShowEditPatientModal(true)}
+                    activeOpacity={0.7}
+                    style={{
+                      backgroundColor: colors.primary,
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      borderRadius: 8,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                      Editar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
                 <View style={{ gap: 12 }}>
                   <View style={{ gap: 4 }}>
@@ -406,6 +480,13 @@ export default function PatientDetailScreen() {
 
             {activeTab === "history" && (
               <View style={{ gap: 16 }}>
+                {/* Gráfico de Evolução */}
+                {sessions.length > 0 && (
+                  <View style={{ marginBottom: 8 }}>
+                    <TreatmentChart sessions={sessions} />
+                  </View>
+                )}
+
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                   <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
                     Histórico de Sessões
@@ -520,6 +601,16 @@ export default function PatientDetailScreen() {
         onClose={() => setShowAddPlanModal(false)}
         onSuccess={loadData}
       />
+
+      {/* Modal de Editar Paciente */}
+      {patient && (
+        <EditPatientModal
+          visible={showEditPatientModal}
+          patient={patient}
+          onClose={() => setShowEditPatientModal(false)}
+          onSuccess={loadData}
+        />
+      )}
     </ScreenContainer>
   );
 }

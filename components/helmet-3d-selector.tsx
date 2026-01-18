@@ -1,8 +1,10 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, Platform } from "react-native";
 import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
-import { helmetRegions } from "@/shared/helmet-data";
+import { helmetRegions, getRegionById } from "@/shared/helmet-data";
 import * as Haptics from "expo-haptics";
+import { RegionInfoModal } from "./region-info-modal";
+import { IconSymbol } from "./ui/icon-symbol";
 
 interface Helmet3DSelectorProps {
   selectedPoints: string[];
@@ -13,6 +15,8 @@ interface Helmet3DSelectorProps {
 export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helmet3DSelectorProps) {
   const colors = useColors();
   const [view, setView] = useState<"top" | "side">("top");
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [selectedRegionInfo, setSelectedRegionInfo] = useState<string | null>(null);
 
   const togglePoint = (pointName: string) => {
     if (Platform.OS !== "web") {
@@ -41,6 +45,14 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
       const newPoints = [...new Set([...selectedPoints, ...regionPoints])];
       onPointsChange(newPoints);
     }
+  };
+
+  const showRegionInfo = (regionId: string) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setSelectedRegionInfo(regionId);
+    setShowInfoModal(true);
   };
 
   return (
@@ -155,41 +167,60 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
             const someSelected = region.points.some((p) => selectedPoints.includes(p));
 
             return (
-              <TouchableOpacity
-                key={region.id}
-                onPress={() => selectAllInRegion(region.points)}
+              <View key={region.id} style={{ flexDirection: "row", gap: 4 }}>
+                <TouchableOpacity
+                  onPress={() => selectAllInRegion(region.points)}
+                  activeOpacity={0.7}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    borderRadius: 12,
+                    backgroundColor: allSelected ? region.colorHex : someSelected ? region.colorHex + "40" : colors.surface,
+                    borderWidth: 1,
+                    borderColor: someSelected ? region.colorHex : colors.border,
+                    minWidth: 140,
+                  }}
+                >
+                  <View style={{ gap: 4 }}>
+                    <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "600",
+                      color: allSelected ? "#FFFFFF" : colors.foreground,
+                    }}
+                  >
+                    {region.name}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: allSelected ? "#FFFFFF" : colors.muted,
+                      marginTop: 2,
+                    }}
+                  >
+                    {region.points.length} pontos
+                  </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                onPress={() => showRegionInfo(region.id)}
                 activeOpacity={0.7}
                 style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
+                  width: 40,
+                  height: 40,
                   borderRadius: 12,
-                  backgroundColor: allSelected ? region.colorHex : someSelected ? region.colorHex + "40" : colors.surface,
+                  backgroundColor: colors.surface,
                   borderWidth: 1,
-                  borderColor: someSelected ? region.colorHex : colors.border,
-                  minWidth: 140,
+                  borderColor: colors.border,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  alignSelf: "center",
                 }}
               >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "600",
-                    color: allSelected ? "#FFFFFF" : colors.foreground,
-                    marginBottom: 4,
-                  }}
-                >
-                  {region.name}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: allSelected ? "#FFFFFF" : colors.muted,
-                  }}
-                >
-                  {region.points.length} pontos
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+                  <Text style={{ fontSize: 18, color: colors.primary }}>ℹ️</Text>
+                </TouchableOpacity>
+              </View>
+            );          })}
         </ScrollView>
       </View>
 
@@ -201,18 +232,27 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
 
         {helmetRegions.map((region) => (
           <View key={region.id} style={{ gap: 8 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <View
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 6,
-                  backgroundColor: region.colorHex,
-                }}
-              />
-              <Text style={{ fontSize: 14, fontWeight: "600", color: colors.muted }}>
-                {region.name}
-              </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: region.colorHex,
+                  }}
+                />
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.muted }}>
+                  {region.name}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => showRegionInfo(region.id)}
+                activeOpacity={0.7}
+                style={{ padding: 4 }}
+              >
+                <Text style={{ fontSize: 16 }}>ℹ️</Text>
+              </TouchableOpacity>
             </View>
 
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -267,6 +307,18 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
             Limpar Seleção
           </Text>
         </TouchableOpacity>
+      )}
+
+      {/* Modal de Informações */}
+      {selectedRegionInfo && (
+        <RegionInfoModal
+          visible={showInfoModal}
+          region={getRegionById(selectedRegionInfo) || undefined}
+          onClose={() => {
+            setShowInfoModal(false);
+            setSelectedRegionInfo(null);
+          }}
+        />
       )}
     </View>
   );
