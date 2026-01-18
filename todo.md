@@ -284,3 +284,27 @@
 - [ ] Adicionar campo de avaliação inicial no formulário de cadastro de paciente
 - [ ] Adicionar análise de efetividade por região cerebral estimulada
 - [ ] Adicionar relatório de efetividade nas estatísticas avançadas
+
+## Tela de Gerenciamento de Templates
+- [x] Criar tela de gerenciamento de templates no perfil
+- [x] Listar todos os templates (padrão e personalizados)
+- [x] Implementar formulário de criação de novo template
+- [x] Implementar formulário de edição de template existente
+- [x] Implementar exclusão de template com confirmação
+- [x] Adicionar indicador visual para templates padrão (não editáveis)
+- [x] Adicionar navegação para tela de templates no menu de perfil
+
+## Campo de Avaliação Inicial no Cadastro
+- [x] Adicionar campo de avaliação inicial (0-10) no formulário de cadastro
+- [x] Adicionar campo de avaliação inicial no formulário de edição
+- [x] Implementar validação (apenas 0-10)
+- [x] Adicionar explicação da escala no formulário
+- [ ] Atualizar dados de exemplo com avaliação inicial
+
+## Análise de Efetividade por Região
+- [x] Criar componente de análise de efetividade
+- [x] Calcular correlação entre regiões estimuladas e melhora de sintomas
+- [x] Criar visualização gráfica da efetividade por região
+- [x] Adicionar ranking de regiões mais efetivas
+- [x] Integrar análise nas estatísticas avançadas
+- [ ] Adicionar filtro por diagnóstico na análise

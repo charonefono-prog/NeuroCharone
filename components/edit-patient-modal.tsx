@@ -20,6 +20,7 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
   const [email, setEmail] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
   const [medicalNotes, setMedicalNotes] = useState("");
+  const [initialSymptomScore, setInitialSymptomScore] = useState("");
   const [status, setStatus] = useState<"active" | "paused" | "completed">("active");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,6 +33,7 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
       setEmail(patient.email || "");
       setDiagnosis(patient.diagnosis || "");
       setMedicalNotes(patient.medicalNotes || "");
+      setInitialSymptomScore(patient.initialSymptomScore?.toString() || "");
       setStatus(patient.status);
     }
   }, [visible, patient]);
@@ -84,6 +86,7 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
         email: email.trim() || undefined,
         diagnosis: diagnosis.trim() || undefined,
         medicalNotes: medicalNotes.trim() || undefined,
+        initialSymptomScore: initialSymptomScore.trim() ? Number(initialSymptomScore) : undefined,
         status,
       });
 
@@ -289,6 +292,37 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
                     fontSize: 16,
                     color: colors.foreground,
                     minHeight: 80,
+                  }}
+                />
+              </View>
+
+              {/* Avaliação Inicial de Sintomas */}
+              <View style={{ gap: 8 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                  Avaliação Inicial dos Sintomas (0-10)
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: -4 }}>
+                  0 = Sem sintomas | 10 = Sintomas muito intensos
+                </Text>
+                <TextInput
+                  value={initialSymptomScore}
+                  onChangeText={(text) => {
+                    const num = Number(text);
+                    if (text === "" || (num >= 0 && num <= 10)) {
+                      setInitialSymptomScore(text);
+                    }
+                  }}
+                  placeholder="Ex: 8"
+                  placeholderTextColor={colors.muted}
+                  keyboardType="numeric"
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: 12,
+                    padding: 16,
+                    fontSize: 16,
+                    color: colors.foreground,
                   }}
                 />
               </View>

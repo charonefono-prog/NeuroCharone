@@ -1,6 +1,7 @@
 import { View, Text, ScrollView } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { Patient, TherapeuticPlan, Session } from "@/lib/local-storage";
+import { EffectivenessAnalysis } from "./effectiveness-analysis";
 
 interface AdvancedStatisticsProps {
   patients: Patient[];
@@ -61,7 +62,8 @@ export function AdvancedStatistics({ patients, plans, sessions }: AdvancedStatis
   const maxRegion = Math.max(...regionData.map((r) => r[1]), 1);
 
   return (
-    <ScrollView contentContainerStyle={{ gap: 24 }}>
+    <View style={{ gap: 24 }}>
+      <ScrollView contentContainerStyle={{ gap: 24 }}>
       {/* Distribuição de Diagnósticos */}
       <View style={{ gap: 12 }}>
         <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
@@ -297,6 +299,10 @@ export function AdvancedStatistics({ patients, plans, sessions }: AdvancedStatis
           </View>
         </View>
       </View>
-    </ScrollView>
+
+      {/* Análise de Efetividade por Região */}
+      <EffectivenessAnalysis patients={patients} sessions={sessions} />
+      </ScrollView>
+    </View>
   );
 }

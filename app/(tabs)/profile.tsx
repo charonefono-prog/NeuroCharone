@@ -1,4 +1,5 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert, Platform, Switch, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert, Switch, TextInput, Platform } from "react-native";
+import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const colors = useColors();
   const { colorScheme, setColorScheme } = useThemeContext();
   const isDark = colorScheme === "dark";
@@ -302,6 +304,50 @@ export default function ProfileScreen() {
                 thumbColor="#FFFFFF"
               />
             </View>
+          </View>
+
+          {/* Templates de Planos */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Templates de Planos
+            </Text>
+            
+            <TouchableOpacity
+              onPress={() => router.push("/templates")}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: colors.primary + "20",
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.primary,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.primary + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>📋</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                  Gerenciar Templates
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.primary, marginTop: 2, opacity: 0.8 }}>
+                  Criar e editar templates personalizados
+                </Text>
+              </View>
+              <IconSymbol name="chevron.right" size={20} color={colors.primary} />
+            </TouchableOpacity>
           </View>
 
           {/* Backup e Restauração */}
