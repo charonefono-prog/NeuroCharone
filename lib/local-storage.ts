@@ -2,6 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addAuditLog } from "./audit-log";
 
 // Tipos de dados
+export interface MediaItem {
+  id: string;
+  uri: string;
+  type: "photo" | "video";
+  caption?: string;
+  createdAt: string;
+}
+
 export interface Patient {
   id: string;
   fullName: string;
@@ -12,7 +20,8 @@ export interface Patient {
   address?: string;
   diagnosis?: string;
   medicalNotes?: string;
-  initialSymptomScore?: number; // Avaliação inicial dos sintomas (0-10)
+  initialSymptomScore?: number; // Avalia\u00e7\u00e3o inicial dos sintomas (0-10)
+  media?: MediaItem[]; // Fotos e v\u00eddeos do paciente
   status: "active" | "paused" | "completed";
   createdAt: string;
   updatedAt: string;

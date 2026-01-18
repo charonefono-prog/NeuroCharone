@@ -366,3 +366,15 @@
 - [ ] Adicionar indicador de status de sincronização
 - [ ] Implementar sincronização automática em intervalos
 - [ ] Adicionar opção de sincronização manual
+
+## Upload de Fotos e V\u00eddeos no Registro do Paciente
+- [x] Instalar expo-image-picker
+- [x] Adicionar campo de m\u00eddia no schema de Patient
+- [x] Criar componente de seletor de fotos/v\u00eddeos
+- [x] Criar componente de galeria de m\u00eddia
+- [x] Adicionar visualiza\u00e7\u00e3o de fotos em tela cheia
+- [x] Adicionar reprodutor de v\u00eddeo
+- [x] Integrar galeria na tela de detalhes do paciente
+- [x] Adicionar op\u00e7\u00e3o de excluir m\u00eddia
+- [x] Adicionar data de captura para cada m\u00eddia
+- [ ] Adicionar legendas/descri\u00e7\u00f5es edit\u00e1veis para cada m\u00eddia

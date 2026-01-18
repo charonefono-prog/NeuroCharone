@@ -8,9 +8,11 @@ import {
   getPatients,
   getPlansByPatient,
   getSessionsByPatient,
+  updatePatient,
   type Patient,
   type TherapeuticPlan,
   type Session,
+  type MediaItem,
 } from "@/lib/local-storage";
 import { AddSessionModal } from "@/components/add-session-modal";
 import { AddPlanModal } from "@/components/add-plan-modal";
@@ -19,6 +21,7 @@ import { TreatmentChart } from "@/components/treatment-chart";
 import { SymptomProgressChart } from "@/components/symptom-progress-chart";
 import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
 import { AuditHistory } from "@/components/audit-history";
+import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
@@ -42,6 +45,30 @@ export default function PatientDetailScreen() {
   useEffect(() => {
     loadData();
   }, [id]);
+
+  const handleAddMedia = async (newMedia: MediaItem) => {
+    if (!patient) return;
+
+    const updatedPatient = {
+      ...patient,
+      media: [...(patient.media || []), newMedia],
+    };
+
+    await updatePatient(patient.id, updatedPatient);
+    setPatient(updatedPatient);
+  };
+
+  const handleDeleteMedia = async (mediaId: string) => {
+    if (!patient) return;
+
+    const updatedPatient = {
+      ...patient,
+      media: (patient.media || []).filter((item) => item.id !== mediaId),
+    };
+
+    await updatePatient(patient.id, updatedPatient);
+    setPatient(updatedPatient);
+  };
 
   const handleGenerateReport = async () => {
     if (!patient) return;
@@ -342,6 +369,15 @@ export default function PatientDetailScreen() {
                       </Text>
                     </View>
                   )}
+                </View>
+
+                {/* Galeria de M\u00eddia */}
+                <View style={{ marginTop: 24, paddingTop: 24, borderTopWidth: 1, borderTopColor: colors.border }}>
+                  <PatientMediaGallery
+                    media={patient.media || []}
+                    onAddMedia={handleAddMedia}
+                    onDeleteMedia={handleDeleteMedia}
+                  />
                 </View>
               </View>
             )}
