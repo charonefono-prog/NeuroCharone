@@ -3,17 +3,14 @@ import { ScreenContainer } from "@/components/screen-container";
 import { trpc } from "@/lib/trpc";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { LoginScreen } from "@/components/login-button";
 
 export default function SessionsScreen() {
   const colors = useColors();
   const { data: user } = trpc.auth.me.useQuery();
 
   if (!user) {
-    return (
-      <ScreenContainer className="items-center justify-center">
-        <Text className="text-lg text-muted">Faça login para acessar</Text>
-      </ScreenContainer>
-    );
+    return <LoginScreen />;
   }
 
   return (

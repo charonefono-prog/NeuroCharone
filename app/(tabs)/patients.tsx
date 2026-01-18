@@ -4,6 +4,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { trpc } from "@/lib/trpc";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { LoginScreen } from "@/components/login-button";
 
 export default function PatientsScreen() {
   const colors = useColors();
@@ -17,11 +18,7 @@ export default function PatientsScreen() {
   );
 
   if (!user) {
-    return (
-      <ScreenContainer className="items-center justify-center">
-        <Text className="text-lg text-muted">Faça login para acessar</Text>
-      </ScreenContainer>
-    );
+    return <LoginScreen />;
   }
 
   const getStatusColor = (status: string) => {

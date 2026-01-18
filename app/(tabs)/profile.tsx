@@ -3,6 +3,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { trpc } from "@/lib/trpc";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { LoginScreen } from "@/components/login-button";
 
 export default function ProfileScreen() {
   const colors = useColors();
@@ -15,11 +16,7 @@ export default function ProfileScreen() {
   };
 
   if (!user) {
-    return (
-      <ScreenContainer className="items-center justify-center">
-        <Text className="text-lg text-muted">Faça login para acessar</Text>
-      </ScreenContainer>
-    );
+    return <LoginScreen />;
   }
 
   return (

@@ -108,3 +108,7 @@
 - [ ] Criar README.md com instruções de uso
 - [ ] Documentar estrutura de dados
 - [ ] Documentar APIs disponíveis
+
+## Correções Urgentes
+- [x] Corrigir problema de autenticação - botão de login não funciona
+- [x] Implementar tela de login funcional ou remover proteção de autenticação para testes
