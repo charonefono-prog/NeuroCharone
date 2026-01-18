@@ -2,6 +2,7 @@ import { View, Text, ScrollView } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { Patient, TherapeuticPlan, Session } from "@/lib/local-storage";
 import { EffectivenessAnalysis } from "./effectiveness-analysis";
+import { ComparativeEffectivenessReport } from "./comparative-effectiveness-report";
 
 interface AdvancedStatisticsProps {
   patients: Patient[];
@@ -302,6 +303,9 @@ export function AdvancedStatistics({ patients, plans, sessions }: AdvancedStatis
 
       {/* Análise de Efetividade por Região */}
       <EffectivenessAnalysis patients={patients} sessions={sessions} />
+
+      {/* Relat\u00f3rio Comparativo de Efetividade */}
+      <ComparativeEffectivenessReport patients={patients} sessions={sessions} />
       </ScrollView>
     </View>
   );

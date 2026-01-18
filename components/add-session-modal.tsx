@@ -1,9 +1,11 @@
-import { Modal, View, Text, TextInput, TouchableOpacity, ScrollView, Platform } from "react-native";
+import { View, Text, Modal, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Platform, Switch } from "react-native";
 import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
-import { saveSession } from "@/lib/local-storage";
+import { saveSession, getPatients } from "@/lib/local-storage";
 import { Helmet3DSelector } from "./helmet-3d-selector";
+import { scheduleSessionReminder } from "@/lib/notifications";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
 
 interface AddSessionModalProps {
@@ -24,6 +26,10 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const handleSave = async () => {
     setError("");
@@ -40,17 +46,36 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
     }
 
     if (joules.trim() && (isNaN(Number(joules)) || Number(joules) <= 0)) {
-      setError("Joules inválido (digite apenas números)");
+      setError("Joules inv\u00e1lido (digite apenas n\u00fameros)");
+      return;
+    }
+
+    // Validar data agendada
+    if (isScheduled && scheduledDate <= new Date()) {
+      setError("Data agendada deve ser futura");
       return;
     }
 
     try {
       setLoading(true);
 
+      let notificationId: string | null = null;
+
+      // Se for sess\u00e3o agendada, criar notifica\u00e7\u00e3o
+      if (isScheduled) {
+        const patients = await getPatients();
+        const patient = patients.find((p) => p.id === patientId);
+        if (patient) {
+          notificationId = await scheduleSessionReminder(patient.fullName, scheduledDate);
+        }
+      }
+
       await saveSession({
         patientId,
         planId,
-        sessionDate: new Date().toISOString(),
+        sessionDate: isScheduled ? scheduledDate.toISOString() : new Date().toISOString(),
+        scheduledDate: isScheduled ? scheduledDate.toISOString() : undefined,
+        notificationId: notificationId || undefined,
         durationMinutes: Number(durationMinutes),
         stimulatedPoints: selectedPoints,
         joules: joules.trim() ? Number(joules) : undefined,
@@ -63,13 +88,15 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
 
-      // Limpar formulário
+      // Limpar formul\u00e1rio
       setDurationMinutes("");
       setJoules("");
       setSymptomScore("");
       setObservations("");
       setPatientReactions("");
       setSelectedPoints([]);
+      setIsScheduled(false);
+      setScheduledDate(new Date());
       setError("");
 
       onSuccess();
@@ -151,9 +178,107 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
             {/* Campos */}
             <View style={{ gap: 16 }}>
               {/* Duração */}
+              {/* Agendar Sess\u00e3o */}
+              <View
+                style={{
+                  backgroundColor: colors.primary + "10",
+                  borderRadius: 12,
+                  padding: 16,
+                  gap: 12,
+                  borderWidth: 1,
+                  borderColor: colors.primary + "30",
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Agendar Sess\u00e3o Futura
+                    </Text>
+                    <Text style={{ fontSize: 12, color: colors.muted, marginTop: 4 }}>
+                      Ative para agendar uma sess\u00e3o futura com notifica\u00e7\u00e3o
+                    </Text>
+                  </View>
+                  <Switch
+                    value={isScheduled}
+                    onValueChange={setIsScheduled}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
+
+                {isScheduled && (
+                  <View style={{ gap: 12 }}>
+                    <TouchableOpacity
+                      onPress={() => setShowDatePicker(true)}
+                      style={{
+                        backgroundColor: colors.surface,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 12,
+                        padding: 16,
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>Data</Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {scheduledDate.toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => setShowTimePicker(true)}
+                      style={{
+                        backgroundColor: colors.surface,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 12,
+                        padding: 16,
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>Hor\u00e1rio</Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {scheduledDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                      </Text>
+                    </TouchableOpacity>
+
+                    {showDatePicker && (
+                      <DateTimePicker
+                        value={scheduledDate}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                          setShowDatePicker(false);
+                          if (selectedDate) {
+                            setScheduledDate(selectedDate);
+                          }
+                        }}
+                        minimumDate={new Date()}
+                      />
+                    )}
+
+                    {showTimePicker && (
+                      <DateTimePicker
+                        value={scheduledDate}
+                        mode="time"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                          setShowTimePicker(false);
+                          if (selectedDate) {
+                            setScheduledDate(selectedDate);
+                          }
+                        }}
+                      />
+                    )}
+                  </View>
+                )}
+              </View>
+
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                  Duração (minutos) *
+                  Dura\u00e7\u00e3o (minutos) *
                 </Text>
                 <TextInput
                   value={durationMinutes}

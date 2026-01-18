@@ -336,3 +336,33 @@
 - [ ] Adicionar campo de data/hora agendada no formulário de sessão
 - [ ] Integrar agendamento ao criar sessão futura
 - [ ] Integrar cancelamento ao excluir sessão
+
+## Agendamento de Sessões Futuras
+- [x] Adicionar campo de data/hora no formulário de criação de sessão
+- [x] Adicionar seletor de data e hora (DateTimePicker)
+- [x] Validar que data agendada é futura
+- [x] Atualizar schema de Session para incluir campo de agendamento
+- [x] Integrar agendamento de notificação ao criar sessão futura
+- [ ] Integrar cancelamento de notificação ao excluir sessão
+- [ ] Adicionar visualização de sessões agendadas na tela inicial
+- [ ] Adicionar filtro de sessões passadas/futuras no histórico
+
+## Relatório Comparativo de Efetividade
+- [x] Criar componente de relatório comparativo
+- [x] Calcular tempo médio de tratamento por diagnóstico
+- [x] Calcular taxa de melhora média por diagnóstico
+- [x] Calcular número de sessões médio por diagnóstico
+- [x] Criar visualização em tabela comparativa
+- [x] Adicionar insights automáticos
+- [x] Integrar relatório nas estatísticas avançadas
+- [ ] Adicionar filtro por período de tempo
+
+## Backup Automático em Nuvem
+- [ ] Criar endpoints no servidor para sincronização
+- [ ] Implementar upload de dados para servidor
+- [ ] Implementar download de dados do servidor
+- [ ] Adicionar detecção de conflitos de sincronização
+- [ ] Criar interface de configuração de backup
+- [ ] Adicionar indicador de status de sincronização
+- [ ] Implementar sincronização automática em intervalos
+- [ ] Adicionar opção de sincronização manual

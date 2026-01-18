@@ -36,11 +36,13 @@ export interface Session {
   id: string;
   patientId: string;
   planId: string;
-  sessionDate: string;
-  durationMinutes: number; // Duração em minutos
+  sessionDate: string; // Data/hora em que a sess\u00e3o foi realizada
+  scheduledDate?: string; // Data/hora agendada para a sess\u00e3o (se for futura)
+  notificationId?: string; // ID da notifica\u00e7\u00e3o agendada
+  durationMinutes: number; // Dura\u00e7\u00e3o em minutos
   stimulatedPoints: string[];
   joules?: number; // Energia aplicada em Joules
-  symptomScore?: number; // Avaliação dos sintomas nesta sessão (0-10)
+  symptomScore?: number; // Avalia\u00e7\u00e3o dos sintomas nesta sess\u00e3o (0-10)
   observations?: string;
   patientReactions?: string;
   nextSessionDate?: string;
