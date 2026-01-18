@@ -3,17 +3,24 @@ import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { getPatients, type Patient } from "@/lib/local-storage";
+import { getPatients, getPlansByPatient, getSessionsByPatient, type Patient } from "@/lib/local-storage";
 import { AddPatientModal } from "@/components/add-patient-modal";
+import { AdvancedFiltersModal, type AdvancedFilters } from "@/components/advanced-filters-modal";
+import { filterPatients, countActiveFilters, getDefaultFilters, type PatientWithData } from "@/lib/patient-filters";
 import { useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
+import { Platform } from "react-native";
 
 export default function PatientsScreen() {
   const colors = useColors();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "paused" | "completed">("all");
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientsWithData, setPatientsWithData] = useState<PatientWithData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(getDefaultFilters());
   const router = useRouter();
 
   useEffect(() => {
@@ -25,6 +32,18 @@ export default function PatientsScreen() {
       setLoading(true);
       const data = await getPatients();
       setPatients(data);
+
+      // Carregar dados adicionais para filtragem
+      const withData = await Promise.all(
+        data.map(async (patient) => {
+          const [plans, sessions] = await Promise.all([
+            getPlansByPatient(patient.id),
+            getSessionsByPatient(patient.id),
+          ]);
+          return { patient, plans, sessions };
+        })
+      );
+      setPatientsWithData(withData);
     } catch (error) {
       console.error("Error loading patients:", error);
     } finally {
@@ -32,11 +51,35 @@ export default function PatientsScreen() {
     }
   };
 
-  const filteredPatients = patients.filter((patient) => {
-    const matchesSearch = patient.fullName.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "all" || patient.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Aplicar filtros avançados primeiro
+  const advancedFiltered = filterPatients(patientsWithData, advancedFilters);
+  
+  // Depois aplicar busca por nome e filtro de status simples
+  const filteredPatients = advancedFiltered
+    .map((item) => item.patient)
+    .filter((patient) => {
+      const matchesSearch = patient.fullName.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter === "all" || patient.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+  const activeFiltersCount = countActiveFilters(advancedFilters);
+
+  const handleApplyFilters = (filters: AdvancedFilters) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    setAdvancedFilters(filters);
+  };
+
+  const handleClearAllFilters = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setAdvancedFilters(getDefaultFilters());
+    setStatusFilter("all");
+    setSearch("");
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -88,14 +131,78 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
-              Pacientes
-            </Text>
-            <Text style={{ fontSize: 14, color: colors.muted }}>
-              {filteredPatients.length} paciente(s) encontrado(s)
-            </Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <View style={{ gap: 8, flex: 1 }}>
+              <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+                Pacientes
+              </Text>
+              <Text style={{ fontSize: 14, color: colors.muted }}>
+                {filteredPatients.length} paciente(s) encontrado(s)
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setShowFiltersModal(true)}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: activeFiltersCount > 0 ? colors.primary : colors.surface,
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: activeFiltersCount > 0 ? colors.primary : colors.border,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <IconSymbol
+                name="chevron.left.forwardslash.chevron.right"
+                size={20}
+                color={activeFiltersCount > 0 ? "#FFFFFF" : colors.foreground}
+              />
+              {activeFiltersCount > 0 && (
+                <View
+                  style={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: 10,
+                    width: 20,
+                    height: 20,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontWeight: "bold", color: colors.primary }}>
+                    {activeFiltersCount}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
+
+          {/* Indicador de Filtros Ativos */}
+          {activeFiltersCount > 0 && (
+            <View
+              style={{
+                backgroundColor: colors.surface,
+                borderRadius: 12,
+                padding: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderWidth: 1,
+                borderColor: colors.border,
+              }}
+            >
+              <Text style={{ fontSize: 14, color: colors.foreground }}>
+                {activeFiltersCount} {activeFiltersCount === 1 ? "filtro ativo" : "filtros ativos"}
+              </Text>
+              <TouchableOpacity onPress={handleClearAllFilters} activeOpacity={0.7}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                  Limpar Tudo
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Busca */}
           <View
@@ -257,6 +364,14 @@ export default function PatientsScreen() {
         visible={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSuccess={loadPatients}
+      />
+      
+      {/* Modal de Filtros Avançados */}
+      <AdvancedFiltersModal
+        visible={showFiltersModal}
+        filters={advancedFilters}
+        onApply={handleApplyFilters}
+        onClose={() => setShowFiltersModal(false)}
       />
     </ScreenContainer>
   );

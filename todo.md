@@ -165,3 +165,14 @@
 - [x] Adicionar descrições detalhadas de cada região cerebral
 - [x] Criar modal informativo ao tocar em região/ponto
 - [x] Incluir funções e indicações terapêuticas de cada área
+
+## Sistema de Pesquisa Avançada
+- [x] Criar componente de modal de filtros avançados
+- [x] Implementar filtro por diagnóstico
+- [x] Implementar filtro por período de tratamento (data início/fim)
+- [x] Implementar filtro por regiões cerebrais estimuladas
+- [x] Implementar filtro por status do paciente
+- [x] Adicionar combinação de múltiplos filtros
+- [x] Integrar filtros na tela de pacientes
+- [x] Adicionar indicador visual de filtros ativos
+- [x] Implementar botão de limpar todos os filtros
