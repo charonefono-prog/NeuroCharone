@@ -122,3 +122,26 @@
 - [x] Implementar AsyncStorage para dados locais
 - [x] Criar funcionalidades básicas de CRUD de pacientes
 - [x] Adicionar dados de exemplo para demonstração
+
+## Formulário de Cadastro de Pacientes
+- [x] Criar componente de modal de cadastro
+- [x] Adicionar campos: nome, data de nascimento, telefone, diagnóstico
+- [x] Implementar validação de campos obrigatórios
+- [x] Integrar com AsyncStorage para salvar paciente
+- [x] Adicionar botão flutuante "+" na tela de pacientes
+- [x] Atualizar lista após cadastro
+
+## Tela de Detalhes do Paciente
+- [x] Criar tela de detalhes com navegação
+- [x] Implementar sistema de abas (informações, plano, histórico)
+- [x] Aba de informações pessoais completas
+- [x] Aba de plano terapêutico ativo
+- [x] Aba de histórico de sessões
+- [x] Adicionar navegação ao tocar no paciente
+
+## Formulário de Registro de Sessões
+- [x] Criar modal de registro de sessão
+- [x] Implementar seleção interativa de pontos do capacete
+- [x] Adicionar campos: duração, intensidade, observações
+- [x] Integrar com AsyncStorage para salvar sessão
+- [x] Atualizar histórico após registro

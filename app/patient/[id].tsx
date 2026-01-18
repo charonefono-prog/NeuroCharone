@@ -1,0 +1,493 @@
+import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useState, useEffect } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ScreenContainer } from "@/components/screen-container";
+import { useColors } from "@/hooks/use-colors";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import {
+  getPatients,
+  getPlansByPatient,
+  getSessionsByPatient,
+  type Patient,
+  type TherapeuticPlan,
+  type Session,
+} from "@/lib/local-storage";
+import { AddSessionModal } from "@/components/add-session-modal";
+
+type Tab = "info" | "plan" | "history";
+
+export default function PatientDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const colors = useColors();
+  const [loading, setLoading] = useState(true);
+  const [patient, setPatient] = useState<Patient | null>(null);
+  const [plans, setPlans] = useState<TherapeuticPlan[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [activeTab, setActiveTab] = useState<Tab>("info");
+  const [showAddSessionModal, setShowAddSessionModal] = useState(false);
+
+  useEffect(() => {
+    loadData();
+  }, [id]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const patients = await getPatients();
+      const foundPatient = patients.find((p) => p.id === id);
+      
+      if (!foundPatient) {
+        router.back();
+        return;
+      }
+
+      const [plansData, sessionsData] = await Promise.all([
+        getPlansByPatient(id!),
+        getSessionsByPatient(id!),
+      ]);
+
+      setPatient(foundPatient);
+      setPlans(plansData);
+      setSessions(sessionsData);
+    } catch (error) {
+      console.error("Error loading patient data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateAge = (birthDate: string) => {
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return colors.success;
+      case "paused":
+        return colors.warning;
+      case "completed":
+        return colors.muted;
+      default:
+        return colors.muted;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Ativo";
+      case "paused":
+        return "Pausado";
+      case "completed":
+        return "Concluído";
+      default:
+        return status;
+    }
+  };
+
+  if (loading) {
+    return (
+      <ScreenContainer className="items-center justify-center">
+        <ActivityIndicator size="large" color={colors.primary} />
+      </ScreenContainer>
+    );
+  }
+
+  if (!patient) {
+    return (
+      <ScreenContainer className="items-center justify-center p-6">
+        <Text style={{ fontSize: 16, color: colors.muted }}>Paciente não encontrado</Text>
+      </ScreenContainer>
+    );
+  }
+
+  const activePlan = plans.find((p) => p.isActive);
+
+  return (
+    <ScreenContainer>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ flex: 1 }}>
+          {/* Header */}
+          <View
+            style={{
+              backgroundColor: colors.primary,
+              padding: 24,
+              paddingTop: 60,
+              gap: 12,
+            }}
+          >
+            <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
+              <IconSymbol name="chevron.right" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+            
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: "#FFFFFF" }}>
+                  {patient.fullName}
+                </Text>
+                <Text style={{ fontSize: 16, color: "#FFFFFF", opacity: 0.9, marginTop: 4 }}>
+                  {calculateAge(patient.birthDate)} anos
+                </Text>
+              </View>
+              <View
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 12,
+                  backgroundColor: "#FFFFFF30",
+                }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                  {getStatusLabel(patient.status)}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Tabs */}
+          <View
+            style={{
+              flexDirection: "row",
+              backgroundColor: colors.surface,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+            }}
+          >
+            {[
+              { key: "info" as Tab, label: "Informações" },
+              { key: "plan" as Tab, label: "Plano" },
+              { key: "history" as Tab, label: "Histórico" },
+            ].map((tab) => (
+              <TouchableOpacity
+                key={tab.key}
+                onPress={() => setActiveTab(tab.key)}
+                activeOpacity={0.7}
+                style={{
+                  flex: 1,
+                  paddingVertical: 16,
+                  alignItems: "center",
+                  borderBottomWidth: 2,
+                  borderBottomColor: activeTab === tab.key ? colors.primary : "transparent",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: activeTab === tab.key ? colors.primary : colors.muted,
+                  }}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Content */}
+          <View style={{ padding: 24, gap: 20 }}>
+            {activeTab === "info" && (
+              <View style={{ gap: 16 }}>
+                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                  Informações Pessoais
+                </Text>
+
+                <View style={{ gap: 12 }}>
+                  <View style={{ gap: 4 }}>
+                    <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                      Data de Nascimento
+                    </Text>
+                    <Text style={{ fontSize: 16, color: colors.foreground }}>
+                      {formatDate(patient.birthDate)}
+                    </Text>
+                  </View>
+
+                  {patient.phone && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Telefone
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {patient.phone}
+                      </Text>
+                    </View>
+                  )}
+
+                  {patient.email && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Email
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {patient.email}
+                      </Text>
+                    </View>
+                  )}
+
+                  {patient.diagnosis && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Diagnóstico
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground, lineHeight: 24 }}>
+                        {patient.diagnosis}
+                      </Text>
+                    </View>
+                  )}
+
+                  {patient.medicalNotes && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Observações Médicas
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground, lineHeight: 24 }}>
+                        {patient.medicalNotes}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            )}
+
+            {activeTab === "plan" && (
+              <View style={{ gap: 16 }}>
+                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                  Plano Terapêutico
+                </Text>
+
+                {activePlan ? (
+                  <View
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      padding: 16,
+                      gap: 12,
+                    }}
+                  >
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Objetivo
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground, lineHeight: 24 }}>
+                        {activePlan.objective}
+                      </Text>
+                    </View>
+
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Regiões Alvo
+                      </Text>
+                      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                        {activePlan.targetRegions.map((region, index) => (
+                          <View
+                            key={index}
+                            style={{
+                              paddingHorizontal: 12,
+                              paddingVertical: 6,
+                              borderRadius: 8,
+                              backgroundColor: colors.primary + "20",
+                            }}
+                          >
+                            <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "500" }}>
+                              {region}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Pontos de Estimulação
+                      </Text>
+                      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                        {activePlan.targetPoints.map((point, index) => (
+                          <View
+                            key={index}
+                            style={{
+                              paddingHorizontal: 12,
+                              paddingVertical: 6,
+                              borderRadius: 8,
+                              backgroundColor: colors.success + "20",
+                            }}
+                          >
+                            <Text style={{ fontSize: 12, color: colors.success, fontWeight: "500" }}>
+                              {point}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+
+                    <View style={{ flexDirection: "row", gap: 16 }}>
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Frequência
+                        </Text>
+                        <Text style={{ fontSize: 16, color: colors.foreground }}>
+                          {activePlan.frequency}x por semana
+                        </Text>
+                      </View>
+
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Duração Total
+                        </Text>
+                        <Text style={{ fontSize: 16, color: colors.foreground }}>
+                          {activePlan.totalDuration} semanas
+                        </Text>
+                      </View>
+                    </View>
+
+                    {activePlan.notes && (
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Observações
+                        </Text>
+                        <Text style={{ fontSize: 16, color: colors.foreground, lineHeight: 24 }}>
+                          {activePlan.notes}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                ) : (
+                  <View style={{ padding: 32, alignItems: "center" }}>
+                    <IconSymbol name="house.fill" size={48} color={colors.muted} />
+                    <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                      Nenhum plano terapêutico ativo
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {activeTab === "history" && (
+              <View style={{ gap: 16 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                    Histórico de Sessões
+                  </Text>
+                  {activePlan && (
+                    <TouchableOpacity
+                      onPress={() => setShowAddSessionModal(true)}
+                      activeOpacity={0.7}
+                      style={{
+                        backgroundColor: colors.primary,
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
+                      <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                        Nova
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                {sessions.length > 0 ? (
+                  <View style={{ gap: 12 }}>
+                    {sessions
+                      .sort((a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime())
+                      .map((session) => (
+                        <View
+                          key={session.id}
+                          style={{
+                            backgroundColor: colors.surface,
+                            borderRadius: 12,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                            padding: 16,
+                            gap: 8,
+                          }}
+                        >
+                          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                            <Text style={{ fontSize: 14, color: colors.muted }}>
+                              {formatDate(session.sessionDate)}
+                            </Text>
+                            <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                              {session.duration} min
+                            </Text>
+                          </View>
+
+                          <View style={{ gap: 4 }}>
+                            <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                              Pontos Estimulados
+                            </Text>
+                            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                              {session.stimulatedPoints.map((point, index) => (
+                                <View
+                                  key={index}
+                                  style={{
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 4,
+                                    borderRadius: 8,
+                                    backgroundColor: colors.primary + "15",
+                                  }}
+                                >
+                                  <Text style={{ fontSize: 12, color: colors.primary }}>
+                                    {point}
+                                  </Text>
+                                </View>
+                              ))}
+                            </View>
+                          </View>
+
+                          {session.observations && (
+                            <Text style={{ fontSize: 14, color: colors.foreground, lineHeight: 20 }}>
+                              {session.observations}
+                            </Text>
+                          )}
+                        </View>
+                      ))}
+                  </View>
+                ) : (
+                  <View style={{ padding: 32, alignItems: "center" }}>
+                    <IconSymbol name="house.fill" size={48} color={colors.muted} />
+                    <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                      Nenhuma sessão registrada
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Modal de Registro de Sessão */}
+      {activePlan && (
+        <AddSessionModal
+          visible={showAddSessionModal}
+          patientId={id!}
+          planId={activePlan.id}
+          onClose={() => setShowAddSessionModal(false)}
+          onSuccess={loadData}
+        />
+      )}
+    </ScreenContainer>
+  );
+}

@@ -4,6 +4,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { getPatients, type Patient } from "@/lib/local-storage";
+import { AddPatientModal } from "@/components/add-patient-modal";
+import { useRouter } from "expo-router";
 
 export default function PatientsScreen() {
   const colors = useColors();
@@ -11,6 +13,8 @@ export default function PatientsScreen() {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "paused" | "completed">("all");
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     loadPatients();
@@ -152,6 +156,31 @@ export default function PatientsScreen() {
             </View>
           </ScrollView>
 
+          {/* Botão Flutuante */}
+          <TouchableOpacity
+            onPress={() => setShowAddModal(true)}
+            activeOpacity={0.8}
+            style={{
+              position: "absolute",
+              right: 24,
+              bottom: 24,
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: colors.primary,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+              zIndex: 999,
+            }}
+          >
+            <IconSymbol name="house.fill" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
+
           {/* Lista de Pacientes */}
           <View style={{ gap: 12 }}>
             {filteredPatients.length === 0 ? (
@@ -168,6 +197,7 @@ export default function PatientsScreen() {
               filteredPatients.map((patient) => (
                 <TouchableOpacity
                   key={patient.id}
+                  onPress={() => router.push(`/patient/${patient.id}` as any)}
                   activeOpacity={0.7}
                   style={{
                     backgroundColor: colors.surface,
@@ -221,6 +251,13 @@ export default function PatientsScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Modal de Cadastro */}
+      <AddPatientModal
+        visible={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={loadPatients}
+      />
     </ScreenContainer>
   );
 }
