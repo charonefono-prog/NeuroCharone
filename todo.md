@@ -190,3 +190,23 @@
 - [x] Alterar nome de "NeuroMap" para "NeuroLaserMap" no app.config.ts
 - [x] Atualizar nome em todas as telas e componentes
 - [x] Atualizar documentação (design.md, README, etc)
+
+## Modal de Informação dos Pontos
+- [x] Integrar PointInfoModal no helmet-3d-selector
+- [x] Adicionar toque longo nos pontos para exibir informações
+- [x] Implementar animação de abertura do modal
+- [x] Testar modal em todos os pontos do capacete
+
+## Relatórios em PDF Nativos
+- [ ] Instalar biblioteca de geração de PDF (react-native-pdf ou similar)
+- [ ] Criar template de PDF profissional
+- [ ] Adicionar gráficos ao PDF
+- [ ] Implementar exportação e compartilhamento de PDF
+- [ ] Substituir exportação HTML por PDF
+
+## Sistema de Backup Automático
+- [x] Criar função de exportação de dados em JSON
+- [x] Implementar agendamento de backup semanal
+- [x] Adicionar opção manual de backup/restauração
+- [x] Implementar compartilhamento de arquivo de backup
+- [x] Adicionar importação de dados do backup

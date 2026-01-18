@@ -1,10 +1,41 @@
-import { ScrollView, Text, View, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, Alert, Platform } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { shareBackup, suggestBackupIfNeeded } from "@/lib/backup-system";
+import { useEffect } from "react";
+import * as Haptics from "expo-haptics";
 
 export default function ProfileScreen() {
   const colors = useColors();
+
+  useEffect(() => {
+    // Sugerir backup se necessário
+    suggestBackupIfNeeded();
+  }, []);
+
+  const handleBackup = async () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    
+    Alert.alert(
+      "Fazer Backup",
+      "Deseja exportar todos os dados do aplicativo?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Exportar",
+          onPress: async () => {
+            const success = await shareBackup();
+            if (success) {
+              Alert.alert("Sucesso", "Backup criado e compartilhado com sucesso!");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScreenContainer className="p-6">
@@ -115,6 +146,66 @@ export default function ProfileScreen() {
               </Text>
               <Text style={{ fontSize: 12, color: colors.muted }}>
                 CREFONO: 9-10025-5
+              </Text>
+            </View>
+          </View>
+
+          {/* Backup e Restauração */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Backup de Dados
+            </Text>
+            
+            <TouchableOpacity
+              onPress={handleBackup}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: colors.success + "20",
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.success,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.success,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>💾</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                  Exportar Backup
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                  Salvar todos os dados em arquivo JSON
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <View
+              style={{
+                backgroundColor: colors.warning + "10",
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.warning + "30",
+                padding: 12,
+                flexDirection: "row",
+                gap: 8,
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>⚠️</Text>
+              <Text style={{ flex: 1, fontSize: 12, color: colors.muted, lineHeight: 18 }}>
+                Recomendamos fazer backup semanal dos seus dados. Os dados são armazenados localmente no dispositivo.
               </Text>
             </View>
           </View>
