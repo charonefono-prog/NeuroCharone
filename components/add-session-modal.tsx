@@ -18,6 +18,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   const colors = useColors();
   const [durationMinutes, setDurationMinutes] = useState("");
   const [joules, setJoules] = useState("");
+  const [symptomScore, setSymptomScore] = useState("");
   const [observations, setObservations] = useState("");
   const [patientReactions, setPatientReactions] = useState("");
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
@@ -53,6 +54,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
         durationMinutes: Number(durationMinutes),
         stimulatedPoints: selectedPoints,
         joules: joules.trim() ? Number(joules) : undefined,
+        symptomScore: symptomScore.trim() ? Number(symptomScore) : undefined,
         observations: observations.trim() || undefined,
         patientReactions: patientReactions.trim() || undefined,
       });
@@ -64,6 +66,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
       // Limpar formulário
       setDurationMinutes("");
       setJoules("");
+      setSymptomScore("");
       setObservations("");
       setPatientReactions("");
       setSelectedPoints([]);
@@ -82,6 +85,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   const handleCancel = () => {
     setDurationMinutes("");
     setJoules("");
+    setSymptomScore("");
     setObservations("");
     setPatientReactions("");
     setSelectedPoints([]);
@@ -177,6 +181,38 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
                 <TextInput
                   value={joules}
                   onChangeText={setJoules}
+                  placeholder="Ex: 5"
+                  placeholderTextColor={colors.muted}
+                  keyboardType="numeric"
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: 12,
+                    padding: 16,
+                    fontSize: 16,
+                    color: colors.foreground,
+                  }}
+                />
+              </View>
+
+              {/* Avaliação de Sintomas */}
+              <View style={{ gap: 8 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                  Avaliação dos Sintomas (0-10)
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: -4 }}>
+                  0 = Sem sintomas | 10 = Sintomas muito intensos
+                </Text>
+                <TextInput
+                  value={symptomScore}
+                  onChangeText={(text) => {
+                    // Limitar entre 0 e 10
+                    const num = Number(text);
+                    if (text === "" || (num >= 0 && num <= 10)) {
+                      setSymptomScore(text);
+                    }
+                  }}
                   placeholder="Ex: 5"
                   placeholderTextColor={colors.muted}
                   keyboardType="numeric"

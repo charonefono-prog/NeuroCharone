@@ -16,8 +16,9 @@ import { AddSessionModal } from "@/components/add-session-modal";
 import { AddPlanModal } from "@/components/add-plan-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
 import { TreatmentChart } from "@/components/treatment-chart";
+import { SymptomProgressChart } from "@/components/symptom-progress-chart";
 import { AuditHistory } from "@/components/audit-history";
-import { generatePatientReport } from "@/lib/pdf-generator";
+import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
@@ -50,11 +51,11 @@ export default function PatientDetailScreen() {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
 
-      await generatePatientReport({
+      await generatePatientPDFReport(
         patient,
-        plan: activePlan || null,
-        sessions,
-      });
+        activePlan || null,
+        sessions
+      );
 
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -482,6 +483,9 @@ export default function PatientDetailScreen() {
 
             {activeTab === "history" && (
               <View style={{ gap: 16 }}>
+                {/* Gráfico de Progresso de Sintomas */}
+                <SymptomProgressChart patient={patient} sessions={sessions} />
+
                 {/* Gráfico de Evolução */}
                 {sessions.length > 0 && (
                   <View style={{ marginBottom: 8 }}>

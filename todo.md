@@ -250,3 +250,37 @@
 - [x] Adicionar histórico ao criar sessão
 - [x] Criar componente de visualização de histórico
 - [x] Integrar visualização de histórico na tela de detalhes do paciente
+
+## Templates de Planos Terapêuticos Personalizáveis
+- [x] Criar schema de templates de planos no AsyncStorage
+- [x] Criar tela de gerenciamento de templates
+- [x] Implementar CRUD de templates (criar, editar, excluir)
+- [x] Adicionar campos: nome do template, objetivo, regiões alvo, pontos alvo, frequência, duração
+- [x] Criar modal de seleção de template ao criar novo plano
+- [x] Implementar aplicação de template no formulário de plano
+- [x] Inicializar templates padrão (Depressão, Ansiedade, Dor Crônica, Insônia, TDAH)
+- [ ] Adicionar opção de salvar plano atual como template
+- [ ] Integrar templates na tela de perfil ou configurações
+
+## Geração de PDF Nativo
+- [x] Instalar biblioteca react-native-pdf-lib ou similar
+- [x] Criar função de geração de PDF para relatório de paciente
+- [x] Adicionar cabeçalho com logo e informações profissionais
+- [x] Incluir dados do paciente no PDF
+- [x] Incluir estatísticas do tratamento no PDF
+- [x] Incluir histórico de sessões no PDF
+- [x] Adicionar rodapé com assinatura do profissional
+- [x] Implementar compartilhamento do PDF gerado
+- [x] Substituir exportação HTML por PDF na tela de detalhes
+
+## Sistema de Avaliação de Progresso
+- [x] Adicionar campo de avaliação de sintomas inicial no schema de paciente
+- [x] Adicionar campo de avaliação de progresso no formulário de sessão
+- [x] Criar escala de avaliação (0-10)
+- [x] Implementar gráfico de evolução de sintomas ao longo do tempo
+- [x] Adicionar comparação antes/depois do tratamento
+- [x] Criar indicadores de melhora/piora/estagnação
+- [x] Integrar gráficos de progresso na tela de detalhes do paciente
+- [ ] Adicionar campo de avaliação inicial no formulário de cadastro de paciente
+- [ ] Adicionar análise de efetividade por região cerebral estimulada
+- [ ] Adicionar relatório de efetividade nas estatísticas avançadas

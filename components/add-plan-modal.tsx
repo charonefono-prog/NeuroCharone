@@ -1,10 +1,12 @@
-import { Modal, View, Text, TextInput, TouchableOpacity, ScrollView, Platform } from "react-native";
+import { Modal, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform } from "react-native";
 import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
 import { savePlan } from "@/lib/local-storage";
 import { Helmet3DSelector } from "./helmet-3d-selector";
 import { helmetRegions } from "@/shared/helmet-data";
+import { TemplateSelectorModal } from "./template-selector-modal";
+import { type PlanTemplate } from "@/lib/plan-templates";
 import * as Haptics from "expo-haptics";
 
 interface AddPlanModalProps {
@@ -23,6 +25,7 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
 
   const getRegionsFromPoints = (points: string[]): string[] => {
     const regions = new Set<string>();
@@ -33,6 +36,17 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
       }
     });
     return Array.from(regions);
+  };
+
+  const handleApplyTemplate = (template: PlanTemplate) => {
+    setObjective(template.objective);
+    setFrequency(template.frequency.toString());
+    setTotalDuration(template.totalDuration.toString());
+    setNotes(template.notes || "");
+    setSelectedPoints(template.targetPoints);
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
   };
 
   const handleSave = async () => {
@@ -154,6 +168,28 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
                 <Text style={{ color: colors.error, fontSize: 14 }}>{error}</Text>
               </View>
             ) : null}
+
+            {/* Botão de Template */}
+            <TouchableOpacity
+              onPress={() => setShowTemplateSelector(true)}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: colors.primary + "20",
+                padding: 16,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.primary,
+                borderStyle: "dashed",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                📋 Usar Template de Plano
+              </Text>
+              <Text style={{ fontSize: 12, color: colors.muted, marginTop: 4 }}>
+                Preencher automaticamente com um modelo pré-configurado
+              </Text>
+            </TouchableOpacity>
 
             {/* Campos Básicos */}
             <View style={{ gap: 16 }}>
@@ -306,6 +342,13 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
           </ScrollView>
         </View>
       </View>
+
+      {/* Modal de Seleção de Template */}
+      <TemplateSelectorModal
+        visible={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onSelectTemplate={handleApplyTemplate}
+      />
     </Modal>
   );
 }

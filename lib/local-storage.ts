@@ -12,6 +12,7 @@ export interface Patient {
   address?: string;
   diagnosis?: string;
   medicalNotes?: string;
+  initialSymptomScore?: number; // Avaliação inicial dos sintomas (0-10)
   status: "active" | "paused" | "completed";
   createdAt: string;
   updatedAt: string;
@@ -39,6 +40,7 @@ export interface Session {
   durationMinutes: number; // Duração em minutos
   stimulatedPoints: string[];
   joules?: number; // Energia aplicada em Joules
+  symptomScore?: number; // Avaliação dos sintomas nesta sessão (0-10)
   observations?: string;
   patientReactions?: string;
   nextSessionDate?: string;
