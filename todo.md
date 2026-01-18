@@ -210,3 +210,23 @@
 - [x] Adicionar opção manual de backup/restauração
 - [x] Implementar compartilhamento de arquivo de backup
 - [x] Adicionar importação de dados do backup
+
+## Modo Escuro/Claro Manual
+- [x] Criar contexto de tema com estado persistente
+- [x] Adicionar botão de alternância na tela de perfil
+- [x] Implementar animação de transição entre temas
+- [x] Testar alternância em todas as telas
+
+## Relatórios Estatísticos Avançados
+- [x] Criar componente de gráfico de distribuição de diagnósticos
+- [x] Criar componente de gráfico de regiões mais estimuladas
+- [x] Criar componente de gráfico de taxa de adesão ao tratamento
+- [x] Adicionar seção de estatísticas no dashboard
+- [x] Implementar filtros de período para estatísticas
+
+## Sistema de Lembretes de Sessões
+- [x] Configurar permissões de notificações
+- [x] Criar função de agendamento de lembretes
+- [x] Adicionar opção de configurar antecedência do lembrete
+- [x] Implementar notificação push para sessões
+- [x] Adicionar gerenciamento de lembretes na tela de sessões

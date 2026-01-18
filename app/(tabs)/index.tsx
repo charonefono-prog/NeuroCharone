@@ -4,7 +4,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useEffect, useState } from "react";
-import { getPatients, getSessions, initializeSampleData, type Patient, type Session } from "@/lib/local-storage";
+import { getPatients, getSessions, getPlans, initializeSampleData, type Patient, type Session, type TherapeuticPlan } from "@/lib/local-storage";
+import { AdvancedStatistics } from "@/components/advanced-statistics";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [plans, setPlans] = useState<TherapeuticPlan[]>([]);
+  const [showStatistics, setShowStatistics] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -23,8 +26,10 @@ export default function HomeScreen() {
       await initializeSampleData();
       const patientsData = await getPatients();
       const sessionsData = await getSessions();
+      const plansData = await getPlans();
       setPatients(patientsData);
       setSessions(sessionsData);
+      setPlans(plansData);
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -169,6 +174,32 @@ export default function HomeScreen() {
               </Text>
               <IconSymbol name="chevron.right" size={20} color="#FFFFFF" />
             </TouchableOpacity>
+          </View>
+
+          {/* Estatísticas Avançadas */}
+          <View style={{ gap: 12 }}>
+            <TouchableOpacity
+              onPress={() => setShowStatistics(!showStatistics)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+                Estatísticas Avançadas
+              </Text>
+              <IconSymbol
+                name="chevron.right"
+                size={20}
+                color={colors.muted}
+                style={{ transform: [{ rotate: showStatistics ? "90deg" : "0deg" }] }}
+              />
+            </TouchableOpacity>
+
+            {showStatistics && (
+              <AdvancedStatistics patients={patients} plans={plans} sessions={sessions} />
+            )}
           </View>
 
           {/* Rodapé */}

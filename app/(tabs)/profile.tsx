@@ -1,18 +1,44 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert, Platform } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, Alert, Platform, Switch, TextInput } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { shareBackup, suggestBackupIfNeeded } from "@/lib/backup-system";
-import { useEffect } from "react";
+import { useThemeContext } from "@/lib/theme-provider";
+import { getReminderAdvance, setReminderAdvance, requestNotificationPermissions } from "@/lib/notifications";
+import { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
 
 export default function ProfileScreen() {
   const colors = useColors();
+  const { colorScheme, setColorScheme } = useThemeContext();
+  const isDark = colorScheme === "dark";
+  const [reminderAdvance, setReminderAdvanceState] = useState<number>(60);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   useEffect(() => {
     // Sugerir backup se necessário
     suggestBackupIfNeeded();
+    // Carregar configuração de lembretes
+    loadReminderSettings();
   }, []);
+
+  const loadReminderSettings = async () => {
+    const advance = await getReminderAdvance();
+    setReminderAdvanceState(advance);
+    const hasPermission = await requestNotificationPermissions();
+    setNotificationsEnabled(hasPermission);
+  };
+
+  const handleReminderAdvanceChange = async (value: string) => {
+    const minutes = parseInt(value, 10);
+    if (!isNaN(minutes) && minutes > 0) {
+      setReminderAdvanceState(minutes);
+      await setReminderAdvance(minutes);
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    }
+  };
 
   const handleBackup = async () => {
     if (Platform.OS !== "web") {
@@ -35,6 +61,13 @@ export default function ProfileScreen() {
         },
       ]
     );
+  };
+
+  const toggleTheme = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setColorScheme(isDark ? "light" : "dark");
   };
 
   return (
@@ -147,6 +180,127 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 12, color: colors.muted }}>
                 CREFONO: 9-10025-5
               </Text>
+            </View>
+          </View>
+
+          {/* Lembretes de Sessões */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Lembretes de Sessões
+            </Text>
+            
+            <View
+              style={{
+                backgroundColor: colors.surface,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                padding: 16,
+                gap: 16,
+              }}
+            >
+              {/* Status das notificações */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: notificationsEnabled ? colors.success + "20" : colors.error + "20",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 20 }}>{notificationsEnabled ? "🔔" : "🔕"}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                    Notificações
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                    {notificationsEnabled ? "Ativadas" : "Desativadas - Ative nas configurações do sistema"}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Antecedência do lembrete */}
+              {notificationsEnabled && (
+                <View style={{ gap: 8 }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                    Antecedência do Lembrete
+                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                    <TextInput
+                      value={reminderAdvance.toString()}
+                      onChangeText={handleReminderAdvanceChange}
+                      keyboardType="number-pad"
+                      style={{
+                        flex: 1,
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        padding: 12,
+                        fontSize: 14,
+                        color: colors.foreground,
+                      }}
+                    />
+                    <Text style={{ fontSize: 14, color: colors.muted }}>minutos antes</Text>
+                  </View>
+                  <Text style={{ fontSize: 12, color: colors.muted }}>
+                    Você será notificado {reminderAdvance} minutos antes de cada sessão agendada
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Tema */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Aparência
+            </Text>
+            
+            <View
+              style={{
+                backgroundColor: colors.surface,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: colors.primary + "20",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 20 }}>{isDark ? "🌙" : "☀️"}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                    Modo Escuro
+                  </Text>
+                  <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                    {isDark ? "Ativado" : "Desativado"}
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+              />
             </View>
           </View>
 
