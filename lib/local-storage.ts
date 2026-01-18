@@ -1,0 +1,253 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Tipos de dados
+export interface Patient {
+  id: string;
+  fullName: string;
+  birthDate: string;
+  cpf?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  diagnosis?: string;
+  medicalNotes?: string;
+  status: "active" | "paused" | "completed";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TherapeuticPlan {
+  id: string;
+  patientId: string;
+  objective: string;
+  targetRegions: string[];
+  targetPoints: string[];
+  frequency: number;
+  totalDuration: number;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Session {
+  id: string;
+  patientId: string;
+  planId: string;
+  sessionDate: string;
+  duration: number;
+  stimulatedPoints: string[];
+  intensity?: string;
+  observations?: string;
+  patientReactions?: string;
+  nextSessionDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Chaves de armazenamento
+const KEYS = {
+  PATIENTS: "@neuromap:patients",
+  PLANS: "@neuromap:plans",
+  SESSIONS: "@neuromap:sessions",
+};
+
+// Funções de pacientes
+export async function getPatients(): Promise<Patient[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.PATIENTS);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Error getting patients:", error);
+    return [];
+  }
+}
+
+export async function savePatient(patient: Omit<Patient, "id" | "createdAt" | "updatedAt">): Promise<Patient> {
+  try {
+    const patients = await getPatients();
+    const newPatient: Patient = {
+      ...patient,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    patients.push(newPatient);
+    await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
+    return newPatient;
+  } catch (error) {
+    console.error("Error saving patient:", error);
+    throw error;
+  }
+}
+
+export async function updatePatient(id: string, updates: Partial<Patient>): Promise<Patient | null> {
+  try {
+    const patients = await getPatients();
+    const index = patients.findIndex((p) => p.id === id);
+    if (index === -1) return null;
+
+    patients[index] = {
+      ...patients[index],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
+    return patients[index];
+  } catch (error) {
+    console.error("Error updating patient:", error);
+    throw error;
+  }
+}
+
+export async function deletePatient(id: string): Promise<boolean> {
+  try {
+    const patients = await getPatients();
+    const filtered = patients.filter((p) => p.id !== id);
+    await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(filtered));
+    return true;
+  } catch (error) {
+    console.error("Error deleting patient:", error);
+    return false;
+  }
+}
+
+// Funções de planos terapêuticos
+export async function getPlans(): Promise<TherapeuticPlan[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.PLANS);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Error getting plans:", error);
+    return [];
+  }
+}
+
+export async function getPlansByPatient(patientId: string): Promise<TherapeuticPlan[]> {
+  const plans = await getPlans();
+  return plans.filter((p) => p.patientId === patientId);
+}
+
+export async function savePlan(plan: Omit<TherapeuticPlan, "id" | "createdAt" | "updatedAt">): Promise<TherapeuticPlan> {
+  try {
+    const plans = await getPlans();
+    const newPlan: TherapeuticPlan = {
+      ...plan,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    plans.push(newPlan);
+    await AsyncStorage.setItem(KEYS.PLANS, JSON.stringify(plans));
+    return newPlan;
+  } catch (error) {
+    console.error("Error saving plan:", error);
+    throw error;
+  }
+}
+
+// Funções de sessões
+export async function getSessions(): Promise<Session[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.SESSIONS);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Error getting sessions:", error);
+    return [];
+  }
+}
+
+export async function getSessionsByPatient(patientId: string): Promise<Session[]> {
+  const sessions = await getSessions();
+  return sessions.filter((s) => s.patientId === patientId);
+}
+
+export async function saveSession(session: Omit<Session, "id" | "createdAt" | "updatedAt">): Promise<Session> {
+  try {
+    const sessions = await getSessions();
+    const newSession: Session = {
+      ...session,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    sessions.push(newSession);
+    await AsyncStorage.setItem(KEYS.SESSIONS, JSON.stringify(sessions));
+    return newSession;
+  } catch (error) {
+    console.error("Error saving session:", error);
+    throw error;
+  }
+}
+
+// Função para inicializar dados de exemplo
+export async function initializeSampleData(): Promise<void> {
+  const patients = await getPatients();
+  if (patients.length > 0) return; // Já tem dados
+
+  // Criar pacientes de exemplo
+  const patient1 = await savePatient({
+    fullName: "Maria Silva",
+    birthDate: "1985-03-15",
+    phone: "(11) 98765-4321",
+    email: "maria.silva@email.com",
+    diagnosis: "Depressão moderada",
+    status: "active",
+  });
+
+  const patient2 = await savePatient({
+    fullName: "João Santos",
+    birthDate: "1978-07-22",
+    phone: "(11) 97654-3210",
+    diagnosis: "Ansiedade generalizada",
+    status: "active",
+  });
+
+  // Criar planos terapêuticos
+  await savePlan({
+    patientId: patient1.id,
+    objective: "Tratamento de depressão com estimulação do córtex pré-frontal dorsolateral esquerdo",
+    targetRegions: ["Frontal Central"],
+    targetPoints: ["F3", "F7"],
+    frequency: 3,
+    totalDuration: 12,
+    isActive: true,
+  });
+
+  await savePlan({
+    patientId: patient2.id,
+    objective: "Redução de sintomas de ansiedade com estimulação bilateral",
+    targetRegions: ["Frontal Central", "Temporal"],
+    targetPoints: ["F4", "T3", "T4"],
+    frequency: 2,
+    totalDuration: 8,
+    isActive: true,
+  });
+
+  // Criar sessões de exemplo
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  await saveSession({
+    patientId: patient1.id,
+    planId: "1",
+    sessionDate: yesterday.toISOString(),
+    duration: 30,
+    stimulatedPoints: ["F3", "F7"],
+    intensity: "Média (5mA)",
+    observations: "Paciente relatou leve melhora no humor",
+    patientReactions: "Bem tolerado, sem efeitos adversos",
+  });
+
+  await saveSession({
+    patientId: patient2.id,
+    planId: "2",
+    sessionDate: today.toISOString(),
+    duration: 25,
+    stimulatedPoints: ["F4", "T3", "T4"],
+    intensity: "Baixa (3mA)",
+    observations: "Primeira sessão, paciente ansioso mas cooperativo",
+    patientReactions: "Leve formigamento, sem desconforto",
+  });
+}

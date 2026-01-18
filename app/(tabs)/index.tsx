@@ -1,112 +1,178 @@
 import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
-import { trpc } from "@/lib/trpc";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { LoginScreen } from "@/components/login-button";
+import { useEffect, useState } from "react";
+import { getPatients, getSessions, initializeSampleData, type Patient, type Session } from "@/lib/local-storage";
 
 export default function HomeScreen() {
   const router = useRouter();
   const colors = useColors();
-  const { data: user } = trpc.auth.me.useQuery();
-  const { data: stats, isLoading } = trpc.patients.getStats.useQuery(undefined, {
-    enabled: !!user,
-  });
+  const [loading, setLoading] = useState(true);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
 
-  if (!user) {
-    return <LoginScreen />;
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      await initializeSampleData();
+      const patientsData = await getPatients();
+      const sessionsData = await getSessions();
+      setPatients(patientsData);
+      setSessions(sessionsData);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <ScreenContainer className="items-center justify-center">
+        <ActivityIndicator size="large" color={colors.primary} />
+      </ScreenContainer>
+    );
   }
+
+  const activePatients = patients.filter((p) => p.status === "active").length;
+  const todaySessions = sessions.filter((s) => {
+    const sessionDate = new Date(s.sessionDate);
+    const today = new Date();
+    return sessionDate.toDateString() === today.toDateString();
+  }).length;
+  const thisWeekSessions = sessions.filter((s) => {
+    const sessionDate = new Date(s.sessionDate);
+    const today = new Date();
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return sessionDate >= weekAgo;
+  }).length;
 
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 gap-6">
+        <View style={{ flex: 1, gap: 24 }}>
           {/* Header */}
-          <View className="gap-2">
-            <Text className="text-3xl font-bold text-foreground">
-              Olá, {user.name || "Profissional"}
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+              NeuroMap
             </Text>
-            <Text className="text-base text-muted">
-              Bem-vindo ao Mapeamento de Neuromodulação
+            <Text style={{ fontSize: 16, color: colors.muted }}>
+              Bem-vindo ao sistema de mapeamento de neuromodulação
             </Text>
           </View>
 
           {/* Estatísticas */}
-          {isLoading ? (
-            <View className="items-center py-8">
-              <ActivityIndicator size="large" color={colors.primary} />
-            </View>
-          ) : (
-            <View className="gap-4">
-              <Text className="text-xl font-semibold text-foreground">Estatísticas</Text>
-              <View className="flex-row flex-wrap gap-4">
-                <View className="flex-1 min-w-[45%] bg-surface rounded-2xl p-4 border border-border">
-                  <Text className="text-3xl font-bold text-primary">
-                    {stats?.totalPatients || 0}
-                  </Text>
-                  <Text className="text-sm text-muted mt-1">Total de Pacientes</Text>
-                </View>
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Estatísticas
+            </Text>
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.surface,
+                  padding: 16,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <IconSymbol name="house.fill" size={24} color={colors.primary} />
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                  {patients.length}
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted }}>Total Pacientes</Text>
+              </View>
 
-                <View className="flex-1 min-w-[45%] bg-surface rounded-2xl p-4 border border-border">
-                  <Text className="text-3xl font-bold text-success">
-                    {stats?.activePatients || 0}
-                  </Text>
-                  <Text className="text-sm text-muted mt-1">Pacientes Ativos</Text>
-                </View>
-
-                <View className="flex-1 min-w-[45%] bg-surface rounded-2xl p-4 border border-border">
-                  <Text className="text-3xl font-bold text-warning">
-                    {stats?.pausedPatients || 0}
-                  </Text>
-                  <Text className="text-sm text-muted mt-1">Pausados</Text>
-                </View>
-
-                <View className="flex-1 min-w-[45%] bg-surface rounded-2xl p-4 border border-border">
-                  <Text className="text-3xl font-bold text-muted">
-                    {stats?.completedPatients || 0}
-                  </Text>
-                  <Text className="text-sm text-muted mt-1">Concluídos</Text>
-                </View>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.surface,
+                  padding: 16,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <IconSymbol name="house.fill" size={24} color={colors.success} />
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                  {activePatients}
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted }}>Ativos</Text>
               </View>
             </View>
-          )}
+
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.surface,
+                  padding: 16,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <IconSymbol name="house.fill" size={24} color={colors.warning} />
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                  {todaySessions}
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted }}>Sessões Hoje</Text>
+              </View>
+
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.surface,
+                  padding: 16,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <IconSymbol name="house.fill" size={24} color={colors.primary} />
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                  {thisWeekSessions}
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted }}>Esta Semana</Text>
+              </View>
+            </View>
+          </View>
 
           {/* Ações Rápidas */}
-          <View className="gap-4">
-            <Text className="text-xl font-semibold text-foreground">Ações Rápidas</Text>
-            
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Ações Rápidas
+            </Text>
             <TouchableOpacity
               onPress={() => router.push("/(tabs)/patients")}
               activeOpacity={0.7}
-              className="bg-primary rounded-xl p-4 flex-row items-center justify-between"
+              style={{
+                backgroundColor: colors.primary,
+                padding: 16,
+                borderRadius: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
             >
-              <View className="flex-row items-center gap-3">
-                <IconSymbol name="person.2.fill" size={24} color="#FFFFFF" />
-                <Text className="text-lg font-semibold text-white">
-                  Ver Todos os Pacientes
-                </Text>
-              </View>
-              <IconSymbol name="chevron.right" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {/* TODO: Implementar modal de adicionar paciente */}}
-              activeOpacity={0.7}
-              className="bg-secondary rounded-xl p-4 flex-row items-center justify-between"
-            >
-              <View className="flex-row items-center gap-3">
-                <IconSymbol name="plus.circle.fill" size={24} color="#FFFFFF" />
-                <Text className="text-lg font-semibold text-white">
-                  Adicionar Novo Paciente
-                </Text>
-              </View>
+              <IconSymbol name="house.fill" size={24} color="#FFFFFF" />
+              <Text style={{ fontSize: 16, fontWeight: "600", color: "#FFFFFF", flex: 1 }}>
+                Ver Todos os Pacientes
+              </Text>
               <IconSymbol name="chevron.right" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
 
-          {/* Informações do Desenvolvedor */}
-          <View className="mt-auto pt-6 border-t border-border">
+          {/* Rodapé */}
+          <View style={{ paddingTop: 24, borderTopWidth: 1, borderTopColor: colors.border, gap: 4 }}>
             <Text className="text-xs text-muted text-center">
               Desenvolvido por Carlos Charone
             </Text>

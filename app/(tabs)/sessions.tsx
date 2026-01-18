@@ -1,39 +1,195 @@
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
-import { trpc } from "@/lib/trpc";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { LoginScreen } from "@/components/login-button";
+import { useEffect, useState } from "react";
+import { getSessions, getPatients, type Session, type Patient } from "@/lib/local-storage";
 
 export default function SessionsScreen() {
   const colors = useColors();
-  const { data: user } = trpc.auth.me.useQuery();
+  const [loading, setLoading] = useState(true);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
 
-  if (!user) {
-    return <LoginScreen />;
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [sessionsData, patientsData] = await Promise.all([
+        getSessions(),
+        getPatients(),
+      ]);
+      setSessions(sessionsData);
+      setPatients(patientsData);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getPatientName = (patientId: string) => {
+    const patient = patients.find((p) => p.id === patientId);
+    return patient?.fullName || "Paciente desconhecido";
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  if (loading) {
+    return (
+      <ScreenContainer className="items-center justify-center">
+        <ActivityIndicator size="large" color={colors.primary} />
+      </ScreenContainer>
+    );
   }
+
+  const sortedSessions = [...sessions].sort((a, b) => {
+    return new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime();
+  });
 
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 gap-6">
+        <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View className="gap-2">
-            <Text className="text-3xl font-bold text-foreground">Sessões</Text>
-            <Text className="text-base text-muted">
-              Agende e gerencie sessões de tratamento
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+              Sessões
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.muted }}>
+              {sessions.length} sessão(ões) registrada(s)
             </Text>
           </View>
 
-          {/* Placeholder */}
-          <View className="flex-1 items-center justify-center py-12">
-            <IconSymbol name="calendar" size={64} color={colors.muted} />
-            <Text className="text-lg text-muted mt-4 text-center">
-              Nenhuma sessão agendada
-            </Text>
-            <Text className="text-sm text-muted mt-2 text-center px-8">
-              As sessões aparecerão aqui quando você criar planos terapêuticos para seus pacientes
-            </Text>
+          {/* Lista de Sessões */}
+          <View style={{ gap: 12 }}>
+            {sortedSessions.length === 0 ? (
+              <View style={{ padding: 32, alignItems: "center" }}>
+                <IconSymbol name="house.fill" size={48} color={colors.muted} />
+                <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                  Nenhuma sessão registrada
+                </Text>
+                <Text style={{ fontSize: 14, color: colors.muted, marginTop: 8, textAlign: "center" }}>
+                  As sessões aparecerão aqui após serem registradas
+                </Text>
+              </View>
+            ) : (
+              sortedSessions.map((session) => (
+                <View
+                  key={session.id}
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    padding: 16,
+                    gap: 12,
+                  }}
+                >
+                  {/* Header da Sessão */}
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
+                        {getPatientName(session.patientId)}
+                      </Text>
+                      <Text style={{ fontSize: 14, color: colors.muted, marginTop: 4 }}>
+                        {formatDate(session.sessionDate)} às {formatTime(session.sessionDate)}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 4,
+                        borderRadius: 12,
+                        backgroundColor: colors.primary + "20",
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                        {session.duration} min
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Pontos Estimulados */}
+                  <View style={{ gap: 4 }}>
+                    <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                      Pontos Estimulados
+                    </Text>
+                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                      {session.stimulatedPoints.map((point, index) => (
+                        <View
+                          key={index}
+                          style={{
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 8,
+                            backgroundColor: colors.primary + "15",
+                          }}
+                        >
+                          <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "500" }}>
+                            {point}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  {/* Intensidade */}
+                  {session.intensity && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Intensidade
+                      </Text>
+                      <Text style={{ fontSize: 14, color: colors.foreground }}>
+                        {session.intensity}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Observações */}
+                  {session.observations && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Observações
+                      </Text>
+                      <Text style={{ fontSize: 14, color: colors.foreground, lineHeight: 20 }}>
+                        {session.observations}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Reações do Paciente */}
+                  {session.patientReactions && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Reações do Paciente
+                      </Text>
+                      <Text style={{ fontSize: 14, color: colors.foreground, lineHeight: 20 }}>
+                        {session.patientReactions}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ))
+            )}
           </View>
         </View>
       </ScrollView>

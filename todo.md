@@ -115,3 +115,10 @@
 
 ## Correções de Texto
 - [x] Corrigir todas as referências de CREFITO para CREFONO
+
+## Simplificação do Aplicativo
+- [x] Remover sistema de autenticação OAuth
+- [x] Converter para aplicativo local sem login
+- [x] Implementar AsyncStorage para dados locais
+- [x] Criar funcionalidades básicas de CRUD de pacientes
+- [x] Adicionar dados de exemplo para demonstração

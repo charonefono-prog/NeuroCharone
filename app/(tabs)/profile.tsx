@@ -1,118 +1,174 @@
 import { ScrollView, Text, View, TouchableOpacity } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
-import { trpc } from "@/lib/trpc";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { LoginScreen } from "@/components/login-button";
 
 export default function ProfileScreen() {
   const colors = useColors();
-  const { data: user } = trpc.auth.me.useQuery();
-  const logoutMutation = trpc.auth.logout.useMutation();
-
-  const handleLogout = async () => {
-    await logoutMutation.mutateAsync();
-    // O sistema de autenticação irá redirecionar automaticamente
-  };
-
-  if (!user) {
-    return <LoginScreen />;
-  }
 
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 gap-6">
+        <View style={{ flex: 1, gap: 24 }}>
           {/* Header */}
-          <View className="gap-2">
-            <Text className="text-3xl font-bold text-foreground">Perfil</Text>
-            <Text className="text-base text-muted">
-              Suas informações profissionais
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+              Perfil
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.muted }}>
+              Informações do profissional
             </Text>
           </View>
 
-          {/* Informações do Usuário */}
-          <View className="bg-surface rounded-2xl p-6 border border-border gap-4">
-            <View className="items-center gap-3">
+          {/* Card do Profissional */}
+          <View
+            style={{
+              backgroundColor: colors.surface,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 20,
+              gap: 16,
+            }}
+          >
+            {/* Avatar e Nome */}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
               <View
-                className="w-20 h-20 rounded-full items-center justify-center"
-                style={{ backgroundColor: colors.primary }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  backgroundColor: colors.primary + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <Text className="text-3xl font-bold text-white">
-                  {user.name?.charAt(0).toUpperCase() || "U"}
+                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.primary }}>
+                  CC
                 </Text>
               </View>
-              <View className="items-center">
-                <Text className="text-xl font-bold text-foreground">
-                  {user.name || "Usuário"}
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+                  Carlos Charone
                 </Text>
-                {user.email && (
-                  <Text className="text-sm text-muted mt-1">{user.email}</Text>
-                )}
+                <Text style={{ fontSize: 14, color: colors.muted, marginTop: 2 }}>
+                  CREFONO: 9-10025-5
+                </Text>
               </View>
             </View>
 
-            <View className="border-t border-border pt-4 gap-3">
-              {user.specialty && (
-                <View className="flex-row items-center gap-3">
-                  <IconSymbol name="doc.text.fill" size={20} color={colors.muted} />
-                  <View className="flex-1">
-                    <Text className="text-xs text-muted">Especialidade</Text>
-                    <Text className="text-base text-foreground">{user.specialty}</Text>
-                  </View>
-                </View>
-              )}
+            {/* Informações */}
+            <View style={{ gap: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
+              <View style={{ gap: 4 }}>
+                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                  Especialidade
+                </Text>
+                <Text style={{ fontSize: 16, color: colors.foreground }}>
+                  Neuromodulação Craniana
+                </Text>
+              </View>
 
-              {user.professionalId && (
-                <View className="flex-row items-center gap-3">
-                  <IconSymbol name="checkmark.circle.fill" size={20} color={colors.muted} />
-                  <View className="flex-1">
-                    <Text className="text-xs text-muted">Registro Profissional</Text>
-                    <Text className="text-base text-foreground">{user.professionalId}</Text>
-                  </View>
-                </View>
-              )}
+              <View style={{ gap: 4 }}>
+                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                  Email
+                </Text>
+                <Text style={{ fontSize: 16, color: colors.foreground }}>
+                  carlos.charone@email.com
+                </Text>
+              </View>
 
-              {user.phone && (
-                <View className="flex-row items-center gap-3">
-                  <IconSymbol name="phone.fill" size={20} color={colors.muted} />
-                  <View className="flex-1">
-                    <Text className="text-xs text-muted">Telefone</Text>
-                    <Text className="text-base text-foreground">{user.phone}</Text>
-                  </View>
-                </View>
-              )}
+              <View style={{ gap: 4 }}>
+                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                  Telefone
+                </Text>
+                <Text style={{ fontSize: 16, color: colors.foreground }}>
+                  (11) 99999-9999
+                </Text>
+              </View>
             </View>
           </View>
 
           {/* Sobre o Aplicativo */}
-          <View className="bg-surface rounded-2xl p-6 border border-border gap-3">
-            <Text className="text-lg font-semibold text-foreground">
-              Sobre o Aplicativo
+          <View
+            style={{
+              backgroundColor: colors.surface,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 20,
+              gap: 12,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Sobre o NeuroMap
             </Text>
-            <Text className="text-sm text-muted leading-relaxed">
-              Aplicativo de Mapeamento de Neuromodulação desenvolvido para auxiliar profissionais 
-              de saúde no posicionamento e registro de tratamentos com capacete anatômico.
+            <Text style={{ fontSize: 14, color: colors.muted, lineHeight: 20 }}>
+              Sistema profissional para mapeamento de neuromodulação craniana, permitindo registro de
+              pacientes, criação de planos terapêuticos e acompanhamento de sessões de tratamento.
             </Text>
-            <View className="border-t border-border pt-3 mt-2">
-              <Text className="text-xs text-muted">Desenvolvido por</Text>
-              <Text className="text-sm font-semibold text-foreground mt-1">
-                Carlos Charone
+            <View style={{ gap: 4, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.border }}>
+              <Text style={{ fontSize: 12, color: colors.muted }}>
+                Versão 1.0.0
               </Text>
-              <Text className="text-xs text-muted mt-1">
+              <Text style={{ fontSize: 12, color: colors.muted }}>
+                Desenvolvido por Carlos Charone
+              </Text>
+              <Text style={{ fontSize: 12, color: colors.muted }}>
                 CREFONO: 9-10025-5
               </Text>
             </View>
           </View>
 
-          {/* Botão de Logout */}
-          <TouchableOpacity
-            onPress={handleLogout}
-            activeOpacity={0.7}
-            className="bg-error rounded-xl p-4 flex-row items-center justify-center gap-2"
-          >
-            <Text className="text-lg font-semibold text-white">Sair</Text>
-          </TouchableOpacity>
+          {/* Funcionalidades */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Funcionalidades
+            </Text>
+            
+            <View style={{ gap: 8 }}>
+              {[
+                { icon: "house.fill", title: "Gerenciamento de Pacientes", desc: "Cadastro e acompanhamento completo" },
+                { icon: "house.fill", title: "Planos Terapêuticos", desc: "Criação de protocolos personalizados" },
+                { icon: "house.fill", title: "Mapeamento do Capacete", desc: "Visualização dos pontos de estimulação" },
+                { icon: "house.fill", title: "Registro de Sessões", desc: "Histórico detalhado de tratamentos" },
+              ].map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    padding: 16,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 12,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: colors.primary + "20",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <IconSymbol name={item.icon as any} size={20} color={colors.primary} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      {item.title}
+                    </Text>
+                    <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                      {item.desc}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
       </ScrollView>
     </ScreenContainer>

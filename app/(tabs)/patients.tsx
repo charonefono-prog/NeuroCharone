@@ -1,25 +1,38 @@
 import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
-import { trpc } from "@/lib/trpc";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { LoginScreen } from "@/components/login-button";
+import { getPatients, type Patient } from "@/lib/local-storage";
 
 export default function PatientsScreen() {
   const colors = useColors();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "paused" | "completed">("all");
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const { data: user } = trpc.auth.me.useQuery();
-  const { data: patients, isLoading } = trpc.patients.list.useQuery(
-    { search, status: statusFilter },
-    { enabled: !!user }
-  );
+  useEffect(() => {
+    loadPatients();
+  }, []);
 
-  if (!user) {
-    return <LoginScreen />;
-  }
+  const loadPatients = async () => {
+    try {
+      setLoading(true);
+      const data = await getPatients();
+      setPatients(data);
+    } catch (error) {
+      console.error("Error loading patients:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredPatients = patients.filter((patient) => {
+    const matchesSearch = patient.fullName.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "all" || patient.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -47,127 +60,165 @@ export default function PatientsScreen() {
     }
   };
 
+  const calculateAge = (birthDate: string) => {
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  if (loading) {
+    return (
+      <ScreenContainer className="items-center justify-center">
+        <ActivityIndicator size="large" color={colors.primary} />
+      </ScreenContainer>
+    );
+  }
+
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 gap-6">
+        <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View className="gap-2">
-            <Text className="text-3xl font-bold text-foreground">Pacientes</Text>
-            <Text className="text-base text-muted">
-              Gerencie seus pacientes e tratamentos
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+              Pacientes
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.muted }}>
+              {filteredPatients.length} paciente(s) encontrado(s)
             </Text>
           </View>
 
           {/* Busca */}
-          <View className="bg-surface rounded-xl p-3 flex-row items-center gap-2 border border-border">
-            <IconSymbol name="magnifyingglass" size={20} color={colors.muted} />
+          <View
+            style={{
+              backgroundColor: colors.surface,
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 12,
+              gap: 8,
+            }}
+          >
+            <IconSymbol name="house.fill" size={20} color={colors.muted} />
             <TextInput
-              className="flex-1 text-base text-foreground"
-              placeholder="Buscar paciente..."
-              placeholderTextColor={colors.muted}
               value={search}
               onChangeText={setSearch}
+              placeholder="Buscar por nome..."
+              placeholderTextColor={colors.muted}
+              style={{
+                flex: 1,
+                paddingVertical: 12,
+                fontSize: 16,
+                color: colors.foreground,
+              }}
             />
-            {search.length > 0 && (
-              <TouchableOpacity onPress={() => setSearch("")}>
-                <IconSymbol name="xmark.circle.fill" size={20} color={colors.muted} />
-              </TouchableOpacity>
-            )}
           </View>
 
           {/* Filtros */}
-          <View className="flex-row gap-2">
-            <TouchableOpacity
-              onPress={() => setStatusFilter("all")}
-              activeOpacity={0.7}
-              className={`px-4 py-2 rounded-full ${
-                statusFilter === "all" ? "bg-primary" : "bg-surface border border-border"
-              }`}
-            >
-              <Text className={statusFilter === "all" ? "text-white font-semibold" : "text-muted"}>
-                Todos
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setStatusFilter("active")}
-              activeOpacity={0.7}
-              className={`px-4 py-2 rounded-full ${
-                statusFilter === "active" ? "bg-success" : "bg-surface border border-border"
-              }`}
-            >
-              <Text className={statusFilter === "active" ? "text-white font-semibold" : "text-muted"}>
-                Ativos
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setStatusFilter("paused")}
-              activeOpacity={0.7}
-              className={`px-4 py-2 rounded-full ${
-                statusFilter === "paused" ? "bg-warning" : "bg-surface border border-border"
-              }`}
-            >
-              <Text className={statusFilter === "paused" ? "text-white font-semibold" : "text-muted"}>
-                Pausados
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {(["all", "active", "paused", "completed"] as const).map((status) => (
+                <TouchableOpacity
+                  key={status}
+                  onPress={() => setStatusFilter(status)}
+                  activeOpacity={0.7}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 20,
+                    backgroundColor: statusFilter === status ? colors.primary : colors.surface,
+                    borderWidth: 1,
+                    borderColor: statusFilter === status ? colors.primary : colors.border,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "600",
+                      color: statusFilter === status ? "#FFFFFF" : colors.foreground,
+                    }}
+                  >
+                    {status === "all" ? "Todos" : getStatusLabel(status)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
 
           {/* Lista de Pacientes */}
-          {isLoading ? (
-            <View className="items-center py-8">
-              <ActivityIndicator size="large" color={colors.primary} />
-            </View>
-          ) : patients && patients.length > 0 ? (
-            <View className="gap-3">
-              {patients.map((patient) => (
+          <View style={{ gap: 12 }}>
+            {filteredPatients.length === 0 ? (
+              <View style={{ padding: 32, alignItems: "center" }}>
+                <IconSymbol name="house.fill" size={48} color={colors.muted} />
+                <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                  Nenhum paciente encontrado
+                </Text>
+                <Text style={{ fontSize: 14, color: colors.muted, marginTop: 8, textAlign: "center" }}>
+                  {search ? "Tente uma busca diferente" : "Adicione seu primeiro paciente"}
+                </Text>
+              </View>
+            ) : (
+              filteredPatients.map((patient) => (
                 <TouchableOpacity
                   key={patient.id}
                   activeOpacity={0.7}
-                  className="bg-surface rounded-xl p-4 border border-border"
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    padding: 16,
+                    gap: 8,
+                  }}
                 >
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-1">
-                      <Text className="text-lg font-semibold text-foreground">
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
                         {patient.fullName}
                       </Text>
-                      <Text className="text-sm text-muted mt-1">
-                        {new Date().getFullYear() - new Date(patient.birthDate).getFullYear()} anos
+                      <Text style={{ fontSize: 14, color: colors.muted, marginTop: 4 }}>
+                        {calculateAge(patient.birthDate)} anos
                       </Text>
-                      {patient.diagnosis && (
-                        <Text className="text-sm text-muted mt-1" numberOfLines={1}>
-                          {patient.diagnosis}
-                        </Text>
-                      )}
                     </View>
                     <View
-                      className="px-3 py-1 rounded-full"
-                      style={{ backgroundColor: getStatusColor(patient.status) + "20" }}
+                      style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 4,
+                        borderRadius: 12,
+                        backgroundColor: getStatusColor(patient.status) + "20",
+                      }}
                     >
-                      <Text
-                        className="text-xs font-semibold"
-                        style={{ color: getStatusColor(patient.status) }}
-                      >
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: getStatusColor(patient.status) }}>
                         {getStatusLabel(patient.status)}
                       </Text>
                     </View>
                   </View>
+
+                  {patient.diagnosis && (
+                    <Text style={{ fontSize: 14, color: colors.muted }} numberOfLines={2}>
+                      {patient.diagnosis}
+                    </Text>
+                  )}
+
+                  {patient.phone && (
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 }}>
+                      <IconSymbol name="house.fill" size={16} color={colors.muted} />
+                      <Text style={{ fontSize: 14, color: colors.muted }}>
+                        {patient.phone}
+                      </Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
-              ))}
-            </View>
-          ) : (
-            <View className="items-center py-12">
-              <IconSymbol name="person.2.fill" size={64} color={colors.muted} />
-              <Text className="text-lg text-muted mt-4 text-center">
-                Nenhum paciente encontrado
-              </Text>
-              <Text className="text-sm text-muted mt-2 text-center">
-                Adicione seu primeiro paciente para começar
-              </Text>
-            </View>
-          )}
+              ))
+            )}
+          </View>
         </View>
       </ScrollView>
     </ScreenContainer>
