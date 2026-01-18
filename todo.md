@@ -308,3 +308,31 @@
 - [x] Adicionar ranking de regiões mais efetivas
 - [x] Integrar análise nas estatísticas avançadas
 - [ ] Adicionar filtro por diagnóstico na análise
+
+## Exportação Excel/CSV
+- [x] Instalar biblioteca para geração de Excel (xlsx)
+- [x] Criar função de exportação de lista de pacientes
+- [x] Criar função de exportação de sessões
+- [x] Criar função de exportação de estatísticas
+- [x] Adicionar botão de exportação na tela inicial
+- [ ] Adicionar botão de exportação na lista de pacientes
+- [ ] Adicionar botão de exportação nas estatísticas avançadas
+- [x] Implementar compartilhamento do arquivo gerado
+
+## Gráficos de Evolução Individual
+- [x] Criar componente de gráfico de linha para evolução de sintomas
+- [x] Integrar gráfico na tela de detalhes do paciente
+- [x] Adicionar eixo X com datas das sessões
+- [x] Adicionar eixo Y com scores de sintomas (0-10)
+- [x] Adicionar linha de baseline (avaliação inicial)
+- [x] Adicionar indicadores visuais de melhora/piora
+- [x] Adicionar cálculo de melhora percentual
+
+## Sistema de Notificações de Lembretes
+- [x] Verificar se notificações já estão configuradas
+- [x] Criar função de agendamento de notificação para sessão
+- [x] Criar função de cancelamento de notificação
+- [x] Adicionar configuração de antecedência no perfil
+- [ ] Adicionar campo de data/hora agendada no formulário de sessão
+- [ ] Integrar agendamento ao criar sessão futura
+- [ ] Integrar cancelamento ao excluir sessão

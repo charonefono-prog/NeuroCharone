@@ -17,6 +17,7 @@ import { AddPlanModal } from "@/components/add-plan-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
 import { TreatmentChart } from "@/components/treatment-chart";
 import { SymptomProgressChart } from "@/components/symptom-progress-chart";
+import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
 import { AuditHistory } from "@/components/audit-history";
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
@@ -483,10 +484,13 @@ export default function PatientDetailScreen() {
 
             {activeTab === "history" && (
               <View style={{ gap: 16 }}>
-                {/* Gráfico de Progresso de Sintomas */}
+                {/* Gr\u00e1fico de Evolu\u00e7\u00e3o de Sintomas */}
+                <SymptomEvolutionChart patient={patient} sessions={sessions} />
+
+                {/* Gr\u00e1fico de Progresso de Sintomas (Card Resumo) */}
                 <SymptomProgressChart patient={patient} sessions={sessions} />
 
-                {/* Gráfico de Evolução */}
+                {/* Gr\u00e1fico de Evolu\u00e7\u00e3o de Sess\u00f5es */}
                 {sessions.length > 0 && (
                   <View style={{ marginBottom: 8 }}>
                     <TreatmentChart sessions={sessions} />

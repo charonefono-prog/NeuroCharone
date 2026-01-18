@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { getPatients, getSessions, getPlans, initializeSampleData, type Patient, type Session, type TherapeuticPlan } from "@/lib/local-storage";
 import { initializeDefaultTemplates } from "@/lib/plan-templates";
 import { AdvancedStatistics } from "@/components/advanced-statistics";
+import { exportPatientsToExcel, exportSessionsToExcel, exportStatisticsToExcel } from "@/lib/export-data";
+import * as Haptics from "expo-haptics";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -36,6 +38,60 @@ export default function HomeScreen() {
       console.error("Error loading data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    try {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+
+      Alert.alert(
+        "Exportar Dados",
+        "Escolha o tipo de dados que deseja exportar:",
+        [
+          {
+            text: "Pacientes",
+            onPress: async () => {
+              try {
+                await exportPatientsToExcel(patients);
+                Alert.alert("Sucesso", "Lista de pacientes exportada com sucesso!");
+              } catch (error) {
+                Alert.alert("Erro", "Erro ao exportar pacientes. Tente novamente.");
+              }
+            },
+          },
+          {
+            text: "Sess\u00f5es",
+            onPress: async () => {
+              try {
+                await exportSessionsToExcel(sessions, patients, plans);
+                Alert.alert("Sucesso", "Lista de sess\u00f5es exportada com sucesso!");
+              } catch (error) {
+                Alert.alert("Erro", "Erro ao exportar sess\u00f5es. Tente novamente.");
+              }
+            },
+          },
+          {
+            text: "Estat\u00edsticas",
+            onPress: async () => {
+              try {
+                await exportStatisticsToExcel(patients, sessions, plans);
+                Alert.alert("Sucesso", "Estat\u00edsticas exportadas com sucesso!");
+              } catch (error) {
+                Alert.alert("Erro", "Erro ao exportar estat\u00edsticas. Tente novamente.");
+              }
+            },
+          },
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Error exporting data:", error);
     }
   };
 
@@ -175,6 +231,27 @@ export default function HomeScreen() {
                 Ver Todos os Pacientes
               </Text>
               <IconSymbol name="chevron.right" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleExportData}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: colors.success + "20",
+                borderWidth: 1,
+                borderColor: colors.success,
+                padding: 16,
+                borderRadius: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <Text style={{ fontSize: 24 }}>📄</Text>
+              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.success, flex: 1 }}>
+                Exportar Dados (Excel)
+              </Text>
+              <IconSymbol name="chevron.right" size={20} color={colors.success} />
             </TouchableOpacity>
           </View>
 
