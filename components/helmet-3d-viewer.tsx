@@ -151,6 +151,17 @@ export function Helmet3DViewer({
   const pointsRef = useRef<Map<string, any>>(new Map());
   const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
   const [isRotating, setIsRotating] = useState(true);
+  const [transparentMode, setTransparentMode] = useState(false);
+
+  const captureScreenshot = () => {
+    if (rendererRef.current) {
+      const canvas = rendererRef.current.domElement;
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = `capacete-3d-${new Date().getTime()}.png`;
+      link.click();
+    }
+  };
 
   useEffect(() => {
     if (!containerRef.current || !THREE) {
@@ -215,22 +226,24 @@ export function Helmet3DViewer({
         // Front model
         const frontMaterial = new THREE.MeshPhongMaterial({
           color: 0x3498db,
-          opacity: 0.8,
+          opacity: transparentMode ? 0.3 : 0.8,
           transparent: true,
         });
         const frontMesh = new THREE.Mesh(frontGeometry, frontMaterial);
         frontMesh.scale.set(0.001, 0.001, 0.001);
+        frontMesh.userData.material = frontMaterial;
         helmetGroup.add(frontMesh);
 
         // Back model
         const backMaterial = new THREE.MeshPhongMaterial({
           color: 0x2980b9,
-          opacity: 0.6,
+          opacity: transparentMode ? 0.2 : 0.6,
           transparent: true,
         });
         const backMesh = new THREE.Mesh(backGeometry, backMaterial);
         backMesh.scale.set(0.001, 0.001, 0.001);
         backMesh.position.z = -0.1;
+        backMesh.userData.material = backMaterial;
         helmetGroup.add(backMesh);
       })
       .catch((error) => console.error("Error loading STL models:", error));
@@ -311,7 +324,7 @@ export function Helmet3DViewer({
       cancelAnimationFrame(animationId);
       containerRef.current?.removeChild(renderer.domElement);
     };
-  }, [isRotating, onPointSelected]);
+  }, [isRotating, onPointSelected, transparentMode]);
 
   // Highlight selected point
   useEffect(() => {
@@ -345,10 +358,42 @@ export function Helmet3DViewer({
           }}
         />
         <TouchableOpacity
-          onPress={() => setIsRotating(!isRotating)}
+          onPress={() => setTransparentMode(!transparentMode)}
           style={{
             position: "absolute",
             bottom: 16,
+            left: 16,
+            backgroundColor: transparentMode ? "rgba(52,152,219,0.8)" : "rgba(0,0,0,0.6)",
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 12, fontWeight: "600" }}>
+            {transparentMode ? "Modo Normal" : "Modo Transparente"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={captureScreenshot}
+          style={{
+            position: "absolute",
+            bottom: 16,
+            right: 16,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: 12 }}>
+            📸 Screenshot
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setIsRotating(!isRotating)}
+          style={{
+            position: "absolute",
+            bottom: 60,
             right: 16,
             backgroundColor: "rgba(0,0,0,0.6)",
             paddingHorizontal: 12,

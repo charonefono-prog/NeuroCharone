@@ -412,3 +412,12 @@
 - [ ] Sincronizar clique com informações no capacete
 - [ ] Remover imagem lateral e deixar apenas capacete 3D
 - [ ] Testar em web e mobile
+
+## Melhorias do Visualizador 3D
+- [x] Sincronização bidirecional entre capacete 3D e 2D
+- [x] Modo de comparação com visualização transparente
+- [x] Captura de screenshot da visualização 3D
+- [ ] Integração de screenshot nos relatórios PDF
+- [x] Modo de rotação automática do capacete 3D
+- [x] Zoom e pan do capacete 3D (mouse wheel e drag)
+- [ ] Exibição de coordenadas 10-20 no capacete 3D

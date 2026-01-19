@@ -12,9 +12,11 @@ interface Helmet3DSelectorProps {
   selectedPoints: string[];
   onPointsChange: (points: string[]) => void;
   title?: string;
+  selectedPointId?: string;
+  onPointIdChange?: (pointId: string) => void;
 }
 
-export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helmet3DSelectorProps) {
+export function Helmet3DSelector({ selectedPoints, onPointsChange, title, selectedPointId, onPointIdChange }: Helmet3DSelectorProps) {
   const router = useRouter();
   const colors = useColors();
   const [view, setView] = useState<"top" | "side">("top");
@@ -288,15 +290,18 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
                     }}
                   >
                     <TouchableOpacity
-                      onPress={() => togglePoint(pointName)}
+                      onPress={() => {
+                        togglePoint(pointName);
+                        onPointIdChange?.(pointName);
+                      }}
                       activeOpacity={0.7}
                       style={{
                         paddingHorizontal: 16,
                         paddingVertical: 10,
                         borderRadius: 8,
                         backgroundColor: isSelected ? region.colorHex : colors.surface,
-                        borderWidth: 1,
-                        borderColor: isSelected ? region.colorHex : colors.border,
+                        borderWidth: selectedPointId === pointName ? 3 : 1,
+                        borderColor: selectedPointId === pointName ? colors.primary : (isSelected ? region.colorHex : colors.border),
                       }}
                     >
                       <Text
