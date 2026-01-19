@@ -423,10 +423,25 @@ export default function TemplatesScreen() {
             <Text style={{ color: colors.muted }}>Carregando...</Text>
           </View>
         ) : templates.length === 0 ? (
-          <View style={{ padding: 32, alignItems: "center" }}>
-            <Text style={{ color: colors.muted, textAlign: "center" }}>
-              Nenhum template criado ainda.{"\n"}Toque em "+ Novo" para criar seu primeiro template.
+          <View style={{ padding: 32, alignItems: "center", gap: 24 }}>
+            <Text style={{ color: colors.muted, textAlign: "center", fontSize: 16 }}>
+              Nenhum template criado ainda.
             </Text>
+            <TouchableOpacity
+              onPress={() => setShowForm(true)}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: colors.primary,
+                paddingHorizontal: 32,
+                paddingVertical: 16,
+                borderRadius: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "600", color: "#FFFFFF" }}>
+                + Criar Novo Plano
+              </Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View style={{ gap: 12 }}>

@@ -83,29 +83,6 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         </View>
       </View>
 
-      {/* Botão para visualizador 3D */}
-      <TouchableOpacity
-        onPress={() => router.push("/helmet-3d")}
-        activeOpacity={0.7}
-        style={{
-          paddingVertical: 12,
-          paddingHorizontal: 16,
-          borderRadius: 12,
-          backgroundColor: colors.primary + "20",
-          borderWidth: 1,
-          borderColor: colors.primary,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 8,
-        }}
-      >
-        <IconSymbol name="cube.transparent" size={18} color={colors.primary} />
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
-          Visualizar em 3D
-        </Text>
-      </TouchableOpacity>
-
       {/* Imagem do Capacete */}
       <View
         style={{

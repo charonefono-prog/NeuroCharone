@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { READY_PROTOCOLS } from "../shared/ready-protocols";
 
 export interface PlanTemplate {
   id: string;
@@ -15,11 +16,28 @@ export interface PlanTemplate {
 
 const TEMPLATES_KEY = "@neurolasermap:plan_templates";
 
-// Obter todos os templates
+// Obter todos os templates (incluindo protocolos prontos)
 export async function getPlanTemplates(): Promise<PlanTemplate[]> {
   try {
     const data = await AsyncStorage.getItem(TEMPLATES_KEY);
-    return data ? JSON.parse(data) : [];
+    const customTemplates = data ? JSON.parse(data) : [];
+    
+    // Converter protocolos prontos para o formato de template
+    const readyTemplates: PlanTemplate[] = READY_PROTOCOLS.map(protocol => ({
+      id: protocol.id,
+      name: protocol.name,
+      objective: protocol.objective,
+      targetRegions: protocol.targetRegions,
+      targetPoints: protocol.targetPoints,
+      frequency: protocol.frequency,
+      totalDuration: protocol.totalDuration,
+      notes: protocol.notes,
+      createdAt: new Date(0).toISOString(),
+      updatedAt: new Date(0).toISOString(),
+    }));
+    
+    // Combinar protocolos prontos com templates customizados
+    return [...readyTemplates, ...customTemplates];
   } catch (error) {
     console.error("Erro ao carregar templates:", error);
     return [];
@@ -89,63 +107,11 @@ export async function getPlanTemplateById(id: string): Promise<PlanTemplate | nu
   return templates.find((t) => t.id === id) || null;
 }
 
-// Inicializar templates padrão
+// Inicializar templates padrão (apenas customizados, protocolos prontos são carregados automaticamente)
 export async function initializeDefaultTemplates(): Promise<void> {
-  const templates = await getPlanTemplates();
-  if (templates.length > 0) return; // Já tem templates
-
-  // Template para Depressão
-  await savePlanTemplate({
-    name: "Depressão - Protocolo Padrão",
-    objective: "Tratamento de depressão com estimulação do córtex pré-frontal dorsolateral esquerdo",
-    targetRegions: ["Frontal Central"],
-    targetPoints: ["F3", "F7", "Fp1"],
-    frequency: 3,
-    totalDuration: 8,
-    notes: "Protocolo baseado em estudos para tratamento de depressão moderada a grave",
-  });
-
-  // Template para Ansiedade
-  await savePlanTemplate({
-    name: "Ansiedade - Protocolo Padrão",
-    objective: "Redução de sintomas de ansiedade com estimulação bilateral",
-    targetRegions: ["Frontal Central", "Temporal"],
-    targetPoints: ["F3", "F4", "T3", "T4"],
-    frequency: 2,
-    totalDuration: 6,
-    notes: "Protocolo para ansiedade generalizada com abordagem bilateral",
-  });
-
-  // Template para Dor Crônica
-  await savePlanTemplate({
-    name: "Dor Crônica - Protocolo Padrão",
-    objective: "Modulação da percepção de dor através de estimulação do córtex motor",
-    targetRegions: ["Central", "Parietal"],
-    targetPoints: ["C3", "C4", "Cz", "P3", "P4"],
-    frequency: 3,
-    totalDuration: 10,
-    notes: "Protocolo para dor crônica com foco no córtex motor e somatossensorial",
-  });
-
-  // Template para Insônia
-  await savePlanTemplate({
-    name: "Insônia - Protocolo Padrão",
-    objective: "Melhora da qualidade do sono através de regulação do ritmo circadiano",
-    targetRegions: ["Frontal Central", "Occipital"],
-    targetPoints: ["Fpz", "Fz", "O1", "O2"],
-    frequency: 2,
-    totalDuration: 4,
-    notes: "Protocolo para distúrbios do sono e insônia",
-  });
-
-  // Template para TDAH
-  await savePlanTemplate({
-    name: "TDAH - Protocolo Padrão",
-    objective: "Melhora da atenção e controle executivo",
-    targetRegions: ["Frontal Central"],
-    targetPoints: ["Fpz", "Fz", "F3", "F4", "Cz"],
-    frequency: 3,
-    totalDuration: 12,
-    notes: "Protocolo para Transtorno de Déficit de Atenção e Hiperatividade",
-  });
+  const data = await AsyncStorage.getItem(TEMPLATES_KEY);
+  if (data) return; // Já tem templates customizados
+  
+  // Inicializar com array vazio - protocolos prontos são carregados via READY_PROTOCOLS
+  await AsyncStorage.setItem(TEMPLATES_KEY, JSON.stringify([]));
 }

@@ -1,4 +1,5 @@
 import { PlanTemplate } from "./plan-templates";
+import { getAllKeywords, searchRegionsByKeyword } from "../shared/manual-reference";
 
 /**
  * Interface para resultados de busca
@@ -6,12 +7,12 @@ import { PlanTemplate } from "./plan-templates";
 export interface SearchResult {
   template: PlanTemplate;
   matchScore: number; // 0-100, quanto maior melhor
-  matchType: "name" | "objective" | "region" | "point" | "notes";
+  matchType: "name" | "objective" | "region" | "point" | "notes" | "manual_keyword";
 }
 
 /**
  * Buscar templates por keywords
- * Suporta busca em: nome, objetivo, regiões, pontos e notas
+ * Suporta busca em: nome, objetivo, regiões, pontos, notas e palavras-chave do manual
  */
 export function searchPlanTemplates(
   templates: PlanTemplate[],
@@ -28,8 +29,39 @@ export function searchPlanTemplates(
   const lowerQuery = query.toLowerCase().trim();
   const results: SearchResult[] = [];
 
+  // Verificar se a query é uma palavra-chave do manual
+  const manualKeywords = getAllKeywords();
+  const isManualKeyword = manualKeywords.some((k: string) => k.toLowerCase() === lowerQuery);
+
   templates.forEach((template) => {
     const matches: SearchResult[] = [];
+
+    // Se for palavra-chave do manual, dar prioridade máxima
+    if (isManualKeyword) {
+      const regions = searchRegionsByKeyword(lowerQuery);
+      const regionNames = regions.map((r: any) => r.name.toLowerCase());
+      
+      const templateText = (
+        template.name +
+        " " +
+        template.objective +
+        " " +
+        template.targetRegions.join(" ") +
+        " " +
+        (template.notes || "")
+      ).toLowerCase();
+      
+      for (const regionName of regionNames) {
+        if (templateText.includes(regionName)) {
+          matches.push({
+            template,
+            matchScore: 110, // Score maior que 100 para palavras-chave do manual
+            matchType: "manual_keyword",
+          });
+          break;
+        }
+      }
+    }
 
     // Buscar no nome
     if (template.name.toLowerCase().includes(lowerQuery)) {
@@ -123,37 +155,25 @@ export function searchPlanTemplatesMultiple(
 }
 
 /**
- * Sugestões de busca baseadas em keywords comuns
- */
-export const SEARCH_SUGGESTIONS = [
-  "Afasia",
-  "Broca",
-  "Wernicke",
-  "Linguagem",
-  "Depressão",
-  "Ansiedade",
-  "Dor",
-  "Insônia",
-  "TDAH",
-  "Frontal",
-  "Temporal",
-  "Parietal",
-  "Motor",
-  "Sensorial",
-  "Fala",
-  "Compreensão",
-];
-
-/**
- * Obter sugestões de busca que correspondem ao query
+ * Obter sugestões de busca baseadas no manual
+ * Retorna palavras-chave do documento fidedigno
  */
 export function getSearchSuggestions(query: string): string[] {
+  const manualKeywords = getAllKeywords();
+  
   if (!query.trim()) {
-    return SEARCH_SUGGESTIONS;
+    return manualKeywords.slice(0, 20); // Retornar primeiras 20 sugestões
   }
 
   const lowerQuery = query.toLowerCase();
-  return SEARCH_SUGGESTIONS.filter((suggestion) =>
-    suggestion.toLowerCase().includes(lowerQuery)
+  return manualKeywords.filter((keyword: string) =>
+    keyword.toLowerCase().includes(lowerQuery)
   );
+}
+
+/**
+ * Obter todas as palavras-chave disponíveis do manual
+ */
+export function getAllManualKeywords(): string[] {
+  return getAllKeywords();
 }

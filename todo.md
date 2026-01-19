@@ -473,6 +473,12 @@
   - [x] Corrigir para exibir corretamente
   - [x] Validar compilação
 
+## Remoção de Botão "Visualizar em 3D"
+- [x] Remover botão "Visualizar em 3D" da interface de seleção de pontos
+  - [x] Localizar botão no componente helmet-3d-selector.tsx
+  - [x] Remover código do botão
+  - [x] Validar compilação
+
 ## Melhorias Prioritárias - Nova Sessão
 - [x] Melhorar raycasting para dispositivos móveis
   - [x] Aumentar raio de detecção dos pontos clicáveis (hit detection)
@@ -486,3 +492,24 @@
   - [x] Filtrar por regiões cerebrais
   - [x] Integrar busca na tela de seleção de templates
   - [x] Criar 17 testes unitários (todos passando)
+
+
+## Integração de Protocolos Prontos e Melhorias - NOVA SESSÃO
+- [x] Criar 12 protocolos prontos baseados no manual
+  - [x] Protocolo Afasia de Broca
+  - [x] Protocolo Ataxia Cerebelar
+  - [x] Protocolo Zumbido (Tinnitus)
+  - [x] Protocolo Apraxia de Fala
+  - [x] Protocolo Disartria
+  - [x] Protocolo Seletividade Alimentar
+  - [x] Protocolo Parkinson
+  - [x] Protocolo Alzheimer Precoce
+  - [x] Protocolo TEA
+  - [x] Protocolo Linguagem Social
+  - [x] Protocolo VPPB
+  - [x] Protocolo Depressão Resistente
+- [x] Integrar protocolos prontos no sistema de templates
+- [x] Criar sistema de busca com palavras-chave do manual
+- [x] Adicionar botão "Novo Plano" na tela principal
+- [x] Criar 27 testes unitários (todos passando)
+- [x] Validar compilação TypeScript
