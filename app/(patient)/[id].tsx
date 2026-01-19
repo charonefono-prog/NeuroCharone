@@ -1,5 +1,6 @@
 import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Animated } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -45,10 +46,27 @@ export default function PatientDetailScreen() {
   const [showAddPlanModal, setShowAddPlanModal] = useState(false);
   const [showEditPatientModal, setShowEditPatientModal] = useState(false);
   const [generatingReport, setGeneratingReport] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     loadData();
+    // Carregar última aba visualizada
+    const savedTab = localStorage.getItem(`patient_${id}_lastTab`);
+    if (savedTab && ['info', 'plan', 'timeline', 'effectiveness', 'comparison', 'scheduler', 'history'].includes(savedTab)) {
+      setActiveTab(savedTab as Tab);
+    }
   }, [id]);
+
+  const handleTabChange = (newTab: Tab) => {
+    fadeAnim.setValue(0);
+    setActiveTab(newTab);
+    localStorage.setItem(`patient_${id}_lastTab`, newTab);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const handleAddMedia = async (newMedia: MediaItem) => {
     if (!patient) return;
@@ -280,7 +298,7 @@ export default function PatientDetailScreen() {
             ].map((tab) => (
               <TouchableOpacity
                 key={tab.key}
-                onPress={() => setActiveTab(tab.key)}
+                onPress={() => handleTabChange(tab.key)}
                 activeOpacity={0.7}
                 style={{
                   paddingHorizontal: 14,
@@ -305,7 +323,7 @@ export default function PatientDetailScreen() {
           </ScrollView>
 
           {/* Content */}
-          <View style={{ padding: 24, gap: 20 }}>
+          <Animated.View style={{ padding: 24, gap: 20, opacity: fadeAnim }}>
             {activeTab === "info" && (
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -677,7 +695,7 @@ export default function PatientDetailScreen() {
             )}
 
 
-          </View>
+        </Animated.View>
         </View>
       </ScrollView>
 
