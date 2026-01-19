@@ -1,7 +1,7 @@
 /**
  * 35 PONTOS COLORIDOS DO MANUAL - Sistema 10-20
- * Apenas os pontos visíveis na imagem colorida (1 de 13)
- * Fonte: Manual de Adesivos - Imagem colorida com 35 pontos
+ * Apenas os pontos visíveis e coloridos na imagem do capacete
+ * Fonte: Manual de Adesivos - Imagem colorida com 35 pontos exatos
  */
 
 export interface ColoredPoint {
@@ -23,11 +23,11 @@ export interface ColoredRegion {
 /**
  * 35 PONTOS COLORIDOS EXATOS DA IMAGEM:
  * Rosa (3): Fp1, Fp2, Fpz
- * Laranja (3): AF3, AF4, AFz
- * Amarelo (5): F3, F4, F7, F8, Fz
+ * Laranja (5): AF3, AF4, AFz, AF7, AF8
+ * Amarelo (5): F3, F4, F1, F2, Fz
  * Ciano (13): FC3, FC1, FCz, FC2, FC4, C5, C3, C1, Cz, C2, C4, C6, CP3, CP1, CPz, CP2, CP4
  * Verde (4): T9, T3, T4, T10
- * Roxo (4): P3, P1, Pz, P2, P4
+ * Roxo (5): P3, P1, Pz, P2, P4
  * Rosa claro (3): O1, Oz, O2
  */
 
@@ -55,7 +55,7 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto frontal anterior central - Integração emocional bilateral"
   },
 
-  // LARANJA - Frontal Média (3 pontos)
+  // LARANJA - Frontal Média (5 pontos)
   {
     name: "AF3",
     color: "#FFA500",
@@ -77,6 +77,20 @@ export const COLORED_POINTS: ColoredPoint[] = [
     applications: ["Atenção", "Foco", "Integração atencional"],
     description: "Ponto frontal médio central - Integração atencional bilateral"
   },
+  {
+    name: "AF7",
+    color: "#FFA500",
+    region: "Frontal Média",
+    applications: ["Atenção", "Foco"],
+    description: "Ponto frontal médio esquerdo anterior - Atenção"
+  },
+  {
+    name: "AF8",
+    color: "#FFA500",
+    region: "Frontal Média",
+    applications: ["Atenção", "Foco"],
+    description: "Ponto frontal médio direito anterior - Atenção"
+  },
 
   // AMARELO - Frontal Central (5 pontos)
   {
@@ -84,35 +98,35 @@ export const COLORED_POINTS: ColoredPoint[] = [
     color: "#FFFF00",
     region: "Frontal Central",
     applications: ["Afasia", "Linguagem expressiva", "Broca"],
-    description: "Ponto frontal central esquerdo - Área de Broca (linguagem expressiva)"
+    description: "Ponto frontal central esquerdo - Área de Broca (produção de fala)"
   },
   {
     name: "F4",
     color: "#FFFF00",
     region: "Frontal Central",
-    applications: ["Afasia", "Linguagem expressiva", "Broca"],
-    description: "Ponto frontal central direito - Área de Broca (linguagem expressiva)"
+    applications: ["Afasia", "Linguagem expressiva"],
+    description: "Ponto frontal central direito - Linguagem expressiva"
   },
   {
-    name: "F7",
+    name: "F1",
     color: "#FFFF00",
     region: "Frontal Central",
-    applications: ["Linguagem", "Coordenação motora fina"],
-    description: "Ponto frontal central anterior esquerdo - Linguagem e coordenação"
+    applications: ["Linguagem", "Coordenação motora"],
+    description: "Ponto frontal central esquerdo mediano - Linguagem"
   },
   {
-    name: "F8",
+    name: "F2",
     color: "#FFFF00",
     region: "Frontal Central",
-    applications: ["Linguagem", "Coordenação motora fina"],
-    description: "Ponto frontal central anterior direito - Linguagem e coordenação"
+    applications: ["Linguagem", "Coordenação motora"],
+    description: "Ponto frontal central direito mediano - Linguagem"
   },
   {
     name: "Fz",
     color: "#FFFF00",
     region: "Frontal Central",
-    applications: ["Linguagem", "Coordenação motora"],
-    description: "Ponto frontal central mediano - Integração motora e linguagem"
+    applications: ["Linguagem bilateral", "Coordenação"],
+    description: "Ponto frontal central mediano - Integração bilateral"
   },
 
   // CIANO - Central / Sensório-Motora (13 pontos)
@@ -120,7 +134,7 @@ export const COLORED_POINTS: ColoredPoint[] = [
     name: "FC3",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Sensação", "Coordenação"],
+    applications: ["Controle motor", "Sensação"],
     description: "Ponto frontocentral esquerdo - Integração sensório-motora"
   },
   {
@@ -265,22 +279,8 @@ export const COLORED_POINTS: ColoredPoint[] = [
     applications: ["Processamento auditivo", "Memória"],
     description: "Ponto temporal direito anterior - Processamento auditivo"
   },
-  {
-    name: "T5",
-    color: "#00FF00",
-    region: "Temporal",
-    applications: ["Zumbido", "Memória", "Processamento auditivo"],
-    description: "Ponto temporal esquerdo posterior - Processamento auditivo"
-  },
-  {
-    name: "T6",
-    color: "#00FF00",
-    region: "Temporal",
-    applications: ["Zumbido", "Memória", "Processamento auditivo"],
-    description: "Ponto temporal direito posterior - Processamento auditivo"
-  },
 
-  // ROXO - Parietal (4 pontos)
+  // ROXO - Parietal (5 pontos)
   {
     name: "P3",
     color: "#9370DB",
@@ -353,14 +353,14 @@ export const COLORED_REGIONS: ColoredRegion[] = [
     id: "region-frontal-media",
     name: "Frontal Média",
     colorHex: "#FFA500",
-    points: ["AF3", "AF4", "AFz"],
+    points: ["AF3", "AF4", "AFz", "AF7", "AF8"],
     applications: ["Atenção", "Foco", "Concentração"]
   },
   {
     id: "region-frontal-central",
     name: "Frontal Central",
     colorHex: "#FFFF00",
-    points: ["F3", "F4", "F7", "F8", "Fz"],
+    points: ["F3", "F4", "F1", "F2", "Fz"],
     applications: ["Afasia", "Linguagem expressiva", "Broca"]
   },
   {
@@ -374,7 +374,7 @@ export const COLORED_REGIONS: ColoredRegion[] = [
     id: "region-temporal",
     name: "Temporal",
     colorHex: "#00FF00",
-    points: ["T9", "T3", "T4", "T10", "T5", "T6"],
+    points: ["T9", "T3", "T4", "T10"],
     applications: ["Zumbido", "Memória", "Wernicke", "Processamento auditivo"]
   },
   {

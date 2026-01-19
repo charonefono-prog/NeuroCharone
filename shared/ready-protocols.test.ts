@@ -143,9 +143,9 @@ describe("Ready Protocols", () => {
   });
 
   describe("Protocolo Zumbido", () => {
-    it("deve ter pontos T3, T4, T5, T6", () => {
+    it("deve ter pontos T3, T4", () => {
       const protocol = getProtocolById("protocol-zumbido");
-      expect(protocol?.targetPoints).toEqual(["T3", "T4", "T5", "T6"]);
+      expect(protocol?.targetPoints).toEqual(["T3", "T4"]);
     });
 
     it("deve ter frequência 2x/semana", () => {
