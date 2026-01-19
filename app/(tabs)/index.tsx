@@ -323,7 +323,7 @@ export default function HomeScreen() {
                 marginTop: 4,
                 fontWeight: '500'
               }}>
-                CRIA 9-10025-5
+                CRIA 9 - 10025-5
               </Text>
             </View>
             <Text style={{
