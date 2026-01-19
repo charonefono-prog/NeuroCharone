@@ -191,7 +191,9 @@ export function Helmet3DViewer({
       containerRef.current.clientHeight
     );
     renderer.shadowMap.enabled = true;
-    containerRef.current.appendChild(renderer.domElement);
+    if (containerRef.current) {
+      containerRef.current.appendChild(renderer.domElement);
+    }
     rendererRef.current = renderer;
 
     // Lighting
@@ -340,7 +342,7 @@ export function Helmet3DViewer({
   }, [selectedPointId]);
 
   return (
-    <View style={{ flex: 1, flexDirection: "row" }}>
+      <View style={{ flex: 1 }}>
       <View
         style={{
           flex: 1,
@@ -349,14 +351,16 @@ export function Helmet3DViewer({
           overflow: "hidden",
         }}
       >
-        <div
-          ref={containerRef}
-          style={{
-            width: "100%",
-            height: "100%",
-            position: "relative",
-          }}
-        />
+        {typeof window !== "undefined" && (
+          <div
+            ref={containerRef as any}
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "relative",
+            }}
+          />
+        )}
         <TouchableOpacity
           onPress={() => setTransparentMode(!transparentMode)}
           style={{
@@ -407,68 +411,7 @@ export function Helmet3DViewer({
         </TouchableOpacity>
       </View>
 
-      {showSidebar && selectedPoint && (
-        <ScrollView
-          style={{
-            width: 280,
-            backgroundColor: "#fff",
-            borderLeftWidth: 1,
-            borderLeftColor: "#e0e0e0",
-            padding: 16,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              marginBottom: 8,
-              color: "#333",
-            }}
-          >
-            {selectedPoint.name}
-          </Text>
-          <View
-            style={{
-              backgroundColor: `#${AREA_COLORS[selectedPoint.area].toString(16).padStart(6, '0')}`,
-              paddingHorizontal: 8,
-              paddingVertical: 4,
-              borderRadius: 4,
-              marginBottom: 12,
-              alignSelf: "flex-start",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: "600",
-                color: "#fff",
-                textTransform: "capitalize",
-              }}
-            >
-              {selectedPoint.area}
-            </Text>
-          </View>
-          <Text
-            style={{
-              fontSize: 12,
-              color: "#666",
-              marginBottom: 12,
-              lineHeight: 18,
-            }}
-          >
-            {selectedPoint.description}
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              color: "#999",
-              marginBottom: 4,
-            }}
-          >
-            Sistema 10-20: {selectedPoint.system10_20}
-          </Text>
-        </ScrollView>
-      )}
+      {/* Sidebar removido - informações mostradas em modal na tela helmet-3d.tsx */}
     </View>
   );
 }
