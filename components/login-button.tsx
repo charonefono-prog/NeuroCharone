@@ -135,7 +135,7 @@ export function LoginScreen() {
             Desenvolvido por Carlos Charone
           </Text>
           <Text style={{ fontSize: 12, color: colors.muted, textAlign: "center" }}>
-            CREFONO: 9-10025-5
+            CRFa 9 - 10025-5
           </Text>
         </View>
       </View>

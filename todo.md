@@ -548,3 +548,8 @@
 - [x] Integrar alerta visual na seção de pontos individuais
 - [x] Testar funcionamento em web e mobile
 - [x] Validar compilação TypeScript
+
+
+## Formatação de Interface - Nova Sessão
+- [x] Formatar título "Pacientes" com melhor tipografia
+- [x] Alterar "CREFONO" para "CRFa 9 - 10025-5" no aplicativo

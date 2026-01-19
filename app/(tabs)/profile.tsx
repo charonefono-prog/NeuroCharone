@@ -118,7 +118,7 @@ export default function ProfileScreen() {
                   Carlos Charone
                 </Text>
                 <Text style={{ fontSize: 14, color: colors.muted, marginTop: 2 }}>
-                  CREFONO: 9-10025-5
+                  CRFa 9 - 10025-5
                 </Text>
               </View>
             </View>
