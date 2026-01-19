@@ -574,3 +574,10 @@
 - [x] Adicionar resumo do plano terapêutico na página de histórico
 - [x] Exibir informações do plano criado inicialmente
 - [x] Testar renderização da página
+
+
+## Correção de Cálculo de Melhora - Nova Sessão
+- [x] Corrigir percentagem de melhora quando score inicial é zero
+- [x] Implementar fórmula que lida com divisão por zero
+- [x] Testar com diferentes valores de score
+- [x] Validar renderização da percentagem corrigida

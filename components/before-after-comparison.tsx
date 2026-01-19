@@ -36,7 +36,14 @@ export function BeforeAfterComparison({
     const initialScore = allScores.length > 0 ? allScores[0] : 0;
     const currentScore = allScores.length > 0 ? allScores[allScores.length - 1] : 0;
     const improvement = initialScore - currentScore;
-    const improvementPercentage = initialScore > 0 ? (improvement / initialScore) * 100 : 0;
+    // Calcular percentagem de melhora
+    // Se score inicial eh 0 e houve melhora, considerar como 100% de reducao
+    let improvementPercentage = 0;
+    if (initialScore === 0 && currentScore > 0) {
+      improvementPercentage = 100; // Maxima melhora possivel quando comecou em 0
+    } else if (initialScore > 0) {
+      improvementPercentage = (improvement / initialScore) * 100;
+    }
 
     const completedSessions = sessions.filter(s => new Date(s.sessionDate) < new Date()).length;
     const treatmentDuration = sessions.length > 0
