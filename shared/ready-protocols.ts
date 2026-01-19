@@ -1,7 +1,7 @@
 /**
- * Protocolos Prontos Baseados no Manual
+ * Protocolos Prontos Baseados no Manual - APENAS PONTOS COLORIDOS
  * 12 protocolos pré-configurados para condições clínicas específicas
- * Fonte: Manual de Adesivos - Sistema 10-20
+ * Fonte: Manual de Adesivos - Sistema 10-20 (apenas áreas coloridas)
  */
 
 export interface ReadyProtocol {
@@ -29,7 +29,7 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     targetPoints: ["F3", "F4", "Fz"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Central. Indicado para afasia não-fluente com dificuldade na expressão verbal.",
+    notes: "Baseado no manual - Região Frontal Central (amarelo). Indicado para afasia não-fluente com dificuldade na expressão verbal.",
     keywords: ["Afasia", "Broca", "Linguagem expressiva", "Fala"]
   },
   
@@ -39,184 +39,175 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Ataxia",
     objective: "Reabilitação de equilíbrio, marcha e coordenação motora",
     description: "Protocolo para tratamento de ataxias cerebelares com estimulação da região cerebelar para melhorar coordenação e timing motor.",
-    targetRegions: ["Região Cerebelar (Iz/Inf-O)"],
-    targetPoints: ["Iz", "Inf-O"],
+    targetRegions: ["Região Temporal (T)"],
+    targetPoints: ["T3", "T4"],
     frequency: 2,
     totalDuration: 10,
-    notes: "Baseado no manual - Região Cerebelar. Suporte em distúrbios de timing motor e coordenação.",
+    notes: "Baseado no manual - Região Temporal (verde). Suporte em distúrbios de timing motor e coordenação.",
     keywords: ["Ataxia", "Equilíbrio", "Marcha", "Coordenação", "Cerebelar"]
   },
   
   {
-    id: "protocol-tinnitus",
-    name: "Zumbido (Tinnitus)",
-    condition: "Zumbido",
-    objective: "Reduzir percepção de zumbido e melhorar qualidade auditiva",
-    description: "Protocolo para tratamento de zumbido com estimulação da região temporal responsável pelo processamento auditivo.",
+    id: "protocol-zumbido",
+    name: "Zumbido",
+    condition: "Tinnitus",
+    objective: "Redução de zumbido e melhora da qualidade de vida auditiva",
+    description: "Protocolo para tratamento de zumbido (tinnitus) com estimulação da região temporal responsável pelo processamento auditivo.",
     targetRegions: ["Região Temporal (T)"],
     targetPoints: ["T3", "T4", "T5", "T6"],
     frequency: 2,
     totalDuration: 8,
-    notes: "Baseado no manual - Região Temporal. Tratamento de zumbido (tinnitus) com acúfeno.",
-    keywords: ["Zumbido", "Tinnitus", "Acúfeno", "Auditivo"]
+    notes: "Baseado no manual - Região Temporal (verde). Indicado para zumbido persistente.",
+    keywords: ["Zumbido", "Tinnitus", "Audição", "Som"]
   },
   
   {
     id: "protocol-apraxia",
-    name: "Apraxia de Fala",
-    condition: "Apraxia",
-    objective: "Melhorar coordenação motora da fala e planejamento motor",
-    description: "Protocolo para apraxia de fala com estimulação da região frontal central para reabilitação de coordenação motora fina e planejamento motor.",
+    name: "Apraxia",
+    condition: "Apraxia de Fala",
+    objective: "Melhorar coordenação motora de fala e planejamento motor",
+    description: "Protocolo para tratamento de apraxia de fala com estimulação da região frontal central.",
     targetRegions: ["Região Frontal Central (F)"],
-    targetPoints: ["F3", "F4", "F1", "F2"],
+    targetPoints: ["F3", "F4", "F7", "F8"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Central. Suporte em transtornos de coordenação motora fina.",
-    keywords: ["Apraxia", "Fala", "Coordenação motora", "Planejamento motor"]
+    notes: "Baseado no manual - Região Frontal Central (amarelo). Suporte em distúrbios de planejamento motor da fala.",
+    keywords: ["Apraxia", "Fala", "Coordenação motora", "Planejamento"]
   },
   
   {
-    id: "protocol-dysarthria",
+    id: "protocol-disartria",
     name: "Disartria",
     condition: "Disartria",
-    objective: "Melhorar articulação de fala e controle motor orofacial",
-    description: "Protocolo para disartria com estimulação da região frontal central para reabilitação de coordenação motora fina e articulação.",
-    targetRegions: ["Região Frontal Central (F)", "Região Central/Sensório-Motora (C)"],
+    objective: "Melhorar articulação e clareza de fala",
+    description: "Protocolo para tratamento de disartria com estimulação da região frontal central e sensório-motora.",
+    targetRegions: ["Região Frontal Central (F)", "Região Central / Sensório-Motora (C/FC/CP)"],
     targetPoints: ["F3", "F4", "C3", "C4"],
     frequency: 3,
     totalDuration: 10,
-    notes: "Baseado no manual - Regiões Frontal Central e Sensório-Motora. Melhora de articulação e controle motor.",
-    keywords: ["Disartria", "Articulação", "Fala", "Controle motor"]
+    notes: "Baseado no manual - Regiões Frontal Central (amarelo) e Central (ciano). Indicado para disartria de origem neurológica.",
+    keywords: ["Disartria", "Fala", "Articulação", "Clareza"]
   },
   
   {
-    id: "protocol-selectivity",
+    id: "protocol-seletividade-alimentar",
     name: "Seletividade Alimentar",
     condition: "Seletividade Alimentar",
-    objective: "Melhorar aceitação alimentar e integração sensorial",
-    description: "Protocolo para seletividade alimentar com estimulação da região sensório-motora para melhorar integração sensorial e aceitação de alimentos.",
-    targetRegions: ["Região Central/Sensório-Motora (C/FC/CP)"],
-    targetPoints: ["C3", "C4", "CP3", "CP4"],
+    objective: "Melhorar aceitação de alimentos e coordenação sensório-motora oral",
+    description: "Protocolo para tratamento de seletividade alimentar com estimulação da região sensório-motora.",
+    targetRegions: ["Região Central / Sensório-Motora (C/FC/CP)"],
+    targetPoints: ["C3", "C4", "CP1", "CP2"],
     frequency: 2,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Sensório-Motora. Suporte em distúrbios de integração sensorial.",
-    keywords: ["Seletividade alimentar", "Integração sensorial", "Alimentação", "Sensorial"]
+    notes: "Baseado no manual - Região Central / Sensório-Motora (ciano). Suporte em distúrbios sensoriais orais.",
+    keywords: ["Seletividade alimentar", "Alimentação", "Sensório-motor", "Oral"]
   },
   
   {
     id: "protocol-parkinson",
-    name: "Doença de Parkinson",
-    condition: "Parkinson",
-    objective: "Controle de tremores e melhora de coordenação motora",
-    description: "Protocolo para Parkinson com estimulação da região sensório-motora para controle de tremores e melhora da coordenação motora.",
-    targetRegions: ["Região Central/Sensório-Motora (C/FC/CP)"],
-    targetPoints: ["C3", "C4", "Cz", "CP3", "CP4"],
+    name: "Parkinson",
+    condition: "Doença de Parkinson",
+    objective: "Controle de tremores, rigidez e melhora da mobilidade",
+    description: "Protocolo para tratamento de sintomas motores da doença de Parkinson com estimulação da região sensório-motora.",
+    targetRegions: ["Região Central / Sensório-Motora (C/FC/CP)"],
+    targetPoints: ["C3", "C4", "Cz", "CP1", "CP2"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Sensório-Motora. Controle de tremores em Parkinson e epilepsias focais.",
-    keywords: ["Parkinson", "Tremor", "Coordenação motora", "Movimento"]
+    notes: "Baseado no manual - Região Central / Sensório-Motora (ciano). Indicado para controle de tremores e rigidez.",
+    keywords: ["Parkinson", "Tremor", "Rigidez", "Mobilidade"]
   },
   
   {
     id: "protocol-alzheimer",
-    name: "Alzheimer Precoce",
-    condition: "Alzheimer",
-    objective: "Reabilitação de memória e manutenção de função cognitiva",
-    description: "Protocolo para Alzheimer precoce com estimulação da região temporal para reabilitação de memória e preservação de função cognitiva.",
+    name: "Alzheimer",
+    condition: "Doença de Alzheimer Precoce",
+    objective: "Reabilitação de memória e preservação cognitiva",
+    description: "Protocolo para tratamento de Alzheimer precoce com estimulação da região temporal responsável pela memória.",
     targetRegions: ["Região Temporal (T)"],
     targetPoints: ["T3", "T4", "T5"],
     frequency: 2,
     totalDuration: 16,
-    notes: "Baseado no manual - Região Temporal. Reabilitação de memória em Alzheimer precoce.",
-    keywords: ["Alzheimer", "Memória", "Demência", "Cognitivo"]
+    notes: "Baseado no manual - Região Temporal (verde). Suporte em reabilitação de memória.",
+    keywords: ["Alzheimer", "Memória", "Cognitivo", "Demência"]
   },
   
   {
     id: "protocol-tea",
-    name: "Transtorno do Espectro Autista",
-    condition: "TEA",
-    objective: "Suporte em transtornos do espectro autista e melhora de coordenação motora",
-    description: "Protocolo para TEA com estimulação da região frontal central para suporte em transtornos do espectro autista e reabilitação de coordenação motora.",
+    name: "TEA",
+    condition: "Transtorno do Espectro Autista",
+    objective: "Suporte em coordenação motora e processamento sensorial",
+    description: "Protocolo para suporte em transtornos do espectro autista com estimulação da região frontal central.",
     targetRegions: ["Região Frontal Central (F)"],
     targetPoints: ["F3", "F4", "F7", "F8"],
     frequency: 2,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Central. Suporte em transtornos do espectro autista.",
-    keywords: ["TEA", "Autismo", "Espectro autista", "Coordenação motora"]
+    notes: "Baseado no manual - Região Frontal Central (amarelo). Suporte em coordenação motora fina.",
+    keywords: ["TEA", "Autismo", "Espectro autista", "Sensorial"]
   },
   
   {
-    id: "protocol-social-language",
+    id: "protocol-linguagem-social",
     name: "Linguagem Social",
     condition: "Distúrbios de Linguagem Social",
     objective: "Melhorar compreensão e produção de linguagem social",
-    description: "Protocolo para distúrbios de linguagem social com estimulação de regiões temporal e frontal para melhorar compreensão (Wernicke) e expressão social.",
-    targetRegions: ["Região Temporal (T)", "Região Frontal Central (F)"],
-    targetPoints: ["T3", "T4", "F3", "F4"],
+    description: "Protocolo para tratamento de distúrbios de linguagem social com estimulação das regiões frontal e temporal.",
+    targetRegions: ["Região Frontal Central (F)", "Região Temporal (T)"],
+    targetPoints: ["F3", "F4", "T3", "T4"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Regiões Temporal (Wernicke) e Frontal Central. Melhora de compreensão e expressão de linguagem social.",
-    keywords: ["Linguagem social", "Compreensão", "Expressão", "Interação social"]
+    notes: "Baseado no manual - Regiões Frontal Central (amarelo) e Temporal (verde). Indicado para pragmática e compreensão social.",
+    keywords: ["Linguagem social", "Pragmática", "Compreensão", "Interação social"]
   },
   
   {
     id: "protocol-vppb",
-    name: "Vertigem Posicional Paroxística Benigna",
-    condition: "VPPB",
+    name: "VPPB",
+    condition: "Vertigem Posicional Paroxística Benigna",
     objective: "Reabilitação de equilíbrio e redução de vertigem",
-    description: "Protocolo para VPPB com estimulação da região cerebelar para reabilitação de equilíbrio e redução de sintomas vertiginosos.",
-    targetRegions: ["Região Cerebelar (Iz/Inf-O)"],
-    targetPoints: ["Iz", "Inf-O"],
+    description: "Protocolo para tratamento de VPPB com estimulação da região temporal.",
+    targetRegions: ["Região Temporal (T)"],
+    targetPoints: ["T3", "T4"],
     frequency: 2,
     totalDuration: 8,
-    notes: "Baseado no manual - Região Cerebelar. Reabilitação de equilíbrio e marcha em distúrbios de timing motor.",
-    keywords: ["VPPB", "Vertigem", "Equilíbrio", "Posicional"]
+    notes: "Baseado no manual - Região Temporal (verde). Suporte em distúrbios vestibulares.",
+    keywords: ["VPPB", "Vertigem", "Equilíbrio", "Vestibular"]
   },
   
   {
-    id: "protocol-depression",
-    name: "Depressão Resistente",
-    condition: "Depressão",
-    objective: "Tratamento de depressão maior resistente e melhora de funções executivas",
-    description: "Protocolo para depressão maior resistente com estimulação da região frontal anterior para melhora de humor e funções executivas.",
+    id: "protocol-depressao",
+    name: "Depressão",
+    condition: "Depressão Maior Resistente",
+    objective: "Melhora de sintomas depressivos e reabilitação de funções executivas",
+    description: "Protocolo para tratamento de depressão maior resistente com estimulação da região frontal anterior.",
     targetRegions: ["Região Frontal Anterior (Fp)"],
-    targetPoints: ["Fp1", "Fp2"],
+    targetPoints: ["Fp1", "Fp2", "Fpz"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Anterior. Depressão maior resistente e transtornos de ansiedade.",
-    keywords: ["Depressão", "Humor", "Executivas", "Resistente"]
-  }
+    notes: "Baseado no manual - Região Frontal Anterior (rosa). Indicado para depressão resistente a tratamento farmacológico.",
+    keywords: ["Depressão", "Humor", "Funções executivas", "Resistente"]
+  },
 ];
 
-/**
- * Obter protocolo por ID
- */
 export function getProtocolById(id: string): ReadyProtocol | undefined {
-  return READY_PROTOCOLS.find(protocol => protocol.id === id);
+  return READY_PROTOCOLS.find(p => p.id === id);
 }
 
-/**
- * Buscar protocolos por condição
- */
-export function searchProtocolsByCondition(condition: string): ReadyProtocol[] {
-  const lowerCondition = condition.toLowerCase();
-  return READY_PROTOCOLS.filter(protocol =>
-    protocol.condition.toLowerCase().includes(lowerCondition) ||
-    protocol.name.toLowerCase().includes(lowerCondition) ||
-    protocol.keywords.some(k => k.toLowerCase().includes(lowerCondition))
+export function getProtocolsByCondition(condition: string): ReadyProtocol[] {
+  return READY_PROTOCOLS.filter(p => 
+    p.condition.toLowerCase().includes(condition.toLowerCase()) ||
+    p.name.toLowerCase().includes(condition.toLowerCase())
   );
 }
 
-/**
- * Obter todos os protocolos
- */
-export function getAllProtocols(): ReadyProtocol[] {
-  return READY_PROTOCOLS;
+export function searchProtocolsByCondition(searchTerm: string): ReadyProtocol[] {
+  const term = searchTerm.toLowerCase();
+  return READY_PROTOCOLS.filter(p => 
+    p.name.toLowerCase().includes(term) ||
+    p.condition.toLowerCase().includes(term) ||
+    p.keywords.some(k => k.toLowerCase().includes(term))
+  );
 }
 
-/**
- * Obter lista de condições disponíveis
- */
-export function getAvailableConditions(): string[] {
-  return READY_PROTOCOLS.map(p => p.condition).sort();
+export function getAllProtocols(): ReadyProtocol[] {
+  return READY_PROTOCOLS;
 }

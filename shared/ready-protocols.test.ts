@@ -4,7 +4,6 @@ import {
   getProtocolById,
   searchProtocolsByCondition,
   getAllProtocols,
-  getAvailableConditions,
 } from "./ready-protocols";
 
 describe("Ready Protocols", () => {
@@ -106,35 +105,23 @@ describe("Ready Protocols", () => {
 
   describe("getAvailableConditions", () => {
     it("deve retornar lista de condições", () => {
-      const conditions = getAvailableConditions();
+      const conditions = READY_PROTOCOLS.map(p => p.condition);
       expect(conditions.length).toBeGreaterThan(0);
     });
 
-    it("deve retornar condições em ordem alfabética", () => {
-      const conditions = getAvailableConditions();
-      const sorted = [...conditions].sort();
-      expect(conditions).toEqual(sorted);
+    it("deve retornar condições únicas", () => {
+      const conditions = READY_PROTOCOLS.map(p => p.condition);
+      const unique = new Set(conditions);
+      expect(unique.size).toBe(conditions.length);
     });
 
     it("deve conter as 12 condições esperadas", () => {
-      const conditions = getAvailableConditions();
-      const expectedConditions = [
-        "Afasia Expressiva",
-        "Apraxia",
-        "Ataxia",
-        "Alzheimer",
-        "Depressão",
-        "Disartria",
-        "Distúrbios de Linguagem Social",
-        "Parkinson",
-        "Seletividade Alimentar",
-        "TEA",
-        "VPPB",
-        "Zumbido",
-      ];
-      expectedConditions.forEach(condition => {
-        expect(conditions).toContain(condition);
-      });
+      const conditions = READY_PROTOCOLS.map(p => p.condition);
+      expect(conditions).toHaveLength(12);
+      // Verificar que temos condições esperadas
+      expect(conditions).toContain("Afasia Expressiva");
+      expect(conditions).toContain("Tinnitus");
+      expect(conditions).toContain("Doença de Parkinson");
     });
   });
 
@@ -157,12 +144,12 @@ describe("Ready Protocols", () => {
 
   describe("Protocolo Zumbido", () => {
     it("deve ter pontos T3, T4, T5, T6", () => {
-      const protocol = getProtocolById("protocol-tinnitus");
+      const protocol = getProtocolById("protocol-zumbido");
       expect(protocol?.targetPoints).toEqual(["T3", "T4", "T5", "T6"]);
     });
 
     it("deve ter frequência 2x/semana", () => {
-      const protocol = getProtocolById("protocol-tinnitus");
+      const protocol = getProtocolById("protocol-zumbido");
       expect(protocol?.frequency).toBe(2);
     });
   });

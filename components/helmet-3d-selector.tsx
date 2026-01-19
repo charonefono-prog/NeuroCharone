@@ -95,15 +95,15 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         }}
       >
         <Image
-          source={require("@/assets/images/helmet-top.png")}
+          source={require("@/assets/images/helmet-colored.png")}
           style={{
             width: "100%",
-            height: 300,
+            height: 320,
             resizeMode: "contain",
           }}
         />
         <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
-          Visualização frontal do capacete de neuromodulação
+          Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
         </Text>
       </View>
 
