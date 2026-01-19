@@ -2,6 +2,7 @@ import { View, Text, Dimensions } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import type { Session, Patient } from '@/lib/local-storage';
 import { useMemo } from 'react';
+import Svg, { Line, Circle, Text as SvgText, Path, G } from 'react-native-svg';
 
 interface SymptomEvolutionLineChartProps {
   patient: Patient;
@@ -105,14 +106,14 @@ export function SymptomEvolutionLineChart({
 
       {/* Gráfico SVG */}
       <View style={{ alignItems: 'center', marginBottom: 16 }}>
-        <svg width={chartWidth} height={chartHeight} style={{ backgroundColor: 'transparent' }}>
+        <Svg width={chartWidth} height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
           {/* Grid horizontal */}
           {[0, 0.25, 0.5, 0.75, 1].map((fraction, index) => {
             const y = chartHeight - padding - fraction * (chartHeight - padding * 2);
             const scoreValue = Math.round(minScore + fraction * scoreRange);
             return (
-              <g key={`grid-${index}`}>
-                <line
+              <G key={`grid-${index}`}>
+                <Line
                   x1={padding}
                   y1={y}
                   x2={chartWidth - padding}
@@ -122,7 +123,7 @@ export function SymptomEvolutionLineChart({
                   strokeDasharray="4,4"
                   opacity="0.5"
                 />
-                <text
+                <SvgText
                   x={padding - 8}
                   y={y + 4}
                   fontSize="12"
@@ -130,23 +131,37 @@ export function SymptomEvolutionLineChart({
                   textAnchor="end"
                 >
                   {scoreValue}
-                </text>
-              </g>
+                </SvgText>
+              </G>
             );
           })}
 
           {/* Linha do gráfico */}
-          <path d={pathData} stroke={colors.primary} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <Path
+            d={pathData}
+            stroke={colors.primary}
+            strokeWidth="3"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
 
           {/* Pontos de dados */}
           {points.map((point, index) => (
-            <g key={`point-${index}`}>
+            <G key={`point-${index}`}>
               {/* Círculo de fundo */}
-              <circle cx={point.x} cy={point.y} r="5" fill={colors.surface} stroke={colors.primary} strokeWidth="2" />
+              <Circle
+                cx={point.x}
+                cy={point.y}
+                r="5"
+                fill={colors.surface}
+                stroke={colors.primary}
+                strokeWidth="2"
+              />
               {/* Ponto interno */}
-              <circle cx={point.x} cy={point.y} r="3" fill={colors.primary} />
+              <Circle cx={point.x} cy={point.y} r="3" fill={colors.primary} />
               {/* Label */}
-              <text
+              <SvgText
                 x={point.x}
                 y={point.y - 15}
                 fontSize="11"
@@ -155,9 +170,9 @@ export function SymptomEvolutionLineChart({
                 fontWeight="600"
               >
                 {point.label}
-              </text>
+              </SvgText>
               {/* Score value */}
-              <text
+              <SvgText
                 x={point.x}
                 y={point.y + 20}
                 fontSize="10"
@@ -165,10 +180,10 @@ export function SymptomEvolutionLineChart({
                 textAnchor="middle"
               >
                 {point.score.toFixed(1)}
-              </text>
-            </g>
+              </SvgText>
+            </G>
           ))}
-        </svg>
+        </Svg>
       </View>
 
       {/* Legenda e informações */}
