@@ -25,12 +25,12 @@ import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { TreatmentTimeline } from "@/components/treatment-timeline";
 import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
 
-import { TreatmentCycleScheduler } from "@/components/treatment-cycle-scheduler";
+
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "scheduler";
+type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -193,21 +193,16 @@ export default function PatientDetailScreen() {
   }
 
   // Usar plano selecionado ou primeiro plano ativo
-  const activePlan = selectedPlanId 
-    ? plans.find((p) => p.id === selectedPlanId)
-    : plans.find((p) => p.isActive);
+  const firstActivePlan = plans.find((p) => p.isActive);
+  const effectiveSelectedPlanId = selectedPlanId || firstActivePlan?.id || null;
+  const activePlan = effectiveSelectedPlanId
+    ? plans.find((p) => p.id === effectiveSelectedPlanId)
+    : null;
   
   // Planos ativos (isActive = true)
   const activePlans = plans.filter((p) => p.isActive);
   // Planos inativos (histórico)
   const inactivePlans = plans.filter((p) => !p.isActive);
-  
-  // Selecionar automaticamente o primeiro plano ativo se nenhum foi selecionado
-  useEffect(() => {
-    if (!selectedPlanId && activePlans.length > 0) {
-      setSelectedPlanId(activePlans[0].id);
-    }
-  }, [plans]);
 
   return (
     <ScreenContainer>
@@ -286,7 +281,6 @@ export default function PatientDetailScreen() {
                   { key: "plan" as Tab, label: "Plano", emoji: "📝" },
                   { key: "timeline" as Tab, label: "Timeline", emoji: "📅" },
                   { key: "effectiveness" as Tab, label: "Efetividade", emoji: "📊" },
-                  { key: "scheduler" as Tab, label: "Ciclos", emoji: "⏱️" },
                   { key: "history" as Tab, label: "Histórico", emoji: "📜" },
                 ].map((tab) => (
                   <TouchableOpacity
@@ -787,19 +781,6 @@ export default function PatientDetailScreen() {
             {activeTab === "effectiveness" && (
               <View style={{ padding: 16 }}>
                 <EffectivenessDashboard sessions={sessions} plans={plans} patients={[patient]} />
-              </View>
-            )}
-
-            {/* Aba de Agendador de Ciclos */}
-            {activeTab === "scheduler" && (
-              <View style={{ padding: 16 }}>
-                <TreatmentCycleScheduler
-                  currentPlan={activePlan || null}
-                  sessions={sessions}
-                  onCreateCycle={(cycle) => {
-                    console.log('Novo ciclo criado:', cycle);
-                  }}
-                />
               </View>
             )}
 
