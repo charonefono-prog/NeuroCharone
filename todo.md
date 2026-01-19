@@ -553,3 +553,10 @@
 ## Formatação de Interface - Nova Sessão
 - [x] Formatar título "Pacientes" com melhor tipografia
 - [x] Alterar "CREFONO" para "CRFa 9 - 10025-5" no aplicativo
+
+
+## Correção de Erro ao Gerar Relatório - Nova Sessão
+- [x] Remover nome "Carlos Charone" do relatório (privacidade)
+- [x] Alterar "CREFONO" para "CRFa 9 - 10025-5" no relatório
+- [x] Mudar extensão de .html para .htm para evitar conflitos
+- [x] Melhorar tratamento de erros na geração de relatório

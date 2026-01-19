@@ -14,16 +14,16 @@ export async function generatePatientPDFReport(
     const htmlContent = generateReportHTML(patient, plan, sessions);
 
     // Nome do arquivo
-    const htmlFileName = `relatorio_${patient.fullName.replace(/\s/g, "_")}_${Date.now()}.html`;
+    const htmlFileName = `relatorio_${patient.fullName.replace(/\s/g, "_")}_${Date.now()}.htm`;
 
     // Verificar se está rodando na web
     if (Platform.OS === "web") {
       // Download direto no navegador
-      const blob = new Blob([htmlContent], { type: "text/html" });
+      const blob = new Blob([htmlContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = htmlFileName;
+      link.download = htmlFileName.replace('.htm', '.htm');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -46,9 +46,9 @@ export async function generatePatientPDFReport(
       const isAvailable = await Sharing.isAvailableAsync();
       if (isAvailable) {
         await Sharing.shareAsync(htmlFilePath, {
-          mimeType: "text/html",
+          mimeType: "text/plain",
           dialogTitle: "Compartilhar Relatório",
-          UTI: "public.html",
+          UTI: "public.text",
         });
       } else {
         Alert.alert(
@@ -60,9 +60,11 @@ export async function generatePatientPDFReport(
     }
   } catch (error) {
     console.error("Erro ao gerar PDF:", error);
+    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+    console.error("Detalhes do erro:", errorMessage);
     Alert.alert(
-      "Erro",
-      "Não foi possível gerar o relatório. Tente novamente."
+      "Erro ao Gerar Relatório",
+      `Não foi possível gerar o relatório. Detalhes: ${errorMessage}`
     );
     throw error;
   }
@@ -370,8 +372,8 @@ function generateReportHTML(
   <!-- Assinatura -->
   <div class="signature">
     <div class="signature-line"></div>
-    <div class="signature-name">Carlos Charone</div>
-    <div class="signature-credential">CREFONO 9-10025-5</div>
+    <div class="signature-name">Profissional de Saúde</div>
+    <div class="signature-credential">CRFa 9 - 10025-5</div>
   </div>
 
   <!-- Rodapé -->
