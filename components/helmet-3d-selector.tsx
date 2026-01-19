@@ -262,40 +262,59 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
               {region.points.map((pointName) => {
                 const isSelected = selectedPoints.includes(pointName);
                 return (
-                  <TouchableOpacity
+                  <View
                     key={pointName}
-                    onPress={() => togglePoint(pointName)}
-                    onLongPress={() => {
-                      if (Platform.OS !== "web") {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      }
-                      setSelectedPointInfo(pointName);
-                      setShowPointModal(true);
-                    }}
-                    activeOpacity={0.7}
                     style={{
-                      paddingHorizontal: 16,
-                      paddingVertical: 10,
-                      borderRadius: 8,
-                      backgroundColor: isSelected ? region.colorHex : colors.surface,
-                      borderWidth: 1,
-                      borderColor: isSelected ? region.colorHex : colors.border,
                       flexDirection: "row",
                       alignItems: "center",
-                      gap: 6,
+                      gap: 4,
                     }}
                   >
-                    <Text
+                    <TouchableOpacity
+                      onPress={() => togglePoint(pointName)}
+                      activeOpacity={0.7}
                       style={{
-                        fontSize: 14,
-                        fontWeight: "600",
-                        color: isSelected ? "#FFFFFF" : colors.foreground,
+                        paddingHorizontal: 16,
+                        paddingVertical: 10,
+                        borderRadius: 8,
+                        backgroundColor: isSelected ? region.colorHex : colors.surface,
+                        borderWidth: 1,
+                        borderColor: isSelected ? region.colorHex : colors.border,
                       }}
                     >
-                      {pointName}
-                    </Text>
-                    <Text style={{ fontSize: 10, color: isSelected ? "#FFFFFF" : colors.muted }}>ℹ️</Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "600",
+                          color: isSelected ? "#FFFFFF" : colors.foreground,
+                        }}
+                      >
+                        {pointName}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (Platform.OS !== "web") {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }
+                        setSelectedPointInfo(pointName);
+                        setShowPointModal(true);
+                      }}
+                      activeOpacity={0.7}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        backgroundColor: colors.surface,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <IconSymbol name="info.circle" size={18} color={colors.primary} />
+                    </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>

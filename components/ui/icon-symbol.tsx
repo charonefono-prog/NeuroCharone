@@ -30,6 +30,11 @@ const MAPPING = {
   "doc.text.fill": "description",
   "square.and.arrow.up": "share",
   "phone.fill": "phone",
+  "info.circle": "info",
+  "xmark": "close",
+  "photo.fill": "photo",
+  "camera.fill": "camera",
+  "play.fill": "play-arrow",
 } as IconMapping;
 
 /**
