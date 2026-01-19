@@ -567,3 +567,10 @@
 - [x] Revisar e ajustar fontes em telas principais
 - [x] Revisar e ajustar fontes em componentes
 - [x] Testar e validar mudanças
+
+
+## Correção de Erro no Histórico de Atendimentos - Nova Sessão
+- [x] Corrigir erro de componente com nome em minúscula
+- [x] Adicionar resumo do plano terapêutico na página de histórico
+- [x] Exibir informações do plano criado inicialmente
+- [x] Testar renderização da página

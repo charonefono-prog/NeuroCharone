@@ -540,13 +540,105 @@ export default function PatientDetailScreen() {
 
             {activeTab === "history" && (
               <View style={{ gap: 16 }}>
-                {/* Gr\u00e1fico de Evolu\u00e7\u00e3o de Sintomas */}
-                <SymptomEvolutionChart patient={patient} sessions={sessions} />
+                {/* Resumo do Plano Terapêutico Ativo */}
+                {activePlan && (
+                  <View
+                    style={{
+                      backgroundColor: colors.primary + "15",
+                      borderRadius: 12,
+                      borderWidth: 2,
+                      borderColor: colors.primary,
+                      padding: 16,
+                      gap: 12,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                      <Text style={{ fontSize: 18, fontWeight: "700", color: colors.foreground }}>
+                        Plano Ativo
+                      </Text>
+                      <View
+                        style={{
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 8,
+                          backgroundColor: colors.primary,
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                          Ativo
+                        </Text>
+                      </View>
+                    </View>
 
-                {/* Gr\u00e1fico de Progresso de Sintomas (Card Resumo) */}
-                <SymptomProgressChart patient={patient} sessions={sessions} />
+                    <View style={{ gap: 8 }}>
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Protocolo
+                        </Text>
+                        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                          {activePlan.objective}
+                        </Text>
+                      </View>
 
-                {/* Gr\u00e1fico de Evolu\u00e7\u00e3o de Sess\u00f5es */}
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Área de Aplicação
+                        </Text>
+                        <Text style={{ fontSize: 14, color: colors.foreground }}>
+                          {activePlan.targetRegions.join(', ')}
+                        </Text>
+                      </View>
+
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Pontos Estimulados
+                        </Text>
+                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                          {activePlan.targetPoints.slice(0, 8).map((point, index) => (
+                            <View
+                              key={index}
+                              style={{
+                                paddingHorizontal: 8,
+                                paddingVertical: 4,
+                                borderRadius: 6,
+                                backgroundColor: colors.primary + "30",
+                              }}
+                            >
+                              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>
+                                {point}
+                              </Text>
+                            </View>
+                          ))}
+                          {activePlan.targetPoints.length > 8 && (
+                            <View
+                              style={{
+                                paddingHorizontal: 8,
+                                paddingVertical: 4,
+                                borderRadius: 6,
+                                backgroundColor: colors.muted + "20",
+                              }}
+                            >
+                              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.muted }}>
+                                +{activePlan.targetPoints.length - 8}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+
+                      <View style={{ gap: 4 }}>
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                          Duração / Frequência
+                        </Text>
+                        <Text style={{ fontSize: 14, color: colors.foreground }}>
+                          {activePlan.frequency}x por semana / {activePlan.totalDuration} dias
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+
+                {/* Gráfico de Evolução de Sessões */}
                 {sessions.length > 0 && (
                   <View style={{ marginBottom: 8 }}>
                     <TreatmentChart sessions={sessions} />
@@ -554,7 +646,7 @@ export default function PatientDetailScreen() {
                 )}
 
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                  <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
                     Histórico de Sessões
                   </Text>
                   {activePlan && (
