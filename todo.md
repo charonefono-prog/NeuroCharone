@@ -608,3 +608,12 @@
 - [x] Remover mediaTypes "videos" do ImagePicker
 - [x] Remover renderização condicional de vídeo
 - [x] Simplificar componente para apenas fotos
+
+
+## Reorganização de Abas do Paciente - Nova Sessão
+- [x] Reorganizar abas: Info, Plano, Evolução, Histórico, Próxima Sessão
+- [x] Criar aba Plano com resumo do plano terapêutico
+- [x] Criar aba Evolução com capacete 3D e pontos usados por sessão
+- [x] Criar aba Próxima Sessão com data agendada
+- [x] Permitir seleção de pontos na evolução (não precisa usar todos do plano)
+- [x] Salvar última aba visualizada por paciente

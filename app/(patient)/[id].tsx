@@ -1,4 +1,10 @@
-import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
@@ -17,20 +23,15 @@ import {
 import { AddSessionModal } from "@/components/add-session-modal";
 import { AddPlanModal } from "@/components/add-plan-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
-import { TreatmentChart } from "@/components/treatment-chart";
-import { SymptomProgressChart } from "@/components/symptom-progress-chart";
-import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
-import { AuditHistory } from "@/components/audit-history";
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
-import { TreatmentTimeline } from "@/components/treatment-timeline";
-import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
 import { BeforeAfterComparison } from "@/components/before-after-comparison";
-import { TreatmentCycleScheduler } from "@/components/treatment-cycle-scheduler";
+import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
+import { SessionHelmetViewer } from "@/components/session-helmet-viewer";
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "comparison" | "scheduler";
+type Tab = "info" | "plan" | "evolution" | "nextSession" | "history";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,6 +46,23 @@ export default function PatientDetailScreen() {
   const [showAddPlanModal, setShowAddPlanModal] = useState(false);
   const [showEditPatientModal, setShowEditPatientModal] = useState(false);
   const [generatingReport, setGeneratingReport] = useState(false);
+
+  // Salvar última aba visualizada
+  useEffect(() => {
+    if (activeTab && id) {
+      localStorage?.setItem(`patient-${id}-lastTab`, activeTab);
+    }
+  }, [activeTab, id]);
+
+  // Carregar última aba visualizada
+  useEffect(() => {
+    if (id) {
+      const lastTab = localStorage?.getItem(`patient-${id}-lastTab`) as Tab | null;
+      if (lastTab && ["info", "plan", "evolution", "nextSession", "history"].includes(lastTab)) {
+        setActiveTab(lastTab);
+      }
+    }
+  }, [id]);
 
   useEffect(() => {
     loadData();
@@ -149,17 +167,15 @@ export default function PatientDetailScreen() {
     });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return colors.success;
-      case "paused":
-        return colors.warning;
-      case "completed":
-        return colors.muted;
-      default:
-        return colors.muted;
-    }
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const getStatusLabel = (status: string) => {
@@ -192,6 +208,7 @@ export default function PatientDetailScreen() {
   }
 
   const activePlan = plans.find((p) => p.isActive);
+  const nextSession = sessions.find((s) => new Date(s.sessionDate) > new Date());
 
   return (
     <ScreenContainer>
@@ -253,7 +270,7 @@ export default function PatientDetailScreen() {
             </View>
           </View>
 
-          {/* Tabs - Sofisticadas */}
+          {/* Tabs - Reorganizadas */}
           <View
             style={{
               backgroundColor: colors.background,
@@ -268,10 +285,8 @@ export default function PatientDetailScreen() {
                 {[
                   { key: "info" as Tab, label: "Info", emoji: "📋" },
                   { key: "plan" as Tab, label: "Plano", emoji: "📝" },
-                  { key: "timeline" as Tab, label: "Timeline", emoji: "📅" },
-                  { key: "effectiveness" as Tab, label: "Efetividade", emoji: "📊" },
-                  { key: "comparison" as Tab, label: "Antes/Depois", emoji: "🔄" },
-                  { key: "scheduler" as Tab, label: "Ciclos", emoji: "⏱️" },
+                  { key: "evolution" as Tab, label: "Evolução", emoji: "📊" },
+                  { key: "nextSession" as Tab, label: "Próxima", emoji: "📅" },
                   { key: "history" as Tab, label: "Histórico", emoji: "📜" },
                 ].map((tab) => (
                   <TouchableOpacity
@@ -310,6 +325,7 @@ export default function PatientDetailScreen() {
 
           {/* Content */}
           <View style={{ padding: 24, gap: 20 }}>
+            {/* ABA: INFO */}
             {activeTab === "info" && (
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -389,9 +405,20 @@ export default function PatientDetailScreen() {
                       </Text>
                     </View>
                   )}
+
+                  {patient.initialSymptomScore !== undefined && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Avaliação Inicial
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {patient.initialSymptomScore}/10
+                      </Text>
+                    </View>
+                  )}
                 </View>
 
-                {/* Galeria de M\u00eddia */}
+                {/* Galeria de Mídia */}
                 <View style={{ marginTop: 24, paddingTop: 24, borderTopWidth: 1, borderTopColor: colors.border }}>
                   <PatientMediaGallery
                     media={patient.media || []}
@@ -402,6 +429,7 @@ export default function PatientDetailScreen() {
               </View>
             )}
 
+            {/* ABA: PLANO */}
             {activeTab === "plan" && (
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -538,138 +566,250 @@ export default function PatientDetailScreen() {
               </View>
             )}
 
-            {activeTab === "history" && (
+            {/* ABA: EVOLUÇÃO */}
+            {activeTab === "evolution" && (
               <View style={{ gap: 16 }}>
-                {/* Resumo do Plano Terapêutico Ativo */}
-                {activePlan && (
+                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                  Evolução do Tratamento
+                </Text>
+
+                {/* Gráfico de Evolução */}
+                {sessions.length > 0 && (
+                  <View style={{ marginBottom: 8 }}>
+                    <SymptomEvolutionChart patient={patient} sessions={sessions} />
+                  </View>
+                )}
+
+                {/* Comparação Antes/Depois */}
+                {sessions.length > 0 && (
+                  <View style={{ marginBottom: 8 }}>
+                    <BeforeAfterComparison patient={patient} sessions={sessions} plans={plans} />
+                  </View>
+                )}
+
+                {/* Sessões com Pontos Usados */}
+                <View style={{ gap: 16 }}>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+                      Sessões Realizadas
+                    </Text>
+                    {activePlan && (
+                      <TouchableOpacity
+                        onPress={() => setShowAddSessionModal(true)}
+                        activeOpacity={0.7}
+                        style={{
+                          backgroundColor: colors.primary,
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
+                        <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                          Nova
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {sessions.length > 0 ? (
+                    <View style={{ gap: 12 }}>
+                      {sessions
+                        .sort((a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime())
+                        .map((session) => (
+                          <View
+                            key={session.id}
+                            style={{
+                              backgroundColor: colors.surface,
+                              borderRadius: 12,
+                              borderWidth: 1,
+                              borderColor: colors.border,
+                              padding: 16,
+                              gap: 12,
+                            }}
+                          >
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                              <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                                {formatDate(session.sessionDate)}
+                              </Text>
+                              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                                {session.durationMinutes} min • {session.joules}J
+                              </Text>
+                            </View>
+
+                            <SessionHelmetViewer session={session} />
+
+                            {session.observations && (
+                              <View style={{ gap: 4 }}>
+                                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                                  Observações
+                                </Text>
+                                <Text style={{ fontSize: 14, color: colors.foreground, lineHeight: 20 }}>
+                                  {session.observations}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        ))}
+                    </View>
+                  ) : (
+                    <View style={{ padding: 32, alignItems: "center" }}>
+                      <IconSymbol name="house.fill" size={48} color={colors.muted} />
+                      <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                        Nenhuma sessão registrada
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            )}
+
+            {/* ABA: PRÓXIMA SESSÃO */}
+            {activeTab === "nextSession" && (
+              <View style={{ gap: 16 }}>
+                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                  Próxima Sessão
+                </Text>
+
+                {nextSession ? (
                   <View
                     style={{
                       backgroundColor: colors.primary + "15",
                       borderRadius: 12,
                       borderWidth: 2,
                       borderColor: colors.primary,
-                      padding: 16,
-                      gap: 12,
+                      padding: 20,
+                      gap: 16,
                     }}
                   >
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                      <Text style={{ fontSize: 18, fontWeight: "700", color: colors.foreground }}>
-                        Plano Ativo
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Data e Hora
                       </Text>
-                      <View
-                        style={{
-                          paddingHorizontal: 12,
-                          paddingVertical: 6,
-                          borderRadius: 8,
-                          backgroundColor: colors.primary,
-                        }}
-                      >
-                        <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
-                          Ativo
-                        </Text>
-                      </View>
+                      <Text style={{ fontSize: 18, fontWeight: "700", color: colors.foreground }}>
+                        {formatDateTime(nextSession.sessionDate)}
+                      </Text>
                     </View>
 
-                    <View style={{ gap: 8 }}>
-                      <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                          Protocolo
-                        </Text>
-                        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                          {activePlan.objective}
-                        </Text>
-                      </View>
-
-                      <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                          Área de Aplicação
-                        </Text>
-                        <Text style={{ fontSize: 14, color: colors.foreground }}>
-                          {activePlan.targetRegions.join(', ')}
-                        </Text>
-                      </View>
-
-                      <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                          Pontos Estimulados
-                        </Text>
-                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                          {activePlan.targetPoints.slice(0, 8).map((point, index) => (
-                            <View
-                              key={index}
-                              style={{
-                                paddingHorizontal: 8,
-                                paddingVertical: 4,
-                                borderRadius: 6,
-                                backgroundColor: colors.primary + "30",
-                              }}
-                            >
-                              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>
-                                {point}
-                              </Text>
-                            </View>
-                          ))}
-                          {activePlan.targetPoints.length > 8 && (
-                            <View
-                              style={{
-                                paddingHorizontal: 8,
-                                paddingVertical: 4,
-                                borderRadius: 6,
-                                backgroundColor: colors.muted + "20",
-                              }}
-                            >
-                              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.muted }}>
-                                +{activePlan.targetPoints.length - 8}
-                              </Text>
-                            </View>
-                          )}
+                    {activePlan && (
+                      <>
+                        <View style={{ gap: 4 }}>
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                            Duração Planejada
+                          </Text>
+                          <Text style={{ fontSize: 16, color: colors.foreground }}>
+                            {nextSession.durationMinutes} minutos
+                          </Text>
                         </View>
-                      </View>
 
-                      <View style={{ gap: 4 }}>
-                        <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                          Duração / Frequência
-                        </Text>
-                        <Text style={{ fontSize: 14, color: colors.foreground }}>
-                          {activePlan.frequency}x por semana / {activePlan.totalDuration} dias
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
+                        <View style={{ gap: 4 }}>
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                            Intensidade (Joules)
+                          </Text>
+                          <Text style={{ fontSize: 16, color: colors.foreground }}>
+                            {nextSession.joules}J
+                          </Text>
+                        </View>
 
-                {/* Gráfico de Evolução de Sessões */}
-                {sessions.length > 0 && (
-                  <View style={{ marginBottom: 8 }}>
-                    <TreatmentChart sessions={sessions} />
-                  </View>
-                )}
+                        <View style={{ gap: 4 }}>
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                            Pontos Planejados
+                          </Text>
+                          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                            {activePlan.targetPoints.map((point, index) => (
+                              <View
+                                key={index}
+                                style={{
+                                  paddingHorizontal: 12,
+                                  paddingVertical: 6,
+                                  borderRadius: 8,
+                                  backgroundColor: colors.primary + "20",
+                                }}
+                              >
+                                <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "500" }}>
+                                  {point}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
 
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                  <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-                    Histórico de Sessões
-                  </Text>
-                  {activePlan && (
+                        <View style={{ gap: 4 }}>
+                          <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                            Regiões Alvo
+                          </Text>
+                          <Text style={{ fontSize: 14, color: colors.foreground }}>
+                            {activePlan.targetRegions.join(", ")}
+                          </Text>
+                        </View>
+
+                        {nextSession.observations && (
+                          <View style={{ gap: 4 }}>
+                            <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                              Observações
+                            </Text>
+                            <Text style={{ fontSize: 14, color: colors.foreground, lineHeight: 20 }}>
+                              {nextSession.observations}
+                            </Text>
+                          </View>
+                        )}
+                      </>
+                    )}
+
                     <TouchableOpacity
                       onPress={() => setShowAddSessionModal(true)}
                       activeOpacity={0.7}
                       style={{
                         backgroundColor: colors.primary,
                         paddingHorizontal: 16,
-                        paddingVertical: 8,
+                        paddingVertical: 12,
                         borderRadius: 8,
-                        flexDirection: "row",
                         alignItems: "center",
-                        gap: 6,
+                        marginTop: 8,
                       }}
                     >
-                      <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
-                        Nova
+                      <Text style={{ fontSize: 16, fontWeight: "600", color: "#FFFFFF" }}>
+                        Registrar Sessão Realizada
                       </Text>
                     </TouchableOpacity>
-                  )}
-                </View>
+                  </View>
+                ) : (
+                  <View style={{ padding: 32, alignItems: "center" }}>
+                    <IconSymbol name="house.fill" size={48} color={colors.muted} />
+                    <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                      Nenhuma sessão agendada
+                    </Text>
+                    {activePlan && (
+                      <TouchableOpacity
+                        onPress={() => setShowAddSessionModal(true)}
+                        activeOpacity={0.7}
+                        style={{
+                          backgroundColor: colors.primary,
+                          paddingHorizontal: 16,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          marginTop: 16,
+                        }}
+                      >
+                        <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                          Agendar Sessão
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </View>
+            )}
+
+            {/* ABA: HISTÓRICO */}
+            {activeTab === "history" && (
+              <View style={{ gap: 16 }}>
+                <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
+                  Histórico de Sessões
+                </Text>
 
                 {sessions.length > 0 ? (
                   <View style={{ gap: 12 }}>
@@ -687,11 +827,11 @@ export default function PatientDetailScreen() {
                             gap: 8,
                           }}
                         >
-                          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                            <Text style={{ fontSize: 14, color: colors.muted }}>
+                          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                               {formatDate(session.sessionDate)}
                             </Text>
-                            <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                            <Text style={{ fontSize: 12, color: colors.muted }}>
                               {session.durationMinutes} min
                             </Text>
                           </View>
@@ -707,11 +847,11 @@ export default function PatientDetailScreen() {
                                   style={{
                                     paddingHorizontal: 8,
                                     paddingVertical: 4,
-                                    borderRadius: 8,
+                                    borderRadius: 6,
                                     backgroundColor: colors.primary + "15",
                                   }}
                                 >
-                                  <Text style={{ fontSize: 12, color: colors.primary }}>
+                                  <Text style={{ fontSize: 11, fontWeight: "600", color: colors.primary }}>
                                     {point}
                                   </Text>
                                 </View>
@@ -720,7 +860,7 @@ export default function PatientDetailScreen() {
                           </View>
 
                           {session.observations && (
-                            <Text style={{ fontSize: 14, color: colors.foreground, lineHeight: 20 }}>
+                            <Text style={{ fontSize: 13, color: colors.foreground, lineHeight: 20 }}>
                               {session.observations}
                             </Text>
                           )}
@@ -735,47 +875,6 @@ export default function PatientDetailScreen() {
                     </Text>
                   </View>
                 )}
-              </View>
-            )}
-
-            {/* Aba de Timeline */}
-            {activeTab === "timeline" && (
-              <View style={{ padding: 16 }}>
-                <TreatmentTimeline sessions={sessions} plans={plans} />
-              </View>
-            )}
-
-            {/* Aba de Efetividade */}
-            {activeTab === "effectiveness" && (
-              <View style={{ padding: 16 }}>
-                <EffectivenessDashboard sessions={sessions} plans={plans} patients={[patient]} />
-              </View>
-            )}
-
-            {/* Aba de Comparação Antes/Depois */}
-            {activeTab === "comparison" && (
-              <View style={{ padding: 16 }}>
-                <BeforeAfterComparison patient={patient} sessions={sessions} plans={plans} />
-              </View>
-            )}
-
-            {/* Aba de Agendador de Ciclos */}
-            {activeTab === "scheduler" && (
-              <View style={{ padding: 16 }}>
-                <TreatmentCycleScheduler
-                  currentPlan={activePlan || null}
-                  sessions={sessions}
-                  onCreateCycle={(cycle) => {
-                    console.log('Novo ciclo criado:', cycle);
-                  }}
-                />
-              </View>
-            )}
-
-            {/* Aba de Auditoria */}
-            {activeTab === "audit" && (
-              <View style={{ padding: 16 }}>
-                <AuditHistory entityType="patient" entityId={id} />
               </View>
             )}
           </View>
