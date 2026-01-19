@@ -26,11 +26,7 @@ export const helmetPointFunctions: PointFunction[] = [
     function: "Controle executivo e atenção",
     description: "Melhora do controle executivo, atenção sustentada e tomada de decisão. Região medial do córtex pré-frontal."
   },
-  {
-    point: "Nz",
-    function: "Ponto de referência anatômico",
-    description: "Násio - ponto de referência anatômico para o sistema 10-20. Localizado na raiz do nariz entre os olhos."
-  },
+
 
   // Região Frontal Média (Laranja)
   {
@@ -210,29 +206,19 @@ export const helmetPointFunctions: PointFunction[] = [
     description: "Processamento auditivo inferior, compreensão de linguagem e memória semântica. Córtex temporal superior esquerdo."
   },
   {
-    point: "T7",
-    function: "Memória verbal e processamento auditivo",
-    description: "Memória verbal, processamento auditivo e compreensão de linguagem. Córtex temporal superior esquerdo. Melhora da compreensão auditiva e consolidação de memórias verbais."
+    point: "T3",
+    function: "Memória verbal e linguagem - Wernicke",
+    description: "Memória verbal, compreensão de linguagem complexa e processamento de significados. Córtex temporal médio esquerdo. Área de Wernicke - melhora da compreensão auditiva e consolidação de memórias verbais."
   },
   {
-    point: "T5",
-    function: "Memória semântica e linguagem - Wernicke",
-    description: "Memória semântica, compreensão de linguagem complexa e processamento de significados. Córtex temporal médio esquerdo. Área de Wernicke - melhora da compreensão auditiva e consolidação de memórias verbais."
+    point: "T4",
+    function: "Processamento não-verbal e reconhecimento",
+    description: "Processamento não-verbal, reconhecimento de faces e processamento de emoções. Córtex temporal médio direito. Reconhecimento de faces e processamento emocional."
   },
   {
     point: "T10",
     function: "Processamento auditivo inferior direito",
     description: "Processamento auditivo inferior, reconhecimento de faces e processamento de emoções. Córtex temporal superior direito."
-  },
-  {
-    point: "T8",
-    function: "Memória visual e reconhecimento",
-    description: "Memória visual, reconhecimento de faces e processamento de emoções. Córtex temporal superior direito. Processamento não-verbal e reconhecimento de faces."
-  },
-  {
-    point: "T6",
-    function: "Processamento visuoespacial",
-    description: "Processamento visuoespacial, navegação espacial e memória de localização. Córtex temporal médio direito. Processamento não-verbal e reconhecimento de faces."
   },
 
   // Região Parietal (Roxo)
@@ -245,11 +231,6 @@ export const helmetPointFunctions: PointFunction[] = [
     point: "P3",
     function: "Integração sensorial e atenção espacial esquerda",
     description: "Integração sensorial, atenção espacial e processamento somatossensorial do lado direito. Córtex parietal inferior esquerdo. Suporte em leitura, escrita e cálculos."
-  },
-  {
-    point: "P5",
-    function: "Processamento visuoespacial esquerdo",
-    description: "Processamento visuoespacial, navegação espacial e memória de localização. Córtex parietal posterior esquerdo."
   },
   {
     point: "Pz",
@@ -266,38 +247,7 @@ export const helmetPointFunctions: PointFunction[] = [
     function: "Integração sensorial e atenção espacial direita",
     description: "Integração sensorial, atenção espacial e processamento somatossensorial do lado esquerdo. Córtex parietal inferior direito. Navegação espacial e percepção da imagem corporal."
   },
-  {
-    point: "P6",
-    function: "Processamento visuoespacial direito",
-    description: "Processamento visuoespacial, navegação espacial e memória de localização. Córtex parietal posterior direito."
-  },
 
-  // Região Parieto-Occipital (Roxo Claro)
-  {
-    point: "PO7",
-    function: "Processamento visual complexo",
-    description: "Processamento visual complexo, reconhecimento de objetos e análise de cenas visuais. Córtex occipitotemporal esquerdo. Refinamento da busca visual."
-  },
-  {
-    point: "PO3",
-    function: "Integração visuoespacial esquerda",
-    description: "Integração entre processamento parietal e visual, processamento de informações visuoespaciais complexas. Córtex parieto-occipital esquerdo."
-  },
-  {
-    point: "POz",
-    function: "Integração visual central",
-    description: "Integração entre processamento parietal e visual, processamento de informações visuoespaciais complexas. Córtex parieto-occipital medial. Integração do fluxo visual."
-  },
-  {
-    point: "PO4",
-    function: "Integração visuoespacial direita",
-    description: "Integração entre processamento parietal e visual, processamento de informações visuoespaciais complexas. Córtex parieto-occipital direito."
-  },
-  {
-    point: "PO8",
-    function: "Processamento visuoespacial",
-    description: "Processamento visuoespacial, localização de objetos e análise de movimento. Córtex occipitotemporal direito. Coordenação visão-movimento."
-  },
 
   // Região Occipital (Salmão)
   {
@@ -315,18 +265,7 @@ export const helmetPointFunctions: PointFunction[] = [
     function: "Processamento visual campo esquerdo",
     description: "Processamento visual primário do campo visual esquerdo, detecção de bordas e movimento. Córtex visual primário direito. Estimulação da acuidade visual."
   },
-  {
-    point: "Iz",
-    function: "Ponto de referência anatômico",
-    description: "Ínio - ponto de referência anatômico para o sistema 10-20. Localizado na protuberância occipital externa na base do crânio."
-  },
 
-  // Região Cerebelar (Cinza)
-  {
-    point: "Inf-O",
-    function: "Equilíbrio e coordenação motora",
-    description: "Equilíbrio dinâmico, precisão do timing motor, coordenação motora e aprendizado motor. Cerebelo - região inferior occipital."
-  }
 ];
 
 /**

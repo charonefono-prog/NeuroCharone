@@ -1,4 +1,5 @@
 // Dados das regiões e pontos do capacete baseados no sistema internacional 10-20
+// APENAS OS 35 PONTOS COLORIDOS DA IMAGEM
 
 export interface HelmetPoint {
   id: string;
@@ -24,9 +25,9 @@ export const helmetRegions: HelmetRegion[] = [
   {
     id: "frontal-anterior",
     name: "Região Frontal Anterior",
-    color: "Rosa/Magenta",
-    colorHex: "#E91E63",
-    points: ["Fp1", "Fpz", "Fp2", "Nz"],
+    color: "Rosa",
+    colorHex: "#FF69B4",
+    points: ["Fp1", "Fpz", "Fp2"],
     functions: [
       "Funções executivas",
       "Planejamento",
@@ -46,7 +47,7 @@ export const helmetRegions: HelmetRegion[] = [
     id: "frontal-media",
     name: "Região Frontal Média",
     color: "Laranja",
-    colorHex: "#FF9800",
+    colorHex: "#FFA500",
     points: ["AF7", "AF3", "AFz", "AF4", "AF8"],
     functions: [
       "Processamento cognitivo superior",
@@ -66,8 +67,8 @@ export const helmetRegions: HelmetRegion[] = [
     id: "frontal-central",
     name: "Região Frontal Central",
     color: "Amarelo",
-    colorHex: "#FFEB3B",
-    points: ["F7", "F3", "F1", "Fz", "F2", "F4", "F8"],
+    colorHex: "#FFFF00",
+    points: ["F3", "F1", "Fz", "F2", "F4"],
     functions: [
       "Controle motor voluntário",
       "Planejamento motor",
@@ -85,8 +86,8 @@ export const helmetRegions: HelmetRegion[] = [
     id: "central-sensoriomotora",
     name: "Região Central/Sensório-Motora",
     color: "Ciano",
-    colorHex: "#00BCD4",
-    points: ["FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "C5", "C3", "C1", "Cz", "C2", "C4", "C6", "CP5", "CP3", "CP1", "CPz", "CP2", "CP4", "CP6"],
+    colorHex: "#00CED1",
+    points: ["FC3", "FC1", "FCz", "FC2", "FC4", "C5", "C3", "C1", "Cz", "C2", "C4", "C6", "CP3", "CP1", "CPz", "CP2", "CP4"],
     functions: [
       "Integração sensório-motora",
       "Processamento somatossensorial",
@@ -105,8 +106,8 @@ export const helmetRegions: HelmetRegion[] = [
     id: "temporal",
     name: "Região Temporal",
     color: "Verde",
-    colorHex: "#4CAF50",
-    points: ["T9", "T7", "T5", "T10", "T8", "T6"],
+    colorHex: "#00FF00",
+    points: ["T9", "T3", "T4", "T10"],
     functions: [
       "Processamento auditivo",
       "Compreensão linguística (Área de Wernicke)",
@@ -125,8 +126,8 @@ export const helmetRegions: HelmetRegion[] = [
     id: "parietal",
     name: "Região Parietal",
     color: "Roxo",
-    colorHex: "#9C27B0",
-    points: ["P1", "P3", "P5", "Pz", "P2", "P4", "P6"],
+    colorHex: "#9370DB",
+    points: ["P3", "P1", "Pz", "P2", "P4"],
     functions: [
       "Processamento somatossensorial",
       "Integração visuoespacial",
@@ -142,29 +143,11 @@ export const helmetRegions: HelmetRegion[] = [
     ]
   },
   {
-    id: "parieto-occipital",
-    name: "Região Parieto-Occipital",
-    color: "Roxo Claro",
-    colorHex: "#CE93D8",
-    points: ["PO7", "PO3", "POz", "PO4", "PO8"],
-    functions: [
-      "Integração entre processamento parietal e visual",
-      "Processamento de informações visuoespaciais complexas",
-      "Integração de profundidade"
-    ],
-    networks: ["Dorsal Attention Network", "Visual Network"],
-    clinicalApplications: [
-      "Melhora da coordenação visomotora",
-      "Reabilitação de ataxia óptica",
-      "Distúrbios de percepção de profundidade"
-    ]
-  },
-  {
     id: "occipital",
     name: "Região Occipital",
-    color: "Salmão",
-    colorHex: "#FF8A80",
-    points: ["O1", "Oz", "O2", "Iz"],
+    color: "Rosa Claro",
+    colorHex: "#FFB6C1",
+    points: ["O1", "Oz", "O2"],
     functions: [
       "Processamento visual primário",
       "Processamento de cor, contraste, orientação",
@@ -177,80 +160,65 @@ export const helmetRegions: HelmetRegion[] = [
       "Suporte em cegueira cortical",
       "Modulação de distúrbios do processamento visual primário"
     ]
-  },
-  {
-    id: "cerebelar",
-    name: "Região Cerebelar",
-    color: "Cinza",
-    colorHex: "#9E9E9E",
-    points: ["Inf-O"],
-    functions: [
-      "Equilíbrio e marcha",
-      "Coordenação motora",
-      "Timing motor",
-      "Aprendizado motor"
-    ],
-    networks: ["Motor Network"],
-    clinicalApplications: [
-      "Reabilitação de equilíbrio e marcha",
-      "Tratamento de ataxias cerebelares",
-      "Suporte em distúrbios de timing motor e coordenação"
-    ]
   }
 ];
 
 export const helmetPoints: HelmetPoint[] = [
-  // Frontal Anterior
+  // Frontal Anterior (Rosa) - 3 pontos
   { id: "Fp1", name: "Fp1", region: "frontal-anterior", description: "Frontal Polar Esquerdo", applications: ["Melhora da depressão", "Aumento do afeto positivo", "Redução da ruminação mental"], position: { x: 35, y: 15 } },
   { id: "Fpz", name: "Fpz", region: "frontal-anterior", description: "Frontal Polar Central", applications: ["Estabilização da atenção sustentada", "Integração da autoconsciência executiva"], position: { x: 50, y: 10 } },
   { id: "Fp2", name: "Fp2", region: "frontal-anterior", description: "Frontal Polar Direito", applications: ["Redução da ansiedade", "Controle de impulsividade", "Modulação de estados de hiperalerta"], position: { x: 65, y: 15 } },
-  { id: "Nz", name: "Nz", region: "frontal-anterior", description: "Násio (ponto de referência)", applications: ["Ponto de referência anatômico"], position: { x: 50, y: 5 } },
   
-  // Frontal Média
+  // Frontal Média (Laranja) - 5 pontos
   { id: "AF7", name: "AF7", region: "frontal-media", description: "Anterior Frontal 7", applications: ["Otimização da memória de trabalho", "Facilitação do raciocínio lógico-matemático"], position: { x: 25, y: 20 } },
   { id: "AF3", name: "AF3", region: "frontal-media", description: "Anterior Frontal 3", applications: ["Otimização da memória de trabalho", "Facilitação do raciocínio lógico-matemático"], position: { x: 38, y: 22 } },
   { id: "AFz", name: "AFz", region: "frontal-media", description: "Anterior Frontal Central", applications: ["Redução do conflito cognitivo", "Melhora na detecção de erros"], position: { x: 50, y: 18 } },
   { id: "AF4", name: "AF4", region: "frontal-media", description: "Anterior Frontal 4", applications: ["Melhora do monitoramento cognitivo", "Regulação da atenção alternada"], position: { x: 62, y: 22 } },
   { id: "AF8", name: "AF8", region: "frontal-media", description: "Anterior Frontal 8", applications: ["Melhora do monitoramento cognitivo", "Regulação da atenção alternada"], position: { x: 75, y: 20 } },
   
-  // Frontal Central
-  { id: "F7", name: "F7", region: "frontal-central", description: "Frontal 7", applications: ["Estimulação da fluência verbal", "Reabilitação da produção da fala (Broca)"], position: { x: 15, y: 35 } },
+  // Frontal Central (Amarelo) - 5 pontos
   { id: "F3", name: "F3", region: "frontal-central", description: "Frontal 3 (Broca)", applications: ["Estimulação da fluência verbal", "Reabilitação da produção da fala (Broca)"], position: { x: 32, y: 32 } },
   { id: "F1", name: "F1", region: "frontal-central", description: "Frontal 1", applications: ["Coordenação da intenção motora", "Suporte na motivação para ação"], position: { x: 42, y: 30 } },
   { id: "Fz", name: "Fz", region: "frontal-central", description: "Frontal Central", applications: ["Coordenação da intenção motora", "Suporte na motivação para ação"], position: { x: 50, y: 28 } },
   { id: "F2", name: "F2", region: "frontal-central", description: "Frontal 2", applications: ["Coordenação da intenção motora", "Suporte na motivação para ação"], position: { x: 58, y: 30 } },
   { id: "F4", name: "F4", region: "frontal-central", description: "Frontal 4", applications: ["Modulação da prosódia emocional", "Controle da inibição comportamental"], position: { x: 68, y: 32 } },
-  { id: "F8", name: "F8", region: "frontal-central", description: "Frontal 8", applications: ["Modulação da prosódia emocional", "Controle da inibição comportamental"], position: { x: 85, y: 35 } },
   
-  // Central/Sensório-Motora
+  // Central/Sensório-Motora (Ciano) - 17 pontos
+  { id: "FC3", name: "FC3", region: "central-sensoriomotora", description: "Frontocentral 3", applications: ["Integração sensório-motora"], position: { x: 32, y: 42 } },
+  { id: "FC1", name: "FC1", region: "central-sensoriomotora", description: "Frontocentral 1", applications: ["Integração sensório-motora"], position: { x: 42, y: 40 } },
+  { id: "FCz", name: "FCz", region: "central-sensoriomotora", description: "Frontocentral Central", applications: ["Integração sensório-motora bilateral"], position: { x: 50, y: 38 } },
+  { id: "FC2", name: "FC2", region: "central-sensoriomotora", description: "Frontocentral 2", applications: ["Integração sensório-motora"], position: { x: 58, y: 40 } },
+  { id: "FC4", name: "FC4", region: "central-sensoriomotora", description: "Frontocentral 4", applications: ["Integração sensório-motora"], position: { x: 68, y: 42 } },
+  { id: "C5", name: "C5", region: "central-sensoriomotora", description: "Central 5", applications: ["Controle motor e sensação"], position: { x: 20, y: 50 } },
   { id: "C3", name: "C3", region: "central-sensoriomotora", description: "Central 3", applications: ["Reabilitação motora lado direito", "Tratamento de dor crônica"], position: { x: 28, y: 50 } },
+  { id: "C1", name: "C1", region: "central-sensoriomotora", description: "Central 1", applications: ["Integração sensório-motora"], position: { x: 42, y: 50 } },
   { id: "Cz", name: "Cz", region: "central-sensoriomotora", description: "Central", applications: ["Integração somatossensorial bilateral", "Controle postural central"], position: { x: 50, y: 48 } },
+  { id: "C2", name: "C2", region: "central-sensoriomotora", description: "Central 2", applications: ["Integração sensório-motora"], position: { x: 58, y: 50 } },
   { id: "C4", name: "C4", region: "central-sensoriomotora", description: "Central 4", applications: ["Reabilitação motora lado esquerdo", "Modulação de espasticidade"], position: { x: 72, y: 50 } },
+  { id: "C6", name: "C6", region: "central-sensoriomotora", description: "Central 6", applications: ["Controle motor e sensação"], position: { x: 80, y: 50 } },
+  { id: "CP3", name: "CP3", region: "central-sensoriomotora", description: "Centroparietal 3", applications: ["Integração sensório-motora"], position: { x: 28, y: 60 } },
+  { id: "CP1", name: "CP1", region: "central-sensoriomotora", description: "Centroparietal 1", applications: ["Integração sensório-motora"], position: { x: 42, y: 60 } },
+  { id: "CPz", name: "CPz", region: "central-sensoriomotora", description: "Centroparietal Central", applications: ["Integração sensório-motora bilateral"], position: { x: 50, y: 58 } },
+  { id: "CP2", name: "CP2", region: "central-sensoriomotora", description: "Centroparietal 2", applications: ["Integração sensório-motora"], position: { x: 58, y: 60 } },
+  { id: "CP4", name: "CP4", region: "central-sensoriomotora", description: "Centroparietal 4", applications: ["Integração sensório-motora"], position: { x: 72, y: 60 } },
   
-  // Temporal
-  { id: "T7", name: "T7", region: "temporal", description: "Temporal 7 (Esq)", applications: ["Melhora da compreensão auditiva", "Consolidação de memórias verbais"], position: { x: 8, y: 50 } },
-  { id: "T5", name: "T5", region: "temporal", description: "Temporal 5 (Wernicke)", applications: ["Melhora da compreensão auditiva", "Consolidação de memórias verbais"], position: { x: 12, y: 65 } },
-  { id: "T8", name: "T8", region: "temporal", description: "Temporal 8 (Dir)", applications: ["Processamento não-verbal", "Reconhecimento de faces"], position: { x: 92, y: 50 } },
-  { id: "T6", name: "T6", region: "temporal", description: "Temporal 6", applications: ["Processamento não-verbal", "Reconhecimento de faces"], position: { x: 88, y: 65 } },
+  // Temporal (Verde) - 4 pontos
+  { id: "T9", name: "T9", region: "temporal", description: "Temporal 9", applications: ["Processamento auditivo", "Memória"], position: { x: 5, y: 45 } },
+  { id: "T3", name: "T3", region: "temporal", description: "Temporal 3 (Wernicke)", applications: ["Melhora da compreensão auditiva", "Consolidação de memórias verbais"], position: { x: 8, y: 50 } },
+  { id: "T4", name: "T4", region: "temporal", description: "Temporal 4", applications: ["Processamento não-verbal", "Reconhecimento de faces"], position: { x: 92, y: 50 } },
+  { id: "T10", name: "T10", region: "temporal", description: "Temporal 10", applications: ["Processamento auditivo", "Memória"], position: { x: 95, y: 45 } },
   
-  // Parietal
+  // Parietal (Roxo) - 5 pontos
   { id: "P3", name: "P3", region: "parietal", description: "Parietal 3", applications: ["Suporte em leitura, escrita e cálculos"], position: { x: 30, y: 68 } },
+  { id: "P1", name: "P1", region: "parietal", description: "Parietal 1", applications: ["Integração sensorial"], position: { x: 42, y: 68 } },
   { id: "Pz", name: "Pz", region: "parietal", description: "Parietal Central", applications: ["Integração da atenção visual-espacial"], position: { x: 50, y: 65 } },
+  { id: "P2", name: "P2", region: "parietal", description: "Parietal 2", applications: ["Integração sensorial"], position: { x: 58, y: 68 } },
   { id: "P4", name: "P4", region: "parietal", description: "Parietal 4", applications: ["Navegação espacial", "Percepção da imagem corporal"], position: { x: 70, y: 68 } },
   
-  // Parieto-Occipital
-  { id: "PO7", name: "PO7", region: "parieto-occipital", description: "Parieto-Occipital 7", applications: ["Refinamento da busca visual"], position: { x: 22, y: 78 } },
-  { id: "POz", name: "POz", region: "parieto-occipital", description: "Parieto-Occipital Central", applications: ["Integração do fluxo visual"], position: { x: 50, y: 75 } },
-  { id: "PO8", name: "PO8", region: "parieto-occipital", description: "Parieto-Occipital 8", applications: ["Coordenação visão-movimento"], position: { x: 78, y: 78 } },
-  
-  // Occipital
+  // Occipital (Rosa Claro) - 3 pontos
   { id: "O1", name: "O1", region: "occipital", description: "Occipital 1", applications: ["Estimulação da acuidade visual"], position: { x: 38, y: 88 } },
   { id: "Oz", name: "Oz", region: "occipital", description: "Occipital Central", applications: ["Redução de auras visuais", "Estabilização da visão central"], position: { x: 50, y: 85 } },
-  { id: "O2", name: "O2", region: "occipital", description: "Occipital 2", applications: ["Estimulação da acuidade visual"], position: { x: 62, y: 88 } },
-  { id: "Iz", name: "Iz", region: "occipital", description: "Ínio (ponto de referência)", applications: ["Ponto de referência anatômico"], position: { x: 50, y: 92 } },
-  
-  // Cerebelar
-  { id: "Inf-O", name: "Inf-O", region: "cerebelar", description: "Inferior Occipital (Cerebelar)", applications: ["Equilíbrio dinâmico", "Precisão do timing motor"], position: { x: 50, y: 95 } }
+  { id: "O2", name: "O2", region: "occipital", description: "Occipital 2", applications: ["Estimulação da acuidade visual"], position: { x: 62, y: 88 } }
 ];
 
 // Função auxiliar para obter região por ID
