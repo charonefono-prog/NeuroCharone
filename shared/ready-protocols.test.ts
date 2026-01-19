@@ -58,7 +58,7 @@ describe("Ready Protocols", () => {
     it("deve retornar protocolo por ID", () => {
       const protocol = getProtocolById("protocol-afasia");
       expect(protocol).toBeDefined();
-      expect(protocol?.name).toBe("Afasia de Broca");
+      expect(protocol?.name).toBe("Afasia");
     });
 
     it("deve retornar undefined para ID inválido", () => {
@@ -75,9 +75,9 @@ describe("Ready Protocols", () => {
     });
 
     it("deve encontrar protocolo por nome parcial", () => {
-      const results = searchProtocolsByCondition("Broca");
+      const results = searchProtocolsByCondition("Afasia");
       expect(results.length).toBeGreaterThan(0);
-      expect(results[0].name).toContain("Broca");
+      expect(results[0].name).toContain("Afasia");
     });
 
     it("deve encontrar protocolo por keyword", () => {
