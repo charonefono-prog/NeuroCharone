@@ -372,11 +372,13 @@ function generateReportHTML(
   <!-- Assinatura -->
   <div class="signature">
     <div class="signature-line"></div>
+    <div class="signature-name">Profissional de Saúde</div>
+    <div class="signature-credential">CRFa 9 - 10025-5</div>
   </div>
 
   <!-- Rodapé -->
   <div class="footer">
-    <p><strong>NeuroLaserMap</strong> - desenvolvido por Carlos Charone</p>
+    <p>Este relatório foi gerado automaticamente pelo sistema NeuroLaserMap</p>
     <p>Documento confidencial - Uso exclusivo para fins terapêuticos</p>
   </div>
 </body>
