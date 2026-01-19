@@ -421,3 +421,25 @@
 - [x] Modo de rotação automática do capacete 3D
 - [x] Zoom e pan do capacete 3D (mouse wheel e drag)
 - [ ] Exibição de coordenadas 10-20 no capacete 3D
+
+
+## Simplificar Visualização do Capacete no Plano Terapêutico
+- [x] Remover seletor de visualização (Vista Superior/Lateral)
+- [x] Deixar apenas imagem frontal do capacete
+- [x] Adicionar botão "Visualizar em 3D" para acessar visualizador 3D
+- [x] Simplificar interface do componente Helmet3DSelector
+
+## Melhorias Prioritárias do Visualizador 3D - PRÓXIMAS
+- [ ] Adicionar labels de coordenadas 10-20 ao capacete 3D
+  - [ ] Implementar texto 3D usando Three.js TextGeometry
+  - [ ] Posicionar labels próximos aos pontos do capacete
+  - [ ] Fazer labels visíveis em diferentes ângulos de rotação
+  - [ ] Adicionar opção de mostrar/ocultar labels
+- [ ] Melhorar raycasting para dispositivos móveis
+  - [ ] Aumentar raio de detecção dos pontos clicáveis
+  - [ ] Implementar feedback visual ao passar sobre ponto
+  - [ ] Testar em dispositivos móveis reais
+- [ ] Integrar screenshots 3D nos relatórios PDF
+  - [ ] Adicionar função de captura de canvas 3D
+  - [ ] Integrar screenshot nos relatórios PDF
+  - [ ] Adicionar legenda "Visualização 3D do Capacete"

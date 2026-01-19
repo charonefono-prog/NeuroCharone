@@ -19,7 +19,7 @@ interface Helmet3DSelectorProps {
 export function Helmet3DSelector({ selectedPoints, onPointsChange, title, selectedPointId, onPointIdChange }: Helmet3DSelectorProps) {
   const router = useRouter();
   const colors = useColors();
-  const [view, setView] = useState<"top" | "side">("top");
+  // Remover seletor de visualização - apenas vista superior (frontal)
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedRegionInfo, setSelectedRegionInfo] = useState<string | null>(null);
   const [showPointModal, setShowPointModal] = useState(false);
@@ -83,75 +83,28 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         </View>
       </View>
 
-      {/* Seletor de Visualização */}
-      <View
+      {/* Botão para visualizador 3D */}
+      <TouchableOpacity
+        onPress={() => router.push("/helmet-3d")}
+        activeOpacity={0.7}
         style={{
-          flexDirection: "row",
-          backgroundColor: colors.surface,
+          paddingVertical: 12,
+          paddingHorizontal: 16,
           borderRadius: 12,
-          padding: 4,
-          gap: 4,
+          backgroundColor: colors.primary + "20",
+          borderWidth: 1,
+          borderColor: colors.primary,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+          gap: 8,
         }}
       >
-        <TouchableOpacity
-          onPress={() => setView("top")}
-          activeOpacity={0.7}
-          style={{
-            flex: 1,
-            paddingVertical: 10,
-            borderRadius: 8,
-            backgroundColor: view === "top" ? colors.primary : "transparent",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: view === "top" ? "#FFFFFF" : colors.foreground,
-            }}
-          >
-            Vista Superior
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setView("side")}
-          activeOpacity={0.7}
-          style={{
-            flex: 1,
-            paddingVertical: 10,
-            borderRadius: 8,
-            backgroundColor: view === "side" ? colors.primary : "transparent",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: view === "side" ? "#FFFFFF" : colors.foreground,
-            }}
-          >
-            Vista Lateral
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.push("/helmet-3d")}
-          activeOpacity={0.7}
-          style={{
-            flex: 1,
-            paddingVertical: 10,
-            borderRadius: 8,
-            backgroundColor: colors.primary + "40",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <IconSymbol name="cube.transparent" size={18} color={colors.primary} />
-        </TouchableOpacity>
-      </View>
+        <IconSymbol name="cube.transparent" size={18} color={colors.primary} />
+        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+          Visualizar em 3D
+        </Text>
+      </TouchableOpacity>
 
       {/* Imagem do Capacete */}
       <View
@@ -165,7 +118,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         }}
       >
         <Image
-          source={view === "top" ? require("@/assets/images/helmet-top.png") : require("@/assets/images/helmet-side.png")}
+          source={require("@/assets/images/helmet-top.png")}
           style={{
             width: "100%",
             height: 300,
@@ -173,7 +126,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
           }}
         />
         <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
-          {view === "top" ? "Visualização superior do capacete de neuromodulação" : "Visualização lateral do capacete de neuromodulação"}
+          Visualização frontal do capacete de neuromodulação
         </Text>
       </View>
 
