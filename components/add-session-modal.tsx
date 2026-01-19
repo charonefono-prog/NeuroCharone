@@ -278,7 +278,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
 
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                  Dura\u00e7\u00e3o (minutos) *
+                  Duração (minutos) *
                 </Text>
                 <TextInput
                   value={durationMinutes}

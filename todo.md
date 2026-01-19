@@ -467,6 +467,12 @@
   - [ ] Template: Linguagem social
 
 
+## Correção de Campo de Duração
+- [x] Corrigir texto "Duração (minutos)" com erro Unicode
+  - [x] Localizar campo com caracteres corrompidos
+  - [x] Corrigir para exibir corretamente
+  - [x] Validar compilação
+
 ## Melhorias Prioritárias - Nova Sessão
 - [x] Melhorar raycasting para dispositivos móveis
   - [x] Aumentar raio de detecção dos pontos clicáveis (hit detection)
