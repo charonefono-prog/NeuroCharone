@@ -253,48 +253,59 @@ export default function PatientDetailScreen() {
             </View>
           </View>
 
-          {/* Tabs */}
+          {/* Tabs - Sofisticadas */}
           <View
             style={{
-              flexDirection: "row",
-              backgroundColor: colors.surface,
+              backgroundColor: colors.background,
               borderBottomWidth: 1,
               borderBottomColor: colors.border,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
             }}
           >
-            {[
-              { key: "info" as Tab, label: "Informações" },
-              { key: "plan" as Tab, label: "Plano" },
-              { key: "timeline" as Tab, label: "Timeline" },
-              { key: "effectiveness" as Tab, label: "Efetividade" },
-              { key: "comparison" as Tab, label: "Antes/Depois" },
-              { key: "scheduler" as Tab, label: "Ciclos" },
-              { key: "history" as Tab, label: "Histórico" },
-              { key: "audit" as Tab, label: "Auditoria" },
-            ].map((tab) => (
-              <TouchableOpacity
-                key={tab.key}
-                onPress={() => setActiveTab(tab.key)}
-                activeOpacity={0.7}
-                style={{
-                  flex: 1,
-                  paddingVertical: 16,
-                  alignItems: "center",
-                  borderBottomWidth: 2,
-                  borderBottomColor: activeTab === tab.key ? colors.primary : "transparent",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "600",
-                    color: activeTab === tab.key ? colors.primary : colors.muted,
-                  }}
-                >
-                  {tab.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View style={{ flexDirection: "row", gap: 12 }}>
+                {[
+                  { key: "info" as Tab, label: "Info", emoji: "📋" },
+                  { key: "plan" as Tab, label: "Plano", emoji: "📝" },
+                  { key: "timeline" as Tab, label: "Timeline", emoji: "📅" },
+                  { key: "effectiveness" as Tab, label: "Efetividade", emoji: "📊" },
+                  { key: "comparison" as Tab, label: "Antes/Depois", emoji: "🔄" },
+                  { key: "scheduler" as Tab, label: "Ciclos", emoji: "⏱️" },
+                  { key: "history" as Tab, label: "Histórico", emoji: "📜" },
+                ].map((tab) => (
+                  <TouchableOpacity
+                    key={tab.key}
+                    onPress={() => setActiveTab(tab.key)}
+                    activeOpacity={0.8}
+                    style={{
+                      paddingHorizontal: 16,
+                      paddingVertical: 10,
+                      borderRadius: 12,
+                      backgroundColor: activeTab === tab.key ? colors.primary : colors.surface,
+                      borderWidth: 1.5,
+                      borderColor: activeTab === tab.key ? colors.primary : colors.border,
+                      shadowColor: activeTab === tab.key ? colors.primary : "transparent",
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: activeTab === tab.key ? 0.3 : 0,
+                      shadowRadius: 4,
+                      elevation: activeTab === tab.key ? 4 : 0,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "600",
+                        color: activeTab === tab.key ? "#FFFFFF" : colors.foreground,
+                        textAlign: "center",
+                      }}
+                    >
+                      {tab.emoji} {tab.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
           </View>
 
           {/* Content */}
