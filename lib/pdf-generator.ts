@@ -337,7 +337,7 @@ export async function generatePatientReport(data: ReportData): Promise<void> {
   ` : ""}
 
   <div class="footer">
-    <p><strong>NeuroLaserMap</strong> - Desenvolvido por Carlos Charone</p>
+    <p><strong>NeuroLaserMap</strong> - desenvolvido por Carlos Charone</p>
     <p style="margin-top: 8px;">Este relatório é confidencial e destinado exclusivamente ao uso profissional.</p>
   </div>
 </body>

@@ -376,7 +376,7 @@ function generateReportHTML(
 
   <!-- Rodapé -->
   <div class="footer">
-    <p>Este relatório foi gerado automaticamente pelo sistema NeuroLaserMap</p>
+    <p><strong>NeuroLaserMap</strong> - desenvolvido por Carlos Charone</p>
     <p>Documento confidencial - Uso exclusivo para fins terapêuticos</p>
   </div>
 </body>
