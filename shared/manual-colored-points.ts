@@ -265,6 +265,20 @@ export const COLORED_POINTS: ColoredPoint[] = [
     applications: ["Processamento auditivo", "Memória"],
     description: "Ponto temporal direito anterior - Processamento auditivo"
   },
+  {
+    name: "T5",
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Zumbido", "Memória", "Processamento auditivo"],
+    description: "Ponto temporal esquerdo posterior - Processamento auditivo"
+  },
+  {
+    name: "T6",
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Zumbido", "Memória", "Processamento auditivo"],
+    description: "Ponto temporal direito posterior - Processamento auditivo"
+  },
 
   // ROXO - Parietal (4 pontos)
   {
@@ -360,7 +374,7 @@ export const COLORED_REGIONS: ColoredRegion[] = [
     id: "region-temporal",
     name: "Temporal",
     colorHex: "#00FF00",
-    points: ["T9", "T3", "T4", "T10"],
+    points: ["T9", "T3", "T4", "T10", "T5", "T6"],
     applications: ["Zumbido", "Memória", "Wernicke", "Processamento auditivo"]
   },
   {

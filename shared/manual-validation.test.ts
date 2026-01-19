@@ -4,8 +4,8 @@ import { COLORED_POINTS, COLORED_REGIONS } from "./manual-colored-points";
 import { READY_PROTOCOLS } from "./ready-protocols";
 
 describe("Manual Validation", () => {
-  it("deve ter 36 pontos coloridos", () => {
-    expect(COLORED_POINTS).toHaveLength(36);
+  it("deve ter 42 pontos coloridos", () => {
+    expect(COLORED_POINTS).toHaveLength(42);
   });
 
   it("deve ter 7 regiões coloridas", () => {

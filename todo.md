@@ -513,3 +513,24 @@
 - [x] Adicionar botão "Novo Plano" na tela principal
 - [x] Criar 27 testes unitários (todos passando)
 - [x] Validar compilação TypeScript
+
+
+## Melhorias Prioritárias - Sessão 3
+
+### 1. Filtro Visual por Cor de Região
+- [ ] Criar componente de toggle para filtrar regiões
+- [ ] Implementar destaque visual de região selecionada
+- [ ] Integrar no visualizador de capacete
+- [ ] Adicionar opção "Todas as cores" como padrão
+
+### 2. Relatório PDF com Visualização do Capacete
+- [ ] Implementar captura de canvas do capacete
+- [ ] Adicionar imagem do capacete aos PDFs
+- [ ] Incluir legenda com pontos selecionados
+- [ ] Testar em diferentes navegadores
+
+### 3. Histórico de Buscas Recentes
+- [ ] Criar storage para guardar buscas (AsyncStorage)
+- [ ] Implementar UI para mostrar últimas 5 buscas
+- [ ] Adicionar botão para limpar histórico
+- [ ] Integrar no modal de busca de protocolos

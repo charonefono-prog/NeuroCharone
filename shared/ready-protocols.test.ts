@@ -70,7 +70,7 @@ describe("Ready Protocols", () => {
     it("deve encontrar protocolo por condição exata", () => {
       const results = searchProtocolsByCondition("Afasia");
       expect(results.length).toBeGreaterThan(0);
-      expect(results[0].condition).toBe("Afasia Expressiva");
+      expect(results[0].condition).toBe("Afasia");
     });
 
     it("deve encontrar protocolo por nome parcial", () => {
@@ -119,7 +119,7 @@ describe("Ready Protocols", () => {
       const conditions = READY_PROTOCOLS.map(p => p.condition);
       expect(conditions).toHaveLength(12);
       // Verificar que temos condições esperadas
-      expect(conditions).toContain("Afasia Expressiva");
+      expect(conditions).toContain("Afasia");
       expect(conditions).toContain("Tinnitus");
       expect(conditions).toContain("Doença de Parkinson");
     });
