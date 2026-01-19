@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, Platform, Animated } from "react-native";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
 import { helmetRegions, getRegionById } from "@/shared/helmet-data";
@@ -27,17 +27,38 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
   const blinkAnim = useRef(new Animated.Value(1)).current;
   const [blinkingPointId, setBlinkingPointId] = useState<string | null>(null);
 
+
   const startBlinking = (pointId: string) => {
-    setBlinkingPointId(pointId);
-    blinkAnim.setValue(1);
-    Animated.sequence([
-      Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
-      Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
-      Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-    ]).start(() => setBlinkingPointId(null));
+    if (blinkingPointId === pointId) {
+      setBlinkingPointId(null);
+      blinkAnim.setValue(1);
+    } else {
+      setBlinkingPointId(pointId);
+    }
   };
 
+  useEffect(() => {
+    if (!blinkingPointId) {
+      blinkAnim.setValue(1);
+      return;
+    }
+    let isMounted = true;
+    const blink = () => {
+      if (!isMounted) return;
+      Animated.sequence([
+        Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
+        Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+      ]).start(({ finished }) => {
+        if (finished && isMounted) {
+          blink();
+        }
+      });
+    };
+    blink();
+    return () => {
+      isMounted = false;
+    };
+  }, [blinkingPointId, blinkAnim]);
   const togglePoint = (pointName: string) => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
