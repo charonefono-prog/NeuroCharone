@@ -1,12 +1,22 @@
-import { View, Text, Dimensions } from 'react-native';
+import { View, Text, Dimensions, PanResponder, Animated, GestureResponderEvent } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import type { Session, Patient } from '@/lib/local-storage';
-import { useMemo } from 'react';
-import Svg, { Line, Circle, Text as SvgText, Path, G } from 'react-native-svg';
+import { useMemo, useRef, useState } from 'react';
+import Svg, { Line, Circle, Text as SvgText, Path, G, Rect } from 'react-native-svg';
 
 interface SymptomEvolutionLineChartProps {
   patient: Patient;
   sessions: Session[];
+}
+
+interface TooltipData {
+  visible: boolean;
+  x: number;
+  y: number;
+  label: string;
+  score: number;
+  date: string;
+  sessionDetails?: string;
 }
 
 export function SymptomEvolutionLineChart({
@@ -18,6 +28,17 @@ export function SymptomEvolutionLineChart({
   const chartWidth = screenWidth - 64; // 32px padding on each side
   const chartHeight = 250;
   const padding = 40;
+
+  const [tooltip, setTooltip] = useState<TooltipData>({
+    visible: false,
+    x: 0,
+    y: 0,
+    label: '',
+    score: 0,
+    date: '',
+  });
+
+  const tooltipOpacity = useRef(new Animated.Value(0)).current;
 
   // Preparar dados do gráfico
   const chartData = useMemo(() => {
@@ -37,6 +58,7 @@ export function SymptomEvolutionLineChart({
         date: new Date(patient.createdAt),
         label: 'Inicial',
         isBaseline: true,
+        sessionDetails: 'Avaliação Inicial',
       });
     }
 
@@ -46,6 +68,7 @@ export function SymptomEvolutionLineChart({
         date: new Date(session.sessionDate),
         label: `S${index + 1}`,
         isBaseline: false,
+        sessionDetails: `Sessão ${index + 1}`,
       }))
     );
 
@@ -89,6 +112,44 @@ export function SymptomEvolutionLineChart({
     .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
     .join(' ');
 
+  // Detectar toque nos pontos
+  const handlePointPress = (point: (typeof points)[0], screenX: number, screenY: number) => {
+    const dateStr = point.date.toLocaleDateString('pt-BR');
+    
+    setTooltip({
+      visible: true,
+      x: screenX,
+      y: screenY,
+      label: point.label,
+      score: point.score,
+      date: dateStr,
+      sessionDetails: point.sessionDetails,
+    });
+
+    Animated.timing(tooltipOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+    // Auto-hide após 4 segundos
+    setTimeout(() => {
+      Animated.timing(tooltipOpacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => setTooltip({ ...tooltip, visible: false }));
+    }, 4000);
+  };
+
+  const hideTooltip = () => {
+    Animated.timing(tooltipOpacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setTooltip({ ...tooltip, visible: false }));
+  };
+
   return (
     <View
       style={{
@@ -104,8 +165,39 @@ export function SymptomEvolutionLineChart({
         Evolução de Sintomas
       </Text>
 
-      {/* Gráfico SVG */}
-      <View style={{ alignItems: 'center', marginBottom: 16 }}>
+      {/* Gráfico SVG com detecção de toque */}
+      <View
+        style={{
+          alignItems: 'center',
+          marginBottom: 16,
+          position: 'relative',
+        }}
+      >
+        <View
+          style={{
+            position: 'absolute',
+            width: chartWidth,
+            height: chartHeight,
+            zIndex: 10,
+          }}
+          onStartShouldSetResponder={() => true}
+          onResponderMove={(evt: GestureResponderEvent) => {
+            const { locationX, locationY } = evt.nativeEvent;
+            
+            // Verificar se tocou em algum ponto
+            points.forEach((point) => {
+              const distance = Math.sqrt(
+                Math.pow(locationX - (point.x - 32), 2) + Math.pow(locationY - point.y, 2)
+              );
+              
+              // Raio de 20px para detectar toque
+              if (distance < 20) {
+                handlePointPress(point, locationX, locationY);
+              }
+            });
+          }}
+        />
+
         <Svg width={chartWidth} height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
           {/* Grid horizontal */}
           {[0, 0.25, 0.5, 0.75, 1].map((fraction, index) => {
@@ -185,6 +277,38 @@ export function SymptomEvolutionLineChart({
           ))}
         </Svg>
       </View>
+
+      {/* Tooltip */}
+      {tooltip.visible && (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            top: Math.max(20, tooltip.y - 120),
+            left: Math.max(16, Math.min(tooltip.x - 80, screenWidth - 176)),
+            backgroundColor: colors.foreground,
+            borderRadius: 8,
+            padding: 12,
+            zIndex: 100,
+            opacity: tooltipOpacity,
+            minWidth: 160,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3,
+            elevation: 5,
+          }}
+        >
+          <Text style={{ fontSize: 12, fontWeight: '700', color: colors.background, marginBottom: 4 }}>
+            {tooltip.sessionDetails}
+          </Text>
+          <Text style={{ fontSize: 11, color: colors.background, marginBottom: 4 }}>
+            Score: {tooltip.score.toFixed(1)}
+          </Text>
+          <Text style={{ fontSize: 10, color: colors.background, opacity: 0.8 }}>
+            {tooltip.date}
+          </Text>
+        </Animated.View>
+      )}
 
       {/* Legenda e informações */}
       <View style={{ gap: 12 }}>

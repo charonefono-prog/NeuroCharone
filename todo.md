@@ -588,3 +588,10 @@
 - [x] Integrar gráfico na aba Antes/Depois
 - [x] Estilizar com cores da marca
 - [x] Testar com dados de múltiplas sessões
+
+
+## Tooltip Interativo no Gráfico - Nova Sessão
+- [x] Adicionar estado de tooltip e detecção de toque
+- [x] Implementar animação do tooltip
+- [x] Exibir informações da sessão no tooltip
+- [x] Testar interatividade em mobile e web
