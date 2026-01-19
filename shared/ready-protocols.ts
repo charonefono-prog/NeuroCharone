@@ -1,7 +1,7 @@
 /**
- * Protocolos Prontos Baseados no Manual - APENAS PONTOS COLORIDOS
+ * Protocolos Prontos Baseados no Manual NEUROADESIVO FINAL
  * 12 protocolos pré-configurados para condições clínicas específicas
- * Fonte: Manual de Adesivos - Sistema 10-20 (apenas áreas coloridas)
+ * Fonte: Manual de Adesivos - Sistema 10-20 (APENAS PONTOS DO DOCUMENTO)
  */
 
 export interface ReadyProtocol {
@@ -24,12 +24,12 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     name: "Afasia",
     condition: "Afasia",
     objective: "Melhorar linguagem expressiva e reabilitação de coordenação motora fina",
-    description: "Protocolo para tratamento de afasias expressivas (Broca) com estimulação da região frontal central responsável pela produção de fala.",
-    targetRegions: ["Região Frontal Central (F)"],
+    description: "Protocolo para tratamento de afasias expressivas (Broca) com estimulação da região frontal média responsável pela produção de fala.",
+    targetRegions: ["frontal-media"],
     targetPoints: ["F3", "F4", "Fz"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Central (amarelo). Indicado para afasia não-fluente com dificuldade na expressão verbal.",
+    notes: "Baseado no manual - Região Frontal Média (amarelo). Indicado para afasia não-fluente com dificuldade na expressão verbal.",
     keywords: ["Afasia", "Broca", "Linguagem expressiva", "Fala"]
   },
   
@@ -38,9 +38,9 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     name: "Ataxia Cerebelar",
     condition: "Ataxia",
     objective: "Reabilitação de equilíbrio, marcha e coordenação motora",
-    description: "Protocolo para tratamento de ataxias cerebelares com estimulação da região cerebelar para melhorar coordenação e timing motor.",
-    targetRegions: ["Região Temporal (T)"],
-    targetPoints: ["T3", "T4"],
+    description: "Protocolo para tratamento de ataxias cerebelares com estimulação da região temporal para melhorar coordenação e timing motor.",
+    targetRegions: ["temporal"],
+    targetPoints: ["T3", "T4", "T5", "T6"],
     frequency: 2,
     totalDuration: 10,
     notes: "Baseado no manual - Região Temporal (verde). Suporte em distúrbios de timing motor e coordenação.",
@@ -53,7 +53,7 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Tinnitus",
     objective: "Redução de zumbido e melhora da qualidade de vida auditiva",
     description: "Protocolo para tratamento de zumbido (tinnitus) com estimulação da região temporal responsável pelo processamento auditivo.",
-    targetRegions: ["Região Temporal (T)"],
+    targetRegions: ["temporal"],
     targetPoints: ["T3", "T4"],
     frequency: 2,
     totalDuration: 8,
@@ -66,12 +66,12 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     name: "Apraxia",
     condition: "Apraxia de Fala",
     objective: "Melhorar coordenação motora de fala e planejamento motor",
-    description: "Protocolo para tratamento de apraxia de fala com estimulação da região frontal central.",
-    targetRegions: ["Região Frontal Central (F)"],
-    targetPoints: ["F3", "F4", "F1", "F2"],
+    description: "Protocolo para tratamento de apraxia de fala com estimulação da região frontal média.",
+    targetRegions: ["frontal-media"],
+    targetPoints: ["F3", "F4", "F7", "F8", "Fz"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Central (amarelo). Suporte em distúrbios de planejamento motor da fala.",
+    notes: "Baseado no manual - Região Frontal Média (amarelo). Suporte em distúrbios de planejamento motor da fala.",
     keywords: ["Apraxia", "Fala", "Coordenação motora", "Planejamento"]
   },
   
@@ -80,12 +80,12 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     name: "Disartria",
     condition: "Disartria",
     objective: "Melhorar articulação e clareza de fala",
-    description: "Protocolo para tratamento de disartria com estimulação da região frontal central e sensório-motora.",
-    targetRegions: ["Região Frontal Central (F)", "Região Central / Sensório-Motora (C/FC/CP)"],
-    targetPoints: ["F3", "F4", "C3", "C4"],
+    description: "Protocolo para tratamento de disartria com estimulação da região frontal média e sensório-motora.",
+    targetRegions: ["frontal-media", "central-sensoriomotora"],
+    targetPoints: ["F3", "F4", "Fz", "C3", "C4", "Cz"],
     frequency: 3,
     totalDuration: 10,
-    notes: "Baseado no manual - Regiões Frontal Central (amarelo) e Central (ciano). Indicado para disartria de origem neurológica.",
+    notes: "Baseado no manual - Regiões Frontal Média (amarelo) e Central/Sensório-Motora (ciano). Indicado para disartria de origem neurológica.",
     keywords: ["Disartria", "Fala", "Articulação", "Clareza"]
   },
   
@@ -95,11 +95,11 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Seletividade Alimentar",
     objective: "Melhorar aceitação de alimentos e coordenação sensório-motora oral",
     description: "Protocolo para tratamento de seletividade alimentar com estimulação da região sensório-motora.",
-    targetRegions: ["Região Central / Sensório-Motora (C/FC/CP)"],
-    targetPoints: ["C3", "C4", "CP1", "CP2"],
+    targetRegions: ["central-sensoriomotora"],
+    targetPoints: ["C3", "C4", "Cz", "CP1", "CP2"],
     frequency: 2,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Central / Sensório-Motora (ciano). Suporte em distúrbios sensoriais orais.",
+    notes: "Baseado no manual - Região Central/Sensório-Motora (ciano). Suporte em distúrbios sensoriais orais.",
     keywords: ["Seletividade alimentar", "Alimentação", "Sensório-motor", "Oral"]
   },
   
@@ -109,11 +109,11 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Doença de Parkinson",
     objective: "Controle de tremores, rigidez e melhora da mobilidade",
     description: "Protocolo para tratamento de sintomas motores da doença de Parkinson com estimulação da região sensório-motora.",
-    targetRegions: ["Região Central / Sensório-Motora (C/FC/CP)"],
-    targetPoints: ["C3", "C4", "Cz", "CP1", "CP2"],
+    targetRegions: ["central-sensoriomotora"],
+    targetPoints: ["C3", "C4", "Cz", "CP1", "CP2", "CP5", "CP6"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Central / Sensório-Motora (ciano). Indicado para controle de tremores e rigidez.",
+    notes: "Baseado no manual - Região Central/Sensório-Motora (ciano). Indicado para controle de tremores e rigidez.",
     keywords: ["Parkinson", "Tremor", "Rigidez", "Mobilidade"]
   },
   
@@ -123,8 +123,8 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Doença de Alzheimer Precoce",
     objective: "Reabilitação de memória e preservação cognitiva",
     description: "Protocolo para tratamento de Alzheimer precoce com estimulação da região temporal responsável pela memória.",
-    targetRegions: ["Região Temporal (T)"],
-    targetPoints: ["T3", "T4", "T5"],
+    targetRegions: ["temporal"],
+    targetPoints: ["T3", "T4", "T5", "T6"],
     frequency: 2,
     totalDuration: 16,
     notes: "Baseado no manual - Região Temporal (verde). Suporte em reabilitação de memória.",
@@ -136,12 +136,12 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     name: "TEA",
     condition: "Transtorno do Espectro Autista",
     objective: "Suporte em coordenação motora e processamento sensorial",
-    description: "Protocolo para suporte em transtornos do espectro autista com estimulação da região frontal central.",
-    targetRegions: ["Região Frontal Central (F)"],
-    targetPoints: ["F3", "F4", "F1", "F2"],
+    description: "Protocolo para suporte em transtornos do espectro autista com estimulação da região frontal média.",
+    targetRegions: ["frontal-media"],
+    targetPoints: ["F3", "F4", "F7", "F8", "Fz"],
     frequency: 2,
     totalDuration: 12,
-    notes: "Baseado no manual - Região Frontal Central (amarelo). Suporte em coordenação motora fina.",
+    notes: "Baseado no manual - Região Frontal Média (amarelo). Suporte em coordenação motora fina.",
     keywords: ["TEA", "Autismo", "Espectro autista", "Sensorial"]
   },
   
@@ -151,11 +151,11 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Distúrbios de Linguagem Social",
     objective: "Melhorar compreensão e produção de linguagem social",
     description: "Protocolo para tratamento de distúrbios de linguagem social com estimulação das regiões frontal e temporal.",
-    targetRegions: ["Região Frontal Central (F)", "Região Temporal (T)"],
-    targetPoints: ["F3", "F4", "T3", "T4"],
+    targetRegions: ["frontal-media", "temporal"],
+    targetPoints: ["F3", "F4", "Fz", "T3", "T4"],
     frequency: 3,
     totalDuration: 12,
-    notes: "Baseado no manual - Regiões Frontal Central (amarelo) e Temporal (verde). Indicado para pragmática e compreensão social.",
+    notes: "Baseado no manual - Regiões Frontal Média (amarelo) e Temporal (verde). Indicado para pragmática e compreensão social.",
     keywords: ["Linguagem social", "Pragmática", "Compreensão", "Interação social"]
   },
   
@@ -165,8 +165,8 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Vertigem Posicional Paroxística Benigna",
     objective: "Reabilitação de equilíbrio e redução de vertigem",
     description: "Protocolo para tratamento de VPPB com estimulação da região temporal.",
-    targetRegions: ["Região Temporal (T)"],
-    targetPoints: ["T3", "T4"],
+    targetRegions: ["temporal"],
+    targetPoints: ["T3", "T4", "T5", "T6"],
     frequency: 2,
     totalDuration: 8,
     notes: "Baseado no manual - Região Temporal (verde). Suporte em distúrbios vestibulares.",
@@ -179,7 +179,7 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
     condition: "Depressão Maior Resistente",
     objective: "Melhora de sintomas depressivos e reabilitação de funções executivas",
     description: "Protocolo para tratamento de depressão maior resistente com estimulação da região frontal anterior.",
-    targetRegions: ["Região Frontal Anterior (Fp)"],
+    targetRegions: ["frontal-anterior"],
     targetPoints: ["Fp1", "Fp2", "Fpz"],
     frequency: 3,
     totalDuration: 12,
