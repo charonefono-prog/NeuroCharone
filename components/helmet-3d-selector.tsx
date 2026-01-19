@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, Platform, Animated } from "react-native";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
 import { helmetRegions, getRegionById } from "@/shared/helmet-data";
@@ -19,6 +19,7 @@ interface Helmet3DSelectorProps {
 export function Helmet3DSelector({ selectedPoints, onPointsChange, title, selectedPointId, onPointIdChange }: Helmet3DSelectorProps) {
   const router = useRouter();
   const colors = useColors();
+  // Remover seletor de visualização - apenas vista superior (frontal)
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedRegionInfo, setSelectedRegionInfo] = useState<string | null>(null);
   const [showPointModal, setShowPointModal] = useState(false);
@@ -27,36 +28,15 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
   const [blinkingPointId, setBlinkingPointId] = useState<string | null>(null);
 
   const startBlinking = (pointId: string) => {
-    if (blinkingPointId === pointId) {
-      setBlinkingPointId(null);
-      blinkAnim.setValue(1);
-      return;
-    }
     setBlinkingPointId(pointId);
+    blinkAnim.setValue(1);
+    Animated.sequence([
+      Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
+      Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
+      Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+    ]).start(() => setBlinkingPointId(null));
   };
-
-  useEffect(() => {
-    if (!blinkingPointId) {
-      blinkAnim.setValue(1);
-      return;
-    }
-    let isMounted = true;
-    const blink = () => {
-      if (!isMounted) return;
-      Animated.sequence([
-        Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
-        Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      ]).start(({ finished }) => {
-        if (finished && isMounted) {
-          blink();
-        }
-      });
-    };
-    blink();
-    return () => {
-      isMounted = false;
-    };
-  }, [blinkingPointId, blinkAnim]);
 
   const togglePoint = (pointName: string) => {
     if (Platform.OS !== "web") {
@@ -78,37 +58,43 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
     const allSelected = regionPoints.every((p) => selectedPoints.includes(p));
     
     if (allSelected) {
+      // Desselecionar todos da região
       onPointsChange(selectedPoints.filter((p) => !regionPoints.includes(p)));
     } else {
-      const newPoints = [...selectedPoints];
-      regionPoints.forEach((p) => {
-        if (!newPoints.includes(p)) {
-          newPoints.push(p);
-        }
-      });
+      // Selecionar todos da região
+      const newPoints = [...new Set([...selectedPoints, ...regionPoints])];
       onPointsChange(newPoints);
     }
   };
 
   const showRegionInfo = (regionId: string) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     setSelectedRegionInfo(regionId);
     setShowInfoModal(true);
   };
 
-  const showPointInfo = (pointName: string) => {
-    setSelectedPointInfo(pointName);
-    setShowPointModal(true);
-  };
-
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 24, paddingBottom: 24 }}>
-      {title && (
-        <View style={{ gap: 8 }}>
-          <Text style={{ fontSize: 18, fontWeight: "700", color: colors.foreground }}>
-            {title}
+    <View style={{ gap: 16 }}>
+      {/* Título e Contador */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+          {title || "Pontos de Estimulação"}
+        </Text>
+        <View
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+            backgroundColor: colors.primary + "20",
+          }}
+        >
+          <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+            {selectedPoints.length} selecionados
           </Text>
         </View>
-      )}
+      </View>
 
       {/* Imagem do Capacete */}
       <View
@@ -176,6 +162,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
                     style={{
                       fontSize: 12,
                       color: allSelected ? "#FFFFFF" : colors.muted,
+                      marginTop: 2,
                     }}
                   >
                     {region.points.length} pontos
@@ -183,36 +170,36 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => showRegionInfo(region.id)}
-                  activeOpacity={0.7}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 22,
-                    backgroundColor: colors.surface,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <IconSymbol name="info.circle" size={18} color={colors.primary} />
+                onPress={() => showRegionInfo(region.id)}
+                activeOpacity={0.7}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  backgroundColor: colors.surface,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  alignSelf: "center",
+                }}
+              >
+                  <Text style={{ fontSize: 18, color: colors.primary }}>ℹ️</Text>
                 </TouchableOpacity>
               </View>
-            );
-          })}
+            );          })}
         </ScrollView>
       </View>
 
-      {/* Pontos Individuais */}
-      <View style={{ gap: 16 }}>
+      {/* Seleção Individual de Pontos */}
+      <View style={{ gap: 12 }}>
         <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
           Pontos Individuais
         </Text>
 
         {helmetRegions.map((region) => (
-          <View key={region.id} style={{ gap: 12 }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <View key={region.id} style={{ gap: 8 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <View
                   style={{
@@ -265,7 +252,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
                     >
                       <Text
                         style={{
-                          fontSize: 13,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: isSelected ? "#FFFFFF" : colors.foreground,
                         }}
@@ -274,11 +261,26 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() => showPointInfo(pointName)}
+                      onPress={() => {
+                        if (Platform.OS !== "web") {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }
+                        setSelectedPointInfo(pointName);
+                        setShowPointModal(true);
+                      }}
                       activeOpacity={0.7}
-                      style={{ padding: 4 }}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        backgroundColor: colors.surface,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
                     >
-                      <IconSymbol name="info.circle" size={16} color={colors.primary} />
+                      <IconSymbol name="info.circle" size={18} color={colors.primary} />
                     </TouchableOpacity>
                   </View>
                 );
@@ -288,10 +290,31 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         ))}
       </View>
 
-      {selectedRegionInfo && getRegionById(selectedRegionInfo) && (
+      {/* Botão Limpar Seleção */}
+      {selectedPoints.length > 0 && (
+        <TouchableOpacity
+          onPress={() => onPointsChange([])}
+          activeOpacity={0.7}
+          style={{
+            paddingVertical: 12,
+            borderRadius: 12,
+            backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.error,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontSize: 14, fontWeight: "600", color: colors.error }}>
+            Limpar Seleção
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Modal de Informações de Região */}
+      {selectedRegionInfo && (
         <RegionInfoModal
           visible={showInfoModal}
-          region={getRegionById(selectedRegionInfo)!}
+          region={getRegionById(selectedRegionInfo) || undefined}
           onClose={() => {
             setShowInfoModal(false);
             setSelectedRegionInfo(null);
@@ -299,16 +322,15 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         />
       )}
 
-      {selectedPointInfo && (
-        <PointInfoModal
-          visible={showPointModal}
-          point={selectedPointInfo}
-          onClose={() => {
-            setShowPointModal(false);
-            setSelectedPointInfo(null);
-          }}
-        />
-      )}
-    </ScrollView>
+      {/* Modal de Informações de Ponto */}
+      <PointInfoModal
+        visible={showPointModal}
+        point={selectedPointInfo}
+        onClose={() => {
+          setShowPointModal(false);
+          setSelectedPointInfo(null);
+        }}
+      />
+    </View>
   );
 }
