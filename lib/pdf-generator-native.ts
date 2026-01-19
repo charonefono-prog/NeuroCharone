@@ -14,32 +14,49 @@ export async function generatePatientPDFReport(
     const htmlContent = generateReportHTML(patient, plan, sessions);
 
     // Nome do arquivo
-    const fileName = `relatorio_${patient.fullName.replace(/\s/g, "_")}_${Date.now()}.pdf`;
-    const filePath = `${FileSystem.documentDirectory}${fileName}`;
-
-    // No React Native, vamos usar uma abordagem alternativa
-    // Criar arquivo HTML temporário e compartilhar
     const htmlFileName = `relatorio_${patient.fullName.replace(/\s/g, "_")}_${Date.now()}.html`;
-    const htmlFilePath = `${FileSystem.documentDirectory}${htmlFileName}`;
 
-    await FileSystem.writeAsStringAsync(htmlFilePath, htmlContent, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-
-    // Verificar se o compartilhamento está disponível
-    const isAvailable = await Sharing.isAvailableAsync();
-    if (isAvailable) {
-      await Sharing.shareAsync(htmlFilePath, {
-        mimeType: "text/html",
-        dialogTitle: "Compartilhar Relatório",
-        UTI: "public.html",
-      });
-    } else {
+    // Verificar se está rodando na web
+    if (Platform.OS === "web") {
+      // Download direto no navegador
+      const blob = new Blob([htmlContent], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = htmlFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
       Alert.alert(
         "Sucesso",
-        `Relatório salvo em: ${htmlFilePath}`,
+        "Relatório baixado com sucesso!",
         [{ text: "OK" }]
       );
+    } else {
+      // Mobile: usar FileSystem e Sharing
+      const htmlFilePath = `${FileSystem.documentDirectory}${htmlFileName}`;
+
+      await FileSystem.writeAsStringAsync(htmlFilePath, htmlContent, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+
+      // Verificar se o compartilhamento está disponível
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(htmlFilePath, {
+          mimeType: "text/html",
+          dialogTitle: "Compartilhar Relatório",
+          UTI: "public.html",
+        });
+      } else {
+        Alert.alert(
+          "Sucesso",
+          `Relatório salvo em: ${htmlFilePath}`,
+          [{ text: "OK" }]
+        );
+      }
     }
   } catch (error) {
     console.error("Erro ao gerar PDF:", error);

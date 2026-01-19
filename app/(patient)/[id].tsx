@@ -216,9 +216,10 @@ export default function PatientDetailScreen() {
                   paddingVertical: 8,
                   borderRadius: 12,
                   opacity: generatingReport ? 0.6 : 1,
+                  zIndex: 1000,
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF", pointerEvents: "none" }}>
                   {generatingReport ? "Gerando..." : "📄 Relatório"}
                 </Text>
               </TouchableOpacity>

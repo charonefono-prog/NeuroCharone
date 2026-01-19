@@ -394,3 +394,10 @@
 - [x] Verificar por que a geração não estava funcionando
 - [x] Adicionar import faltante de Alert
 - [x] Corrigir funcionalidade de geração de PDF
+
+## Correção de Botão de Relatório Não Respondendo
+- [x] Verificar se onPress está conectado ao botão
+- [x] Verificar erros no console (writeAsStringAsync não funciona na web)
+- [x] Adicionar suporte para web com download direto
+- [x] Manter suporte mobile com FileSystem e Sharing
+- [x] Remover logs de debug
