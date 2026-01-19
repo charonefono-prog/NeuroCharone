@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { Animated } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -51,16 +52,23 @@ export default function PatientDetailScreen() {
   useEffect(() => {
     loadData();
     // Carregar última aba visualizada
-    const savedTab = localStorage.getItem(`patient_${id}_lastTab`);
-    if (savedTab && ['info', 'plan', 'timeline', 'effectiveness', 'comparison', 'scheduler', 'history'].includes(savedTab)) {
-      setActiveTab(savedTab as Tab);
-    }
+    const loadLastTab = async () => {
+      try {
+        const savedTab = await AsyncStorage.getItem(`patient_${id}_lastTab`);
+        if (savedTab && ['info', 'plan', 'timeline', 'effectiveness', 'comparison', 'scheduler', 'history'].includes(savedTab)) {
+          setActiveTab(savedTab as Tab);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar última aba:', error);
+      }
+    };
+    loadLastTab();
   }, [id]);
 
-  const handleTabChange = (newTab: Tab) => {
+  const handleTabChange = async (newTab: Tab) => {
     fadeAnim.setValue(0);
     setActiveTab(newTab);
-    localStorage.setItem(`patient_${id}_lastTab`, newTab);
+    await AsyncStorage.setItem(`patient_${id}_lastTab`, newTab);
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 300,
