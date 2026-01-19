@@ -22,11 +22,13 @@ import { SymptomProgressChart } from "@/components/symptom-progress-chart";
 import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
 import { AuditHistory } from "@/components/audit-history";
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
+import { TreatmentTimeline } from "@/components/treatment-timeline";
+import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "audit";
+type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -261,6 +263,8 @@ export default function PatientDetailScreen() {
             {[
               { key: "info" as Tab, label: "Informações" },
               { key: "plan" as Tab, label: "Plano" },
+              { key: "timeline" as Tab, label: "Timeline" },
+              { key: "effectiveness" as Tab, label: "Efetividade" },
               { key: "history" as Tab, label: "Histórico" },
               { key: "audit" as Tab, label: "Auditoria" },
             ].map((tab) => (
@@ -624,6 +628,20 @@ export default function PatientDetailScreen() {
                     </Text>
                   </View>
                 )}
+              </View>
+            )}
+
+            {/* Aba de Timeline */}
+            {activeTab === "timeline" && (
+              <View style={{ padding: 16 }}>
+                <TreatmentTimeline sessions={sessions} plans={plans} />
+              </View>
+            )}
+
+            {/* Aba de Efetividade */}
+            {activeTab === "effectiveness" && (
+              <View style={{ padding: 16 }}>
+                <EffectivenessDashboard sessions={sessions} plans={plans} patients={[patient]} />
               </View>
             )}
 
