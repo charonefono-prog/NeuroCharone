@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image, ScrollView, Platform, Animated } from "react-native";
-import { useState, useRef, useEffect } from "react";
+import { View, Text, TouchableOpacity, Image, ScrollView, Platform } from "react-native";
+import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
 import { helmetRegions, getRegionById } from "@/shared/helmet-data";
@@ -24,41 +24,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
   const [selectedRegionInfo, setSelectedRegionInfo] = useState<string | null>(null);
   const [showPointModal, setShowPointModal] = useState(false);
   const [selectedPointInfo, setSelectedPointInfo] = useState<string | null>(null);
-  const blinkAnim = useRef(new Animated.Value(1)).current;
-  const [blinkingPointId, setBlinkingPointId] = useState<string | null>(null);
 
-
-  const startBlinking = (pointId: string) => {
-    if (blinkingPointId === pointId) {
-      setBlinkingPointId(null);
-      blinkAnim.setValue(1);
-    } else {
-      setBlinkingPointId(pointId);
-    }
-  };
-
-  useEffect(() => {
-    if (!blinkingPointId) {
-      blinkAnim.setValue(1);
-      return;
-    }
-    let isMounted = true;
-    const blink = () => {
-      if (!isMounted) return;
-      Animated.sequence([
-        Animated.timing(blinkAnim, { toValue: 0.3, duration: 200, useNativeDriver: true }),
-        Animated.timing(blinkAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      ]).start(({ finished }) => {
-        if (finished && isMounted) {
-          blink();
-        }
-      });
-    };
-    blink();
-    return () => {
-      isMounted = false;
-    };
-  }, [blinkingPointId, blinkAnim]);
   const togglePoint = (pointName: string) => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -128,16 +94,14 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
           borderColor: colors.border,
         }}
       >
-        <Animated.View style={{ opacity: blinkingPointId ? blinkAnim : 1 }}>
-          <Image
-            source={require("@/assets/images/helmet-improved.png")}
-            style={{
-              width: "100%",
-              height: 320,
-              resizeMode: "contain",
-            }}
-          />
-        </Animated.View>
+        <Image
+          source={require("@/assets/images/helmet-improved.png")}
+          style={{
+            width: "100%",
+            height: 320,
+            resizeMode: "contain",
+          }}
+        />
         <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
           Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
         </Text>
@@ -259,7 +223,6 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
                       onPress={() => {
                         togglePoint(pointName);
                         onPointIdChange?.(pointName);
-                        startBlinking(pointName);
                       }}
                       activeOpacity={0.7}
                       style={{

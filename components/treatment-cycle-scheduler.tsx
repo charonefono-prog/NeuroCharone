@@ -5,8 +5,6 @@ import type { TherapeuticPlan, Session, Patient } from '@/lib/local-storage';
 import * as Haptics from 'expo-haptics';
 import { exportCycleToPDF, shareCycleReport } from '@/lib/cycle-pdf-export';
 import type { CycleReportData } from '@/lib/cycle-report-generator';
-import { CycleFeedbackForm } from './cycle-feedback-form';
-import type { CycleFeedback } from '@/lib/feedback-service';
 
 interface TreatmentCycle {
   id: string;
@@ -38,8 +36,6 @@ export function TreatmentCycleScheduler({
   const [durationWeeks, setDurationWeeks] = useState('4');
   const [frequency, setFrequency] = useState('3');
   const [notes, setNotes] = useState('');
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [selectedCycleForFeedback, setSelectedCycleForFeedback] = useState<TreatmentCycle | null>(null);
 
   const suggestedCycles = useMemo(() => {
     if (!currentPlan || sessions.length === 0) return [];

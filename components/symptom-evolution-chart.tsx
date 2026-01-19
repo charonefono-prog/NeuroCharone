@@ -1,5 +1,4 @@
 import { View, Text, Dimensions } from "react-native";
-import Svg, { Path } from "react-native-svg";
 import { useColors } from "@/hooks/use-colors";
 import type { Patient, Session } from "@/lib/local-storage";
 
@@ -178,8 +177,8 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
           })}
 
           {/* Linha do gráfico */}
-          <Svg width={chartWidth} height={chartHeight} style={{ position: "absolute", left: 0, top: 0 }}>
-            <Path
+          <svg width={chartWidth} height={chartHeight} style={{ position: "absolute", left: 0, top: 0 }}>
+            <path
               d={pathData}
               stroke={improvement > 0 ? colors.success : colors.error}
               strokeWidth="3"
@@ -187,7 +186,7 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-          </Svg>
+          </svg>
 
           {/* Pontos */}
           {points.map((point, index) => (

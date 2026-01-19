@@ -1,7 +1,5 @@
 import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
-import { useState, useEffect, useRef } from "react";
-import { Animated } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState, useEffect } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -22,7 +20,7 @@ import { EditPatientModal } from "@/components/edit-patient-modal";
 import { TreatmentChart } from "@/components/treatment-chart";
 import { SymptomProgressChart } from "@/components/symptom-progress-chart";
 import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
-
+import { AuditHistory } from "@/components/audit-history";
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { TreatmentTimeline } from "@/components/treatment-timeline";
 import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
@@ -32,7 +30,7 @@ import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "timeline" | "effectiveness" | "comparison" | "scheduler";
+type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "comparison" | "scheduler";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -47,34 +45,10 @@ export default function PatientDetailScreen() {
   const [showAddPlanModal, setShowAddPlanModal] = useState(false);
   const [showEditPatientModal, setShowEditPatientModal] = useState(false);
   const [generatingReport, setGeneratingReport] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     loadData();
-    // Carregar última aba visualizada
-    const loadLastTab = async () => {
-      try {
-        const savedTab = await AsyncStorage.getItem(`patient_${id}_lastTab`);
-        if (savedTab && ['info', 'plan', 'timeline', 'effectiveness', 'comparison', 'scheduler', 'history'].includes(savedTab)) {
-          setActiveTab(savedTab as Tab);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar última aba:', error);
-      }
-    };
-    loadLastTab();
   }, [id]);
-
-  const handleTabChange = async (newTab: Tab) => {
-    fadeAnim.setValue(0);
-    setActiveTab(newTab);
-    await AsyncStorage.setItem(`patient_${id}_lastTab`, newTab);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
 
   const handleAddMedia = async (newMedia: MediaItem) => {
     if (!patient) return;
@@ -280,46 +254,40 @@ export default function PatientDetailScreen() {
           </View>
 
           {/* Tabs */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
+          <View
             style={{
-              backgroundColor: colors.background,
+              flexDirection: "row",
+              backgroundColor: colors.surface,
               borderBottomWidth: 1,
               borderBottomColor: colors.border,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 0,
-              }}
-            >
             {[
-              { key: "info" as Tab, label: "📋 Info" },
-              { key: "plan" as Tab, label: "📝 Plano" },
-              { key: "timeline" as Tab, label: "📅 Timeline" },
-              { key: "effectiveness" as Tab, label: "📊 Efetiv." },
-              { key: "comparison" as Tab, label: "📈 Antes/Depois" },
-              { key: "scheduler" as Tab, label: "🔄 Ciclos" },
-              { key: "history" as Tab, label: "📜 Histórico" },
+              { key: "info" as Tab, label: "Informações" },
+              { key: "plan" as Tab, label: "Plano" },
+              { key: "timeline" as Tab, label: "Timeline" },
+              { key: "effectiveness" as Tab, label: "Efetividade" },
+              { key: "comparison" as Tab, label: "Antes/Depois" },
+              { key: "scheduler" as Tab, label: "Ciclos" },
+              { key: "history" as Tab, label: "Histórico" },
+              { key: "audit" as Tab, label: "Auditoria" },
             ].map((tab) => (
               <TouchableOpacity
                 key={tab.key}
-                onPress={() => handleTabChange(tab.key)}
+                onPress={() => setActiveTab(tab.key)}
                 activeOpacity={0.7}
                 style={{
-                  paddingHorizontal: 14,
-                  paddingVertical: 12,
-                  borderBottomWidth: 3,
+                  flex: 1,
+                  paddingVertical: 16,
+                  alignItems: "center",
+                  borderBottomWidth: 2,
                   borderBottomColor: activeTab === tab.key ? colors.primary : "transparent",
-                  backgroundColor: activeTab === tab.key ? colors.surface : "transparent",
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 12,
-                    fontWeight: activeTab === tab.key ? "700" : "600",
+                    fontSize: 14,
+                    fontWeight: "600",
                     color: activeTab === tab.key ? colors.primary : colors.muted,
                   }}
                 >
@@ -327,11 +295,10 @@ export default function PatientDetailScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-            </View>
-          </ScrollView>
+          </View>
 
           {/* Content */}
-          <Animated.View style={{ padding: 24, gap: 20, opacity: fadeAnim }}>
+          <View style={{ padding: 24, gap: 20 }}>
             {activeTab === "info" && (
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -702,8 +669,13 @@ export default function PatientDetailScreen() {
               </View>
             )}
 
-
-        </Animated.View>
+            {/* Aba de Auditoria */}
+            {activeTab === "audit" && (
+              <View style={{ padding: 16 }}>
+                <AuditHistory entityType="patient" entityId={id} />
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
 
