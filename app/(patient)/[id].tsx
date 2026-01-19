@@ -263,7 +263,7 @@ export default function PatientDetailScreen() {
               paddingVertical: 12,
             }}
           >
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={true} pointerEvents="box-none">
               <View style={{ flexDirection: "row", gap: 12 }}>
                 {[
                   { key: "info" as Tab, label: "Info", emoji: "📋" },

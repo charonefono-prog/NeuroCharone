@@ -388,6 +388,81 @@ export default function PatientsScreen() {
                       </Text>
                     </View>
                   )}
+
+                  {/* Botões de Ação */}
+                  <View style={{ flexDirection: "row", gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        Alert.alert(
+                          patient.status === "active" ? "Desativar Paciente" : "Reativar Paciente",
+                          patient.status === "active" ? "Tem certeza que deseja desativar este paciente?" : "Tem certeza que deseja reativar este paciente?",
+                          [
+                            { text: "Cancelar", style: "cancel" },
+                            {
+                              text: patient.status === "active" ? "Desativar" : "Reativar",
+                              style: "destructive",
+                              onPress: async () => {
+                                const updatedPatient = {
+                                  ...patient,
+                                  status: patient.status === "active" ? ("paused" as const) : ("active" as const),
+                                };
+                                // Aqui você chamaria a função para atualizar o paciente
+                                console.log("Paciente atualizado:", updatedPatient);
+                                loadPatients();
+                              },
+                            },
+                          ]
+                        );
+                      }}
+                      activeOpacity={0.7}
+                      style={{
+                        flex: 1,
+                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                        backgroundColor: patient.status === "active" ? colors.warning : colors.success,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                        {patient.status === "active" ? "Desativar" : "Reativar"}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        Alert.alert(
+                          "Excluir Paciente",
+                          "Esta ação não pode ser desfeita. Todos os dados do paciente serão removidos.",
+                          [
+                            { text: "Cancelar", style: "cancel" },
+                            {
+                              text: "Excluir",
+                              style: "destructive",
+                              onPress: async () => {
+                                // Aqui você chamaria a função para excluir o paciente
+                                console.log("Paciente excluído:", patient.id);
+                                loadPatients();
+                              },
+                            },
+                          ]
+                        );
+                      }}
+                      activeOpacity={0.7}
+                      style={{
+                        flex: 1,
+                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                        backgroundColor: colors.error,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                        Excluir
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </TouchableOpacity>
               ))
             )}
