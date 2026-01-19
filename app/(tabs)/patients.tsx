@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { getPatients, getPlansByPatient, getSessionsByPatient, type Patient } from "@/lib/local-storage";
+import { getPatients, getPlansByPatient, getSessionsByPatient, updatePatient, deletePatient, type Patient } from "@/lib/local-storage";
 import { AddPatientModal } from "@/components/add-patient-modal";
 import { AdvancedFiltersModal, type AdvancedFilters } from "@/components/advanced-filters-modal";
 import { filterPatients, countActiveFilters, getDefaultFilters, type PatientWithData } from "@/lib/patient-filters";
@@ -402,13 +402,14 @@ export default function PatientsScreen() {
                               text: patient.status === "active" ? "Desativar" : "Reativar",
                               style: "destructive",
                               onPress: async () => {
-                                const updatedPatient = {
-                                  ...patient,
-                                  status: patient.status === "active" ? ("paused" as const) : ("active" as const),
-                                };
-                                // Aqui você chamaria a função para atualizar o paciente
-                                console.log("Paciente atualizado:", updatedPatient);
-                                loadPatients();
+                                try {
+                                  const newStatus = patient.status === "active" ? ("paused" as const) : ("active" as const);
+                                  await updatePatient(patient.id, { status: newStatus });
+                                  loadPatients();
+                                } catch (error) {
+                                  Alert.alert("Erro", "Não foi possível atualizar o paciente.");
+                                  console.error(error);
+                                }
                               },
                             },
                           ]
@@ -440,9 +441,17 @@ export default function PatientsScreen() {
                               text: "Excluir",
                               style: "destructive",
                               onPress: async () => {
-                                // Aqui você chamaria a função para excluir o paciente
-                                console.log("Paciente excluído:", patient.id);
-                                loadPatients();
+                                try {
+                                  const success = await deletePatient(patient.id);
+                                  if (success) {
+                                    loadPatients();
+                                  } else {
+                                    Alert.alert("Erro", "Não foi possível excluir o paciente.");
+                                  }
+                                } catch (error) {
+                                  Alert.alert("Erro", "Ocorreu um erro ao excluir o paciente.");
+                                  console.error(error);
+                                }
                               },
                             },
                           ]

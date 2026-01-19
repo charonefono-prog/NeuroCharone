@@ -183,7 +183,7 @@
 - [x] Atualizar formulário de sessão com Joules e Minutos
 - [x] Atualizar formulário de plano terapêutico com Joules e Minutos
 - [x] Adicionar função específica de cada ponto do capacete (baseado no manual)
-- [ ] Exibir função do ponto ao clicar no capacete
+- [x] Exibir função do ponto ao clicar no capacete
 - [x] Atualizar visualização de sessões com Joules e Minutos
 
 ## Alteração de Nome do Aplicativo
@@ -236,8 +236,8 @@
 - [x] Criar função de exportação de sessões em CSV
 - [x] Criar função de exportação de estatísticas em CSV
 - [x] Adicionar botão de exportar na tela de pacientes
-- [ ] Adicionar botão de exportar na tela de sessões
-- [ ] Adicionar botão de exportar nas estatísticas avançadas
+- [x] Adicionar botão de exportar na tela de sessões
+- [x] Adicionar botão de exportar nas estatísticas avançadas
 - [x] Implementar compartilhamento do arquivo CSV
 
 ## Histórico de Alterações (Auditoria)
@@ -281,7 +281,7 @@
 - [x] Adicionar comparação antes/depois do tratamento
 - [x] Criar indicadores de melhora/piora/estagnação
 - [x] Integrar gráficos de progresso na tela de detalhes do paciente
-- [ ] Adicionar campo de avaliação inicial no formulário de cadastro de paciente
+- [x] Adicionar campo de avaliação inicial no formulário de cadastro de paciente
 - [ ] Adicionar análise de efetividade por região cerebral estimulada
 - [ ] Adicionar relatório de efetividade nas estatísticas avançadas
 
@@ -335,7 +335,7 @@
 - [x] Adicionar configuração de antecedência no perfil
 - [ ] Adicionar campo de data/hora agendada no formulário de sessão
 - [ ] Integrar agendamento ao criar sessão futura
-- [ ] Integrar cancelamento ao excluir sessão
+- [x] Integrar cancelamento ao excluir sessão
 
 ## Agendamento de Sessões Futuras
 - [x] Adicionar campo de data/hora no formulário de criação de sessão
@@ -344,8 +344,8 @@
 - [x] Atualizar schema de Session para incluir campo de agendamento
 - [x] Integrar agendamento de notificação ao criar sessão futura
 - [ ] Integrar cancelamento de notificação ao excluir sessão
-- [ ] Adicionar visualização de sessões agendadas na tela inicial
-- [ ] Adicionar filtro de sessões passadas/futuras no histórico
+- [x] Adicionar visualização de sessões agendadas na tela inicial
+- [x] Adicionar filtro de sessões passadas/futuras no histórico
 
 ## Relatório Comparativo de Efetividade
 - [x] Criar componente de relatório comparativo
@@ -355,7 +355,7 @@
 - [x] Criar visualização em tabela comparativa
 - [x] Adicionar insights automáticos
 - [x] Integrar relatório nas estatísticas avançadas
-- [ ] Adicionar filtro por período de tempo
+- [x] Adicionar filtro por período de tempo
 
 ## Backup Automático em Nuvem
 - [ ] Criar endpoints no servidor para sincronização
@@ -417,10 +417,10 @@
 - [x] Sincronização bidirecional entre capacete 3D e 2D
 - [x] Modo de comparação com visualização transparente
 - [x] Captura de screenshot da visualização 3D
-- [ ] Integração de screenshot nos relatórios PDF
+- [x] Integração de screenshot nos relatórios PDF
 - [x] Modo de rotação automática do capacete 3D
 - [x] Zoom e pan do capacete 3D (mouse wheel e drag)
-- [ ] Exibição de coordenadas 10-20 no capacete 3D
+- [x] Exibição de coordenadas 10-20 no capacete 3D
 
 
 ## Simplificar Visualização do Capacete no Plano Terapêutico
@@ -514,6 +514,12 @@
 - [x] Criar 27 testes unitários (todos passando)
 - [x] Validar compilação TypeScript
 
+
+## Correções Críticas - Sessão Atual
+- [x] Corrigir abas não clicáveis na tela de pacientes
+- [x] Implementar funcionalidade de desativar/reativar pacientes
+- [x] Implementar funcionalidade de excluir pacientes
+- [x] Adicionar animação de piscada contínua ao clicar em ponto do capacete
 
 ## Melhorias Prioritárias - Sessão 3
 
