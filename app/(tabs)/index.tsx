@@ -281,13 +281,58 @@ export default function HomeScreen() {
             )}
           </View>
 
-          {/* Rodapé */}
-          <View style={{ paddingTop: 24, borderTopWidth: 1, borderTopColor: colors.border, gap: 4 }}>
-            <Text className="text-xs text-muted text-center">
-              Desenvolvido por Carlos Charone
-            </Text>
-            <Text className="text-xs text-muted text-center">
-              CREFONO: 9-10025-5
+          {/* Rodapé Sofisticado */}
+          <View style={{ 
+            paddingTop: 32, 
+            paddingBottom: 16,
+            borderTopWidth: 2, 
+            borderTopColor: colors.border, 
+            gap: 12,
+            alignItems: 'center'
+          }}>
+            <View style={{
+              backgroundColor: colors.surface,
+              paddingVertical: 12,
+              paddingHorizontal: 16,
+              borderRadius: 8,
+              borderLeftWidth: 4,
+              borderLeftColor: colors.primary,
+              width: '100%'
+            }}>
+              <Text style={{
+                fontSize: 11,
+                fontWeight: '700',
+                color: colors.primary,
+                letterSpacing: 0.5,
+                textTransform: 'uppercase',
+                marginBottom: 4
+              }}>
+                Desenvolvido por
+              </Text>
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: colors.foreground,
+                letterSpacing: 0.3
+              }}>
+                Carlos Charone
+              </Text>
+              <Text style={{
+                fontSize: 10,
+                color: colors.muted,
+                marginTop: 4,
+                fontWeight: '500'
+              }}>
+                CRIA 9-10025-5
+              </Text>
+            </View>
+            <Text style={{
+              fontSize: 11,
+              color: colors.muted,
+              textAlign: 'center',
+              fontStyle: 'italic'
+            }}>
+              NeuroLaserMap - Sistema de Mapeamento de Neuromodulação
             </Text>
           </View>
         </View>

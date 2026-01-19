@@ -1,6 +1,7 @@
 /**
  * Serviço de geração de relatórios em HTML e PDF
- * Relatórios profissionais para compartilhamento
+ * Design sofisticado e clean moderno para impressão de alto nível
+ * Desenvolvedor: Carlos Charone
  */
 
 export interface ReportData {
@@ -34,188 +35,261 @@ export function generateReportHTML(data: ReportData): string {
             box-sizing: border-box;
         }
         
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            font-family: 'Segoe UI', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px 20px;
             line-height: 1.6;
-            color: #333;
+            color: #2c3e50;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
-            background-color: white;
-            padding: 50px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            padding: 60px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
         }
         
+        /* Header Sofisticado */
         .header {
-            border-bottom: 4px solid #0066cc;
-            margin-bottom: 40px;
-            padding-bottom: 25px;
-            text-align: center;
+            border-bottom: 2px solid #e8eef7;
+            margin-bottom: 45px;
+            padding-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
         
-        .header h1 {
-            color: #0066cc;
-            font-size: 32px;
-            margin-bottom: 10px;
+        .header-left h1 {
+            color: #1a3a52;
+            font-size: 36px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-left .subtitle {
+            color: #7f8c8d;
+            font-size: 13px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .header-right {
+            text-align: right;
+        }
+        
+        .developer-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .developer-badge .label {
+            display: block;
+            font-size: 11px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .developer-badge .name {
+            display: block;
+            font-size: 16px;
             font-weight: 700;
         }
         
-        .header .subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 5px;
+        .developer-badge .cria {
+            display: block;
+            font-size: 10px;
+            opacity: 0.85;
+            margin-top: 4px;
         }
         
-        .header .system-info {
-            color: #999;
-            font-size: 12px;
-            margin-top: 10px;
-        }
-        
+        /* Seções */
         .section {
-            margin-bottom: 35px;
+            margin-bottom: 40px;
             page-break-inside: avoid;
         }
         
         .section h2 {
-            color: #0066cc;
-            font-size: 20px;
-            margin-bottom: 18px;
+            color: #1a3a52;
+            font-size: 18px;
+            margin-bottom: 20px;
             padding-bottom: 12px;
-            border-bottom: 3px solid #e0e0e0;
-            font-weight: 600;
+            border-bottom: 3px solid #667eea;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
         
+        /* Grid de Informações */
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            gap: 30px;
             margin-bottom: 20px;
         }
         
         .info-row {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
         
         .info-label {
             font-weight: 700;
-            color: #0066cc;
-            font-size: 13px;
+            color: #667eea;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
         
         .info-value {
-            color: #333;
+            color: #2c3e50;
             font-size: 16px;
-            padding-left: 5px;
-            border-left: 3px solid #0066cc;
-            padding-left: 12px;
+            font-weight: 500;
+            padding-left: 0;
+            border-left: none;
         }
         
+        /* Listas de Pontos */
         .points-list, .regions-list {
             list-style: none;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 12px;
-            margin-top: 15px;
+            margin-top: 18px;
         }
         
-        .points-list li, .regions-list li {
-            background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+        .points-list li {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f3ff 100%);
             padding: 14px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             text-align: center;
-            font-weight: 600;
-            color: #0066cc;
-            border: 2px solid #0066cc;
+            font-weight: 700;
+            color: #667eea;
+            border: 2px solid #e8eef7;
             font-size: 14px;
             transition: all 0.3s ease;
         }
         
-        .regions-list li {
-            background: linear-gradient(135deg, #fff0f5 0%, #ffe6f0 100%);
-            border-color: #ff69b4;
-            color: #ff69b4;
+        .points-list li:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f3ff 0%, #e8eef7 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
         }
         
+        .regions-list li {
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe8ed 100%);
+            border-color: #f0d9e0;
+            color: #c2185b;
+            font-weight: 700;
+        }
+        
+        .regions-list li:hover {
+            border-color: #c2185b;
+            background: linear-gradient(135deg, #ffe8ed 0%, #ffd9e3 100%);
+        }
+        
+        /* Card de Detalhes */
         .protocol-details {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 6px;
-            border-left: 5px solid #0066cc;
-            margin-top: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f3ff 100%);
+            padding: 24px;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+            margin-top: 18px;
         }
         
         .protocol-details p {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             line-height: 1.8;
-            color: #555;
+            color: #2c3e50;
+            font-size: 15px;
         }
         
         .protocol-details strong {
-            color: #0066cc;
+            color: #667eea;
+            font-weight: 700;
         }
         
+        /* Card de Notas */
         .notes-section {
-            background-color: #fffbf0;
-            padding: 20px;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #fffbf0 0%, #fff5e6 100%);
+            padding: 24px;
+            border-radius: 8px;
             border-left: 5px solid #ff9800;
-            margin-top: 15px;
+            margin-top: 18px;
         }
         
         .notes-section p {
-            color: #555;
+            color: #2c3e50;
             line-height: 1.8;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-size: 15px;
         }
         
+        /* Footer Elegante */
         .footer {
-            margin-top: 50px;
-            padding-top: 25px;
-            border-top: 2px solid #e0e0e0;
-            color: #999;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e8eef7;
+            color: #7f8c8d;
             font-size: 12px;
             text-align: center;
             line-height: 1.8;
         }
         
-        .footer-signature {
-            margin-top: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-        }
-        
-        .signature-line {
-            border-top: 1px solid #333;
-            padding-top: 10px;
-            text-align: center;
-            font-size: 12px;
-            color: #333;
-        }
-        
-        .badge {
-            display: inline-block;
-            background-color: #0066cc;
+        .footer-developer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
             font-weight: 600;
-            margin-right: 8px;
-            margin-bottom: 8px;
         }
         
+        .footer-developer .title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+        
+        .footer-developer .name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .footer-developer .cria {
+            font-size: 11px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+        
+        .footer-info {
+            margin-top: 15px;
+            color: #95a5a6;
+            font-size: 11px;
+        }
+        
+        /* Responsivo */
         @media print {
             body {
                 background-color: white;
@@ -224,7 +298,7 @@ export function generateReportHTML(data: ReportData): string {
             
             .container {
                 box-shadow: none;
-                padding: 40px;
+                padding: 50px;
                 max-width: 100%;
             }
             
@@ -233,18 +307,27 @@ export function generateReportHTML(data: ReportData): string {
             }
         }
         
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 30px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .header-right {
+                text-align: left;
             }
             
             .info-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 20px;
             }
             
-            .header h1 {
-                font-size: 24px;
+            .header-left h1 {
+                font-size: 28px;
             }
         }
     </style>
@@ -252,13 +335,21 @@ export function generateReportHTML(data: ReportData): string {
 <body>
     <div class="container">
         <div class="header">
-            <h1>📋 Relatório de Protocolo Terapêutico</h1>
-            <div class="subtitle">NeuroLaserMap - Sistema de Mapeamento de Neuromodulação</div>
-            <div class="system-info">Desenvolvido por Carlos Charone | CRIA 9-10025-5</div>
+            <div class="header-left">
+                <h1>Relatório Terapêutico</h1>
+                <div class="subtitle">NeuroLaserMap</div>
+            </div>
+            <div class="header-right">
+                <div class="developer-badge">
+                    <span class="label">Desenvolvido por</span>
+                    <span class="name">Carlos Charone</span>
+                    <span class="cria">CRIA 9-10025-5</span>
+                </div>
+            </div>
         </div>
         
         <div class="section">
-            <h2>👤 Informações do Paciente</h2>
+            <h2>Informações do Paciente</h2>
             <div class="info-grid">
                 <div class="info-row">
                     <div class="info-label">Nome do Paciente</div>
@@ -272,7 +363,7 @@ export function generateReportHTML(data: ReportData): string {
         </div>
         
         <div class="section">
-            <h2>🎯 Protocolo Selecionado</h2>
+            <h2>Protocolo Selecionado</h2>
             <div class="info-grid">
                 <div class="info-row">
                     <div class="info-label">Protocolo</div>
@@ -293,7 +384,7 @@ export function generateReportHTML(data: ReportData): string {
         </div>
         
         <div class="section">
-            <h2>⚙️ Parâmetros de Tratamento</h2>
+            <h2>Parâmetros de Tratamento</h2>
             <div class="info-grid">
                 <div class="info-row">
                     <div class="info-label">Frequência</div>
@@ -308,7 +399,7 @@ export function generateReportHTML(data: ReportData): string {
         
         ${data.targetRegions && data.targetRegions.length > 0 ? `
         <div class="section">
-            <h2>🧠 Regiões Cerebrais Alvo</h2>
+            <h2>Regiões Cerebrais Alvo</h2>
             <ul class="regions-list">
                 ${data.targetRegions.map(r => `<li>${r}</li>`).join('')}
             </ul>
@@ -316,8 +407,8 @@ export function generateReportHTML(data: ReportData): string {
         ` : ''}
         
         <div class="section">
-            <h2>📍 Pontos de Estimulação</h2>
-            <p style="color: #666; margin-bottom: 15px;">Total de pontos: <strong>${data.targetPoints.length}</strong></p>
+            <h2>Pontos de Estimulação</h2>
+            <p style="color: #7f8c8d; margin-bottom: 15px; font-size: 14px;">Total de pontos: <strong style="color: #2c3e50;">${data.targetPoints.length}</strong></p>
             <ul class="points-list">
                 ${pointsList}
             </ul>
@@ -325,7 +416,7 @@ export function generateReportHTML(data: ReportData): string {
         
         ${data.notes ? `
         <div class="section">
-            <h2>📝 Notas Adicionais</h2>
+            <h2>Notas Adicionais</h2>
             <div class="notes-section">
                 <p>${data.notes}</p>
             </div>
@@ -333,10 +424,15 @@ export function generateReportHTML(data: ReportData): string {
         ` : ''}
         
         <div class="footer">
-            <p>Este relatório foi gerado automaticamente pelo sistema <strong>NeuroLaserMap</strong>.</p>
-            <p>Sistema de Mapeamento de Neuromodulação - Versão 1.0</p>
-            <p style="margin-top: 15px; color: #ccc;">Desenvolvido por Carlos Charone | CRIA 9-10025-5</p>
-            <p style="margin-top: 10px; font-size: 11px;">Data de geração: ${new Date().toLocaleString('pt-BR')}</p>
+            <div class="footer-developer">
+                <div class="title">Sistema Desenvolvido por</div>
+                <div class="name">Carlos Charone</div>
+                <div class="cria">CRIA 9-10025-5</div>
+            </div>
+            <div class="footer-info">
+                <p>NeuroLaserMap - Sistema de Mapeamento de Neuromodulação</p>
+                <p style="margin-top: 8px;">Relatório gerado em ${new Date().toLocaleString('pt-BR')}</p>
+            </div>
         </div>
     </div>
 </body>
@@ -361,13 +457,11 @@ export function downloadReportHTML(html: string, filename: string = 'relatorio.h
 }
 
 export function downloadReportPDF(html: string, filename: string = 'relatorio.pdf') {
-  // Abrir em nova janela para impressão em PDF
   const newWindow = window.open('', '_blank');
   if (newWindow) {
     newWindow.document.write(html);
     newWindow.document.close();
     
-    // Aguardar o carregamento do documento e abrir diálogo de impressão
     newWindow.onload = () => {
       setTimeout(() => {
         newWindow.print();
@@ -385,7 +479,6 @@ export function openReportHTML(html: string) {
 }
 
 export function shareReportHTML(html: string, filename: string = 'relatorio.html') {
-  // Para compartilhamento em plataformas que suportam Web Share API
   if (navigator.share) {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const file = new File([blob], filename, { type: 'text/html' });
@@ -393,10 +486,9 @@ export function shareReportHTML(html: string, filename: string = 'relatorio.html
     navigator.share({
       files: [file],
       title: 'Relatório NeuroLaserMap',
-      text: 'Relatório de Protocolo Terapêutico'
+      text: 'Relatório de Protocolo Terapêutico - Desenvolvido por Carlos Charone'
     }).catch(err => console.log('Erro ao compartilhar:', err));
   } else {
-    // Fallback: download
     downloadReportHTML(html, filename);
   }
 }
