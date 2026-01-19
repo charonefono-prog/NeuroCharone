@@ -150,10 +150,12 @@ export function Helmet3DViewer({
   const helmetGroupRef = useRef<any>(null);
   const pointsRef = useRef<Map<string, any>>(new Map());
   const labelsRef = useRef<Map<string, any>>(new Map());
+  const hoverPointRef = useRef<string | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
   const [isRotating, setIsRotating] = useState(true);
   const [transparentMode, setTransparentMode] = useState(false);
   const [showLabels, setShowLabels] = useState(true);
+  const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
 
   const captureScreenshot = () => {
     if (rendererRef.current) {
@@ -315,9 +317,58 @@ export function Helmet3DViewer({
       }
     });
 
-    // Mouse interaction
+    // Mouse interaction com raycasting melhorado para mobile
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
+    
+    // Aumentar raio de detecção para mobile (hit detection)
+    raycaster.params.Points.threshold = 0.15; // Aumentado de 0.1 para melhor detecção em mobile
+
+    const onMouseMove = (event: MouseEvent) => {
+      if (!containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      // Detectar hover sobre pontos
+      const intersects = raycaster.intersectObjects(helmetGroup.children);
+      let hoveredId: string | null = null;
+      
+      for (let i = 0; i < intersects.length; i++) {
+        const obj = intersects[i].object as any;
+        if (obj.userData.pointId && obj.geometry.type === 'SphereGeometry') {
+          hoveredId = obj.userData.pointId;
+          break;
+        }
+      }
+      
+      // Atualizar feedback visual de hover
+      if (hoveredId !== hoverPointRef.current) {
+        // Remover highlight anterior
+        if (hoverPointRef.current) {
+          const prevMesh = pointsRef.current.get(hoverPointRef.current);
+          if (prevMesh) {
+            prevMesh.scale.set(1, 1, 1);
+            prevMesh.material.emissiveIntensity = 0;
+          }
+        }
+        
+        // Adicionar highlight novo
+        if (hoveredId) {
+          const mesh = pointsRef.current.get(hoveredId);
+          if (mesh) {
+            mesh.scale.set(1.5, 1.5, 1.5); // Aumentar tamanho ao passar
+            mesh.material.emissiveIntensity = 0.5;
+          }
+        }
+        
+        hoverPointRef.current = hoveredId;
+        setHoveredPointId(hoveredId);
+      }
+    };
 
     const onMouseClick = (event: MouseEvent) => {
       if (!containerRef.current) return;
@@ -331,7 +382,7 @@ export function Helmet3DViewer({
       const intersects = raycaster.intersectObjects(helmetGroup.children);
       for (let i = 0; i < intersects.length; i++) {
         const obj = intersects[i].object as any;
-        if (obj.userData.pointId) {
+        if (obj.userData.pointId && obj.geometry.type === 'SphereGeometry') {
           const pointId = obj.userData.pointId;
           const point = HELMET_POINTS.find((p) => p.id === pointId);
           if (point) {
@@ -344,6 +395,7 @@ export function Helmet3DViewer({
       }
     };
 
+    renderer.domElement.addEventListener("mousemove", onMouseMove);
     renderer.domElement.addEventListener("click", onMouseClick);
 
     // Animation loop
@@ -373,6 +425,7 @@ export function Helmet3DViewer({
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      renderer.domElement.removeEventListener("mousemove", onMouseMove);
       renderer.domElement.removeEventListener("click", onMouseClick);
       cancelAnimationFrame(animationId);
       containerRef.current?.removeChild(renderer.domElement);

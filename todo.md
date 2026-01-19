@@ -451,3 +451,32 @@
   - [x] Fazer labels visíveis em diferentes ângulos de rotação
   - [x] Adicionar toggle para mostrar/ocultar labels (botão 🏷️)
   - [x] Testar em web
+
+
+## Remoção do Visualizador 3D e Adição de Novos Templates
+- [ ] Remover visualizador 3D do aplicativo
+  - [ ] Remover rota /helmet-3d
+  - [ ] Remover botão "Visualizar em 3D" do Helmet3DSelector
+  - [ ] Remover componentes relacionados ao 3D
+- [ ] Adicionar 6 novos templates de planos terapêuticos
+  - [ ] Template: Afasia
+  - [ ] Template: Seletividade alimentar
+  - [ ] Template: Disfagia
+  - [ ] Template: Zumbido
+  - [ ] Template: Linguagem oral
+  - [ ] Template: Linguagem social
+
+
+## Melhorias Prioritárias - Nova Sessão
+- [x] Melhorar raycasting para dispositivos móveis
+  - [x] Aumentar raio de detecção dos pontos clicáveis (hit detection)
+  - [x] Implementar feedback visual ao passar sobre ponto (hover effect)
+  - [x] Adicionar haptic feedback ao selecionar ponto
+  - [x] Testar em web
+- [x] Implementar sistema de busca nos planos terapêuticos
+  - [x] Criar componente de busca com campo de texto (PlanSearchModal)
+  - [x] Implementar filtro por keywords (afasia, Broca, linguagem, etc.)
+  - [x] Filtrar por objetivo do tratamento
+  - [x] Filtrar por regiões cerebrais
+  - [x] Integrar busca na tela de seleção de templates
+  - [x] Criar 17 testes unitários (todos passando)

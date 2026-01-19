@@ -2,6 +2,7 @@ import { Modal, View, Text, TouchableOpacity, ScrollView, Alert } from "react-na
 import { useState, useEffect } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { getPlanTemplates, type PlanTemplate } from "@/lib/plan-templates";
+import { PlanSearchModal } from "./plan-search-modal";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
@@ -19,6 +20,7 @@ export function TemplateSelectorModal({
   const colors = useColors();
   const [templates, setTemplates] = useState<PlanTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSearchModal, setShowSearchModal] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -75,11 +77,24 @@ export function TemplateSelectorModal({
               paddingBottom: 16,
               borderBottomWidth: 1,
               borderBottomColor: colors.border,
+              gap: 12,
             }}
           >
-            <Text style={{ fontSize: 20, fontWeight: "bold", color: colors.foreground }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: colors.foreground, flex: 1 }}>
               Selecionar Template
             </Text>
+            <TouchableOpacity
+              onPress={() => setShowSearchModal(true)}
+              activeOpacity={0.7}
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 8,
+                backgroundColor: colors.primary + "20",
+              }}
+            >
+              <Text style={{ fontSize: 14, color: colors.primary, fontWeight: "600" }}>🔍 Buscar</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
               <Text style={{ fontSize: 16, color: colors.primary }}>Cancelar</Text>
             </TouchableOpacity>
@@ -177,6 +192,27 @@ export function TemplateSelectorModal({
           </ScrollView>
         </View>
       </View>
+
+      {/* Modal de busca */}
+      {showSearchModal && (
+        <Modal
+          visible={showSearchModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowSearchModal(false)}
+        >
+          <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: 20 }}>
+            <PlanSearchModal
+              templates={templates}
+              onSelectTemplate={(template) => {
+                handleSelectTemplate(template);
+                setShowSearchModal(false);
+              }}
+              onClose={() => setShowSearchModal(false)}
+            />
+          </View>
+        </Modal>
+      )}
     </Modal>
   );
 }
