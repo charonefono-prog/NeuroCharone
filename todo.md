@@ -443,3 +443,11 @@
   - [ ] Adicionar função de captura de canvas 3D
   - [ ] Integrar screenshot nos relatórios PDF
   - [ ] Adicionar legenda "Visualização 3D do Capacete"
+
+## Implementação de Texto 3D no Capacete
+- [x] Adicionar texto 3D com coordenadas 10-20 ao capacete 3D
+  - [x] Criar função para gerar texto 3D para cada ponto usando Canvas Sprites
+  - [x] Posicionar labels próximos aos pontos do capacete
+  - [x] Fazer labels visíveis em diferentes ângulos de rotação
+  - [x] Adicionar toggle para mostrar/ocultar labels (botão 🏷️)
+  - [x] Testar em web

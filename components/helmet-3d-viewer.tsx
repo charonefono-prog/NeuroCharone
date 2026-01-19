@@ -149,9 +149,11 @@ export function Helmet3DViewer({
   const rendererRef = useRef<any>(null);
   const helmetGroupRef = useRef<any>(null);
   const pointsRef = useRef<Map<string, any>>(new Map());
+  const labelsRef = useRef<Map<string, any>>(new Map());
   const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
   const [isRotating, setIsRotating] = useState(true);
   const [transparentMode, setTransparentMode] = useState(false);
+  const [showLabels, setShowLabels] = useState(true);
 
   const captureScreenshot = () => {
     if (rendererRef.current) {
@@ -160,6 +162,48 @@ export function Helmet3DViewer({
       link.href = canvas.toDataURL("image/png");
       link.download = `capacete-3d-${new Date().getTime()}.png`;
       link.click();
+    }
+  };
+
+  const createTextLabel = (text: string, position: [number, number, number]) => {
+    if (!THREE) return null;
+    
+    try {
+      // Criar canvas para textura de texto
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return null;
+      
+      canvas.width = 256;
+      canvas.height = 256;
+      
+      // Fundo transparente
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Texto
+      context.font = 'Bold 80px Arial';
+      context.fillStyle = 'white';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, canvas.width / 2, canvas.height / 2);
+      
+      // Criar textura
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.magFilter = THREE.LinearFilter;
+      texture.minFilter = THREE.LinearFilter;
+      
+      // Criar sprite com o texto
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.scale.set(0.15, 0.15, 0.15);
+      sprite.position.set(...position);
+      sprite.position.x += 0.08; // Offset para não ficar exatamente no ponto
+      sprite.position.y += 0.08;
+      
+      return sprite;
+    } catch (error) {
+      console.error('Erro ao criar label de texto:', error);
+      return null;
     }
   };
 
@@ -262,6 +306,13 @@ export function Helmet3DViewer({
       sphere.userData = { pointId: point.id };
       helmetGroup.add(sphere);
       pointsRef.current.set(point.id, sphere);
+      
+      // Adicionar label de texto 3D
+      const label = createTextLabel(point.system10_20, point.position);
+      if (label) {
+        helmetGroup.add(label);
+        labelsRef.current.set(point.id, label);
+      }
     });
 
     // Mouse interaction
@@ -326,7 +377,14 @@ export function Helmet3DViewer({
       cancelAnimationFrame(animationId);
       containerRef.current?.removeChild(renderer.domElement);
     };
-  }, [isRotating, onPointSelected, transparentMode]);
+  }, [isRotating, onPointSelected, transparentMode, showLabels]);
+
+  // Controlar visibilidade dos labels
+  useEffect(() => {
+    labelsRef.current.forEach((label: any) => {
+      label.visible = showLabels;
+    });
+  }, [showLabels]);
 
   // Highlight selected point
   useEffect(() => {
@@ -394,10 +452,26 @@ export function Helmet3DViewer({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setIsRotating(!isRotating)}
+          onPress={() => setShowLabels(!showLabels)}
           style={{
             position: "absolute",
             bottom: 60,
+            right: 16,
+            backgroundColor: showLabels ? "rgba(52,152,219,0.8)" : "rgba(0,0,0,0.6)",
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: 12 }}>
+            {showLabels ? "🏷️ Labels" : "🏷️ Sem Labels"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setIsRotating(!isRotating)}
+          style={{
+            position: "absolute",
+            bottom: 104,
             right: 16,
             backgroundColor: "rgba(0,0,0,0.6)",
             paddingHorizontal: 12,
