@@ -24,11 +24,13 @@ import { AuditHistory } from "@/components/audit-history";
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { TreatmentTimeline } from "@/components/treatment-timeline";
 import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
+import { BeforeAfterComparison } from "@/components/before-after-comparison";
+import { TreatmentCycleScheduler } from "@/components/treatment-cycle-scheduler";
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness";
+type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "comparison" | "scheduler";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -265,6 +267,8 @@ export default function PatientDetailScreen() {
               { key: "plan" as Tab, label: "Plano" },
               { key: "timeline" as Tab, label: "Timeline" },
               { key: "effectiveness" as Tab, label: "Efetividade" },
+              { key: "comparison" as Tab, label: "Antes/Depois" },
+              { key: "scheduler" as Tab, label: "Ciclos" },
               { key: "history" as Tab, label: "Histórico" },
               { key: "audit" as Tab, label: "Auditoria" },
             ].map((tab) => (
@@ -642,6 +646,26 @@ export default function PatientDetailScreen() {
             {activeTab === "effectiveness" && (
               <View style={{ padding: 16 }}>
                 <EffectivenessDashboard sessions={sessions} plans={plans} patients={[patient]} />
+              </View>
+            )}
+
+            {/* Aba de Comparação Antes/Depois */}
+            {activeTab === "comparison" && (
+              <View style={{ padding: 16 }}>
+                <BeforeAfterComparison patient={patient} sessions={sessions} plans={plans} />
+              </View>
+            )}
+
+            {/* Aba de Agendador de Ciclos */}
+            {activeTab === "scheduler" && (
+              <View style={{ padding: 16 }}>
+                <TreatmentCycleScheduler
+                  currentPlan={activePlan || null}
+                  sessions={sessions}
+                  onCreateCycle={(cycle) => {
+                    console.log('Novo ciclo criado:', cycle);
+                  }}
+                />
               </View>
             )}
 
