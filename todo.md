@@ -401,3 +401,14 @@
 - [x] Adicionar suporte para web com download direto
 - [x] Manter suporte mobile com FileSystem e Sharing
 - [x] Remover logs de debug
+
+## Visualizador 3D Interativo do Capacete
+- [ ] Copiar modelos STL (Front e Back) para assets
+- [ ] Instalar Three.js e bibliotecas de renderização 3D
+- [ ] Criar componente visualizador 3D com rotação
+- [ ] Implementar clique em pontos específicos
+- [ ] Adicionar áreas anatômicas (Broca, Wernicke, Linguagem, Motora)
+- [ ] Integrar com sistema 10-20
+- [ ] Sincronizar clique com informações no capacete
+- [ ] Remover imagem lateral e deixar apenas capacete 3D
+- [ ] Testar em web e mobile

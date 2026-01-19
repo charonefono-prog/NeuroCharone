@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, Platform } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
 import { helmetRegions, getRegionById } from "@/shared/helmet-data";
 import * as Haptics from "expo-haptics";
@@ -14,6 +15,7 @@ interface Helmet3DSelectorProps {
 }
 
 export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helmet3DSelectorProps) {
+  const router = useRouter();
   const colors = useColors();
   const [view, setView] = useState<"top" | "side">("top");
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -131,6 +133,21 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title }: Helm
           >
             Vista Lateral
           </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push("/helmet-3d")}
+          activeOpacity={0.7}
+          style={{
+            flex: 1,
+            paddingVertical: 10,
+            borderRadius: 8,
+            backgroundColor: colors.primary + "40",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <IconSymbol name="cube.transparent" size={18} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
