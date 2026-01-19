@@ -20,7 +20,7 @@ import { EditPatientModal } from "@/components/edit-patient-modal";
 import { TreatmentChart } from "@/components/treatment-chart";
 import { SymptomProgressChart } from "@/components/symptom-progress-chart";
 import { SymptomEvolutionChart } from "@/components/symptom-evolution-chart";
-import { AuditHistory } from "@/components/audit-history";
+
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { TreatmentTimeline } from "@/components/treatment-timeline";
 import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
@@ -30,7 +30,7 @@ import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "comparison" | "scheduler";
+type Tab = "info" | "plan" | "history" | "timeline" | "effectiveness" | "comparison" | "scheduler";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -270,7 +270,6 @@ export default function PatientDetailScreen() {
               { key: "comparison" as Tab, label: "Antes/Depois" },
               { key: "scheduler" as Tab, label: "Ciclos" },
               { key: "history" as Tab, label: "Histórico" },
-              { key: "audit" as Tab, label: "Auditoria" },
             ].map((tab) => (
               <TouchableOpacity
                 key={tab.key}
@@ -669,12 +668,7 @@ export default function PatientDetailScreen() {
               </View>
             )}
 
-            {/* Aba de Auditoria */}
-            {activeTab === "audit" && (
-              <View style={{ padding: 16 }}>
-                <AuditHistory entityType="patient" entityId={id} />
-              </View>
-            )}
+
           </View>
         </View>
       </ScrollView>
