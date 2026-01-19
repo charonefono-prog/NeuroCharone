@@ -5,7 +5,7 @@ import { addAuditLog } from "./audit-log";
 export interface MediaItem {
   id: string;
   uri: string;
-  type: "photo" | "video";
+  type: "photo";
   caption?: string;
   createdAt: string;
 }
@@ -21,7 +21,7 @@ export interface Patient {
   diagnosis?: string;
   medicalNotes?: string;
   initialSymptomScore?: number; // Avalia\u00e7\u00e3o inicial dos sintomas (0-10)
-  media?: MediaItem[]; // Fotos e v\u00eddeos do paciente
+  media?: MediaItem[]; // Fotos do paciente
   status: "active" | "paused" | "completed";
   createdAt: string;
   updatedAt: string;

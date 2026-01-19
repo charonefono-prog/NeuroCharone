@@ -100,7 +100,7 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
   };
 
   const handleDeleteMedia = (mediaId: string) => {
-    Alert.alert("Excluir Mídia", "Tem certeza que deseja excluir esta foto/vídeo?", [
+    Alert.alert("Excluir Mídia", "Tem certeza que deseja excluir esta foto?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Excluir",
@@ -122,7 +122,7 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <View>
           <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-            Fotos e Vídeos
+            Fotos
           </Text>
           <Text style={{ fontSize: 13, color: colors.muted, marginTop: 2 }}>
             {media.length} {media.length === 1 ? "arquivo" : "arquivos"}
@@ -182,7 +182,7 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
         >
           <IconSymbol name="photo.fill" size={48} color={colors.muted} />
           <Text style={{ color: colors.muted, marginTop: 12, textAlign: "center" }}>
-            Nenhuma foto ou vídeo adicionado
+            Nenhuma foto adicionada
           </Text>
           <Text style={{ color: colors.muted, fontSize: 13, marginTop: 4, textAlign: "center" }}>
             Toque em "Câmera" ou "Galeria" para adicionar
@@ -204,14 +204,7 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
                 borderColor: colors.border,
               }}
             >
-              {item.type === "photo" ? (
-                <Image source={{ uri: item.uri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-              ) : (
-                <View style={{ width: "100%", height: "100%", backgroundColor: colors.surface, justifyContent: "center", alignItems: "center" }}>
-                  <IconSymbol name="play.fill" size={32} color={colors.primary} />
-                  <Text style={{ color: colors.muted, fontSize: 10, marginTop: 4 }}>Vídeo</Text>
-                </View>
-              )}
+              <Image source={{ uri: item.uri }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
             </TouchableOpacity>
           ))}
         </View>
