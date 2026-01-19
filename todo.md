@@ -379,9 +379,9 @@
 - [x] Adicionar data de captura para cada m\u00eddia
 - [ ] Adicionar legendas/descri\u00e7\u00f5es edit\u00e1veis para cada m\u00eddia
 ## Correção de Botões de Informação no Capacete 3D
-- [ ] Investigar por que botões de informação não estão acionando
-- [ ] Corrigir handlers de clique nos botões de informação
-- [ ] Testar funcionamento dos botões em todos os pontos
+- [x] Investigar por que botões de informação não estão acionando
+- [x] Corrigir handlers de clique nos botões de informação
+- [x] Testar funcionamento dos botões em todos os pontos
 
 ## Correção de Botões de Informação nos Pontos Individuais
 - [x] Investigar por que botões de informação nos pontos individuais não estão acionando
