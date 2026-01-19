@@ -254,39 +254,46 @@ export default function PatientDetailScreen() {
           </View>
 
           {/* Tabs */}
-          <View
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
             style={{
-              flexDirection: "row",
-              backgroundColor: colors.surface,
+              backgroundColor: colors.background,
               borderBottomWidth: 1,
               borderBottomColor: colors.border,
             }}
           >
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 0,
+              }}
+            >
             {[
-              { key: "info" as Tab, label: "Informações" },
-              { key: "plan" as Tab, label: "Plano" },
-              { key: "timeline" as Tab, label: "Timeline" },
-              { key: "effectiveness" as Tab, label: "Efetividade" },
-              { key: "comparison" as Tab, label: "Antes/Depois" },
-              { key: "scheduler" as Tab, label: "Ciclos" },
-              { key: "history" as Tab, label: "Histórico" },
+              { key: "info" as Tab, label: "📋 Info" },
+              { key: "plan" as Tab, label: "📝 Plano" },
+              { key: "timeline" as Tab, label: "📅 Timeline" },
+              { key: "effectiveness" as Tab, label: "📊 Efetiv." },
+              { key: "comparison" as Tab, label: "📈 Antes/Depois" },
+              { key: "scheduler" as Tab, label: "🔄 Ciclos" },
+              { key: "history" as Tab, label: "📜 Histórico" },
             ].map((tab) => (
               <TouchableOpacity
                 key={tab.key}
                 onPress={() => setActiveTab(tab.key)}
                 activeOpacity={0.7}
                 style={{
-                  flex: 1,
-                  paddingVertical: 16,
-                  alignItems: "center",
-                  borderBottomWidth: 2,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                  borderBottomWidth: 3,
                   borderBottomColor: activeTab === tab.key ? colors.primary : "transparent",
+                  backgroundColor: activeTab === tab.key ? colors.surface : "transparent",
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 14,
-                    fontWeight: "600",
+                    fontSize: 12,
+                    fontWeight: activeTab === tab.key ? "700" : "600",
                     color: activeTab === tab.key ? colors.primary : colors.muted,
                   }}
                 >
@@ -294,7 +301,8 @@ export default function PatientDetailScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+            </View>
+          </ScrollView>
 
           {/* Content */}
           <View style={{ padding: 24, gap: 20 }}>
