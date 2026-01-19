@@ -595,3 +595,9 @@
 - [x] Implementar animação do tooltip
 - [x] Exibir informações da sessão no tooltip
 - [x] Testar interatividade em mobile e web
+
+
+## Correção de Erro no Upload de Vídeo - Nova Sessão
+- [x] Diagnosticar erro ao adicionar upload de vídeo
+- [x] Corrigir funcionalidade de upload
+- [x] Testar upload em mobile e web

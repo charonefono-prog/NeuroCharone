@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, Modal, ScrollView, Alert, Platform } from "react-native";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
 import * as ImagePicker from "expo-image-picker";
@@ -17,6 +17,24 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
   const colors = useColors();
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [showViewer, setShowViewer] = useState(false);
+  const videoPlayerRef = useRef<ReturnType<typeof useVideoPlayer> | null>(null);
+
+  // Criar player quando vídeo for selecionado
+  useEffect(() => {
+    if (selectedMedia?.type === "video" && selectedMedia.uri) {
+      // Criar novo player
+      const player = useVideoPlayer(selectedMedia.uri, (p) => {
+        p.play();
+      });
+      videoPlayerRef.current = player;
+    }
+    return () => {
+      // Limpar player ao desmontar
+      if (videoPlayerRef.current) {
+        videoPlayerRef.current.release();
+      }
+    };
+  }, [selectedMedia?.uri, selectedMedia?.type]);
 
   const requestPermissions = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -254,15 +272,17 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
                     style={{ width: "100%", height: "80%", borderRadius: 8 }}
                     resizeMode="contain"
                   />
-                ) : (
+                ) : videoPlayerRef.current ? (
                   <VideoView
-                    player={useVideoPlayer(selectedMedia.uri, (player) => {
-                      player.play();
-                    })}
+                    player={videoPlayerRef.current}
                     style={{ width: "100%", height: "80%", borderRadius: 8 }}
                     nativeControls
                     contentFit="contain"
                   />
+                ) : (
+                  <View style={{ width: "100%", height: "80%", backgroundColor: colors.surface, borderRadius: 8, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ color: colors.muted }}>Carregando vídeo...</Text>
+                  </View>
                 )}
 
                 {/* Info */}
