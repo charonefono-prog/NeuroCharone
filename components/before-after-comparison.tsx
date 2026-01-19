@@ -38,12 +38,16 @@ export function BeforeAfterComparison({
     const currentScore = allScores.length > 0 ? allScores[allScores.length - 1] : 0;
     const improvement = initialScore - currentScore;
     // Calcular percentagem de melhora
-    // Se score inicial eh 0 e houve melhora, considerar como 100% de reducao
+    // Se score inicial eh 0, nao ha melhora possivel
+    // Caso contrario, calcular a reducao percentual
     let improvementPercentage = 0;
-    if (initialScore === 0 && currentScore > 0) {
-      improvementPercentage = 100; // Maxima melhora possivel quando comecou em 0
-    } else if (initialScore > 0) {
+    if (initialScore > 0) {
+      // Calcular percentual de reducao: (reducao / score inicial) * 100
       improvementPercentage = (improvement / initialScore) * 100;
+      // Garantir que nao seja negativo (se score aumentou)
+      if (improvementPercentage < 0) {
+        improvementPercentage = 0;
+      }
     }
 
     const completedSessions = sessions.filter(s => new Date(s.sessionDate) < new Date()).length;

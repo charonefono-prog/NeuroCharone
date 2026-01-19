@@ -12,11 +12,12 @@ interface AddSessionModalProps {
   visible: boolean;
   patientId: string;
   planId: string;
+  plans?: any[];
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess }: AddSessionModalProps) {
+export function AddSessionModal({ visible, patientId, planId, plans = [], onClose, onSuccess }: AddSessionModalProps) {
   const colors = useColors();
   const [durationMinutes, setDurationMinutes] = useState("");
   const [joules, setJoules] = useState("");
@@ -31,6 +32,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   const [scheduledDate, setScheduledDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState(planId);
 
   const handleSave = async () => {
     setError("");
@@ -73,7 +75,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
 
       await saveSession({
         patientId,
-        planId,
+        planId: selectedPlanId,
         sessionDate: isScheduled ? scheduledDate.toISOString() : new Date().toISOString(),
         scheduledDate: isScheduled ? scheduledDate.toISOString() : undefined,
         notificationId: notificationId || undefined,

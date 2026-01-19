@@ -24,13 +24,13 @@ import { AuditHistory } from "@/components/audit-history";
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { TreatmentTimeline } from "@/components/treatment-timeline";
 import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
-import { BeforeAfterComparison } from "@/components/before-after-comparison";
+
 import { TreatmentCycleScheduler } from "@/components/treatment-cycle-scheduler";
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
-type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "comparison" | "scheduler";
+type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness" | "scheduler";
 
 export default function PatientDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,6 +45,7 @@ export default function PatientDetailScreen() {
   const [showAddPlanModal, setShowAddPlanModal] = useState(false);
   const [showEditPatientModal, setShowEditPatientModal] = useState(false);
   const [generatingReport, setGeneratingReport] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -191,7 +192,22 @@ export default function PatientDetailScreen() {
     );
   }
 
-  const activePlan = plans.find((p) => p.isActive);
+  // Usar plano selecionado ou primeiro plano ativo
+  const activePlan = selectedPlanId 
+    ? plans.find((p) => p.id === selectedPlanId)
+    : plans.find((p) => p.isActive);
+  
+  // Planos ativos (isActive = true)
+  const activePlans = plans.filter((p) => p.isActive);
+  // Planos inativos (histórico)
+  const inactivePlans = plans.filter((p) => !p.isActive);
+  
+  // Selecionar automaticamente o primeiro plano ativo se nenhum foi selecionado
+  useEffect(() => {
+    if (!selectedPlanId && activePlans.length > 0) {
+      setSelectedPlanId(activePlans[0].id);
+    }
+  }, [plans]);
 
   return (
     <ScreenContainer>
@@ -270,7 +286,6 @@ export default function PatientDetailScreen() {
                   { key: "plan" as Tab, label: "Plano", emoji: "📝" },
                   { key: "timeline" as Tab, label: "Timeline", emoji: "📅" },
                   { key: "effectiveness" as Tab, label: "Efetividade", emoji: "📊" },
-                  { key: "comparison" as Tab, label: "Antes/Depois", emoji: "🔄" },
                   { key: "scheduler" as Tab, label: "Ciclos", emoji: "⏱️" },
                   { key: "history" as Tab, label: "Histórico", emoji: "📜" },
                 ].map((tab) => (
@@ -408,27 +423,64 @@ export default function PatientDetailScreen() {
                   <Text style={{ fontSize: 20, fontWeight: "600", color: colors.foreground }}>
                     Plano Terapêutico
                   </Text>
-                  {!activePlan && (
-                    <TouchableOpacity
-                      onPress={() => setShowAddPlanModal(true)}
-                      activeOpacity={0.7}
-                      style={{
-                        backgroundColor: colors.primary,
-                        paddingHorizontal: 16,
-                        paddingVertical: 8,
-                        borderRadius: 8,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
-                        Criar
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                  <TouchableOpacity
+                    onPress={() => setShowAddPlanModal(true)}
+                    activeOpacity={0.7}
+                    style={{
+                      backgroundColor: colors.primary,
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      borderRadius: 8,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <IconSymbol name="house.fill" size={16} color="#FFFFFF" />
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                      + Novo
+                    </Text>
+                  </TouchableOpacity>
                 </View>
+
+                {/* Seletor de Multiplos Planos */}
+                {activePlans.length > 1 && (
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                      Planos Ativos ({activePlans.length})
+                    </Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      <View style={{ flexDirection: "row", gap: 8 }}>
+                        {activePlans.map((plan) => (
+                          <TouchableOpacity
+                            key={plan.id}
+                            onPress={() => setSelectedPlanId(plan.id)}
+                            activeOpacity={0.7}
+                            style={{
+                              paddingHorizontal: 12,
+                              paddingVertical: 8,
+                              borderRadius: 8,
+                              backgroundColor: selectedPlanId === plan.id ? colors.primary : colors.surface,
+                              borderWidth: 1.5,
+                              borderColor: selectedPlanId === plan.id ? colors.primary : colors.border,
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: selectedPlanId === plan.id ? "#FFFFFF" : colors.foreground,
+                              }}
+                              numberOfLines={1}
+                            >
+                              {plan.objective.substring(0, 20)}...
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    </ScrollView>
+                  </View>
+                )}
 
                 {activePlan ? (
                   <View
@@ -591,10 +643,10 @@ export default function PatientDetailScreen() {
 
                       <View style={{ gap: 4 }}>
                         <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                          Pontos Estimulados
+                          Pontos Estimulados ({activePlan.targetPoints.length})
                         </Text>
                         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                          {activePlan.targetPoints.slice(0, 8).map((point, index) => (
+                          {activePlan.targetPoints.map((point, index) => (
                             <View
                               key={index}
                               style={{
@@ -609,20 +661,6 @@ export default function PatientDetailScreen() {
                               </Text>
                             </View>
                           ))}
-                          {activePlan.targetPoints.length > 8 && (
-                            <View
-                              style={{
-                                paddingHorizontal: 8,
-                                paddingVertical: 4,
-                                borderRadius: 6,
-                                backgroundColor: colors.muted + "20",
-                              }}
-                            >
-                              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.muted }}>
-                                +{activePlan.targetPoints.length - 8}
-                              </Text>
-                            </View>
-                          )}
                         </View>
                       </View>
 
@@ -749,13 +787,6 @@ export default function PatientDetailScreen() {
             {activeTab === "effectiveness" && (
               <View style={{ padding: 16 }}>
                 <EffectivenessDashboard sessions={sessions} plans={plans} patients={[patient]} />
-              </View>
-            )}
-
-            {/* Aba de Comparação Antes/Depois */}
-            {activeTab === "comparison" && (
-              <View style={{ padding: 16 }}>
-                <BeforeAfterComparison patient={patient} sessions={sessions} plans={plans} />
               </View>
             )}
 
