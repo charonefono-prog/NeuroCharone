@@ -601,3 +601,10 @@
 - [x] Diagnosticar erro ao adicionar upload de vídeo
 - [x] Corrigir funcionalidade de upload
 - [x] Testar upload em mobile e web
+
+
+## Remover Suporte a Vídeo - Nova Sessão
+- [x] Remover imports de VideoView e useVideoPlayer
+- [x] Remover mediaTypes "videos" do ImagePicker
+- [x] Remover renderização condicional de vídeo
+- [x] Simplificar componente para apenas fotos

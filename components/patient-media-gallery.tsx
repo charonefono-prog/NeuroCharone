@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, Image, Modal, ScrollView, Alert, Platform } from "react-native";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
 import * as ImagePicker from "expo-image-picker";
-import { VideoView, useVideoPlayer } from "expo-video";
+
 import type { MediaItem } from "@/lib/local-storage";
 import * as Haptics from "expo-haptics";
 
@@ -17,29 +17,12 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
   const colors = useColors();
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [showViewer, setShowViewer] = useState(false);
-  const videoPlayerRef = useRef<ReturnType<typeof useVideoPlayer> | null>(null);
 
-  // Criar player quando vídeo for selecionado
-  useEffect(() => {
-    if (selectedMedia?.type === "video" && selectedMedia.uri) {
-      // Criar novo player
-      const player = useVideoPlayer(selectedMedia.uri, (p) => {
-        p.play();
-      });
-      videoPlayerRef.current = player;
-    }
-    return () => {
-      // Limpar player ao desmontar
-      if (videoPlayerRef.current) {
-        videoPlayerRef.current.release();
-      }
-    };
-  }, [selectedMedia?.uri, selectedMedia?.type]);
 
   const requestPermissions = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permissão Negada", "É necessário permitir acesso à galeria para adicionar fotos e vídeos.");
+      Alert.alert("Permissão Negada", "É necessário permitir acesso à galeria para adicionar fotos.");
       return false;
     }
     return true;
@@ -51,10 +34,9 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images", "videos"],
+        mediaTypes: ["images"],
         allowsEditing: false,
         quality: 0.8,
-        videoMaxDuration: 60, // Máximo 60 segundos
       });
 
       if (!result.canceled && result.assets[0]) {
@@ -62,7 +44,7 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
         const newMedia: MediaItem = {
           id: Date.now().toString(),
           uri: asset.uri,
-          type: asset.type === "video" ? "video" : "photo",
+          type: "photo",
           createdAt: new Date().toISOString(),
         };
 
@@ -266,35 +248,25 @@ export function PatientMediaGallery({ media = [], onAddMedia, onDeleteMedia }: P
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", padding: 16 }}>
             {selectedMedia && (
               <>
-                {selectedMedia.type === "photo" ? (
-                  <Image
-                    source={{ uri: selectedMedia.uri }}
-                    style={{ width: "100%", height: "80%", borderRadius: 8 }}
-                    resizeMode="contain"
-                  />
-                ) : videoPlayerRef.current ? (
-                  <VideoView
-                    player={videoPlayerRef.current}
-                    style={{ width: "100%", height: "80%", borderRadius: 8 }}
-                    nativeControls
-                    contentFit="contain"
-                  />
-                ) : (
-                  <View style={{ width: "100%", height: "80%", backgroundColor: colors.surface, borderRadius: 8, justifyContent: "center", alignItems: "center" }}>
-                    <Text style={{ color: colors.muted }}>Carregando vídeo...</Text>
-                  </View>
-                )}
+                <Image
+                  source={{ uri: selectedMedia.uri }}
+                  style={{ width: "100%", height: "80%", borderRadius: 8 }}
+                  resizeMode="contain"
+                />
 
                 {/* Info */}
                 <View style={{ marginTop: 16, alignItems: "center" }}>
                   <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
                     {new Date(selectedMedia.createdAt).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                  {" às "}
+                  {new Date(selectedMedia.createdAt).toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                   </Text>
                 </View>
               </>
