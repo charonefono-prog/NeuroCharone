@@ -22,7 +22,7 @@ export const READY_PROTOCOLS: ReadyProtocol[] = [
   {
     id: "protocol-afasia",
     name: "Afasia",
-    condition: "Afasia Expressiva",
+    condition: "Afasia",
     objective: "Melhorar linguagem expressiva e reabilitação de coordenação motora fina",
     description: "Protocolo para tratamento de afasias expressivas (Broca) com estimulação da região frontal central responsável pela produção de fala.",
     targetRegions: ["Região Frontal Central (F)"],

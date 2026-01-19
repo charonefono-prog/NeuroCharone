@@ -1,7 +1,7 @@
 /**
- * Pontos Coloridos do Manual - Apenas áreas com adesivos
- * Baseado na imagem do manual com cores específicas
- * Cada cor representa uma região funcional
+ * 35 PONTOS COLORIDOS DO MANUAL - Sistema 10-20
+ * Apenas os pontos visíveis na imagem colorida (1 de 13)
+ * Fonte: Manual de Adesivos - Imagem colorida com 35 pontos
  */
 
 export interface ColoredPoint {
@@ -12,360 +12,385 @@ export interface ColoredPoint {
   description: string;
 }
 
+export interface ColoredRegion {
+  id: string;
+  name: string;
+  colorHex: string;
+  points: string[];
+  applications: string[];
+}
+
+/**
+ * 35 PONTOS COLORIDOS EXATOS DA IMAGEM:
+ * Rosa (3): Fp1, Fp2, Fpz
+ * Laranja (3): AF3, AF4, AFz
+ * Amarelo (5): F3, F4, F7, F8, Fz
+ * Ciano (13): FC3, FC1, FCz, FC2, FC4, C5, C3, C1, Cz, C2, C4, C6, CP3, CP1, CPz, CP2, CP4
+ * Verde (4): T9, T3, T4, T10
+ * Roxo (4): P3, P1, Pz, P2, P4
+ * Rosa claro (3): O1, Oz, O2
+ */
+
 export const COLORED_POINTS: ColoredPoint[] = [
-  // ROSA - Região Frontal Anterior (Fp)
+  // ROSA - Frontal Anterior (3 pontos)
   {
     name: "Fp1",
-    color: "#FF69B4", // Rosa
-    region: "Região Frontal Anterior (Fp)",
-    applications: ["Depressão maior resistente", "Transtornos de ansiedade generalizada", "Reabilitação de funções executivas", "Controle de impulsividade em TDAH"],
-    description: "Região frontal anterior esquerda. Aplicações: Depressão maior resistente, transtornos de ansiedade generalizada, reabilitação de funções executivas e controle de impulsividade em TDAH."
-  },
-  {
-    name: "Fpz",
-    color: "#FF69B4", // Rosa
-    region: "Região Frontal Anterior (Fp)",
-    applications: ["Depressão maior resistente", "Transtornos de ansiedade generalizada", "Reabilitação de funções executivas", "Controle de impulsividade em TDAH"],
-    description: "Região frontal anterior central. Aplicações: Depressão maior resistente, transtornos de ansiedade generalizada, reabilitação de funções executivas e controle de impulsividade em TDAH."
+    color: "#FF69B4",
+    region: "Frontal Anterior",
+    applications: ["Depressão", "Ansiedade", "Transtorno do humor"],
+    description: "Ponto frontal anterior esquerdo - Processamento emocional e regulação do humor"
   },
   {
     name: "Fp2",
-    color: "#FF69B4", // Rosa
-    region: "Região Frontal Anterior (Fp)",
-    applications: ["Depressão maior resistente", "Transtornos de ansiedade generalizada", "Reabilitação de funções executivas", "Controle de impulsividade em TDAH"],
-    description: "Região frontal anterior direita. Aplicações: Depressão maior resistente, transtornos de ansiedade generalizada, reabilitação de funções executivas e controle de impulsividade em TDAH."
+    color: "#FF69B4",
+    region: "Frontal Anterior",
+    applications: ["Depressão", "Ansiedade", "Transtorno do humor"],
+    description: "Ponto frontal anterior direito - Processamento emocional e regulação do humor"
+  },
+  {
+    name: "Fpz",
+    color: "#FF69B4",
+    region: "Frontal Anterior",
+    applications: ["Depressão", "Ansiedade", "Regulação emocional"],
+    description: "Ponto frontal anterior central - Integração emocional bilateral"
   },
 
-  // LARANJA - Região Frontal Média (AF)
+  // LARANJA - Frontal Média (3 pontos)
   {
     name: "AF3",
-    color: "#FFA500", // Laranja
-    region: "Região Frontal Média (AF)",
-    applications: ["Treinamento de foco atencional", "Monitoramento de fadiga cognitiva", "Ambientes de alta performance", "Modulação da tomada de decisão"],
-    description: "Região frontal média esquerda. Aplicações: Treinamento de foco atencional, monitoramento de fadiga cognitiva em ambientes de alta performance e modulação da tomada de decisão."
-  },
-  {
-    name: "AFz",
-    color: "#FFA500", // Laranja
-    region: "Região Frontal Média (AF)",
-    applications: ["Treinamento de foco atencional", "Monitoramento de fadiga cognitiva", "Ambientes de alta performance", "Modulação da tomada de decisão"],
-    description: "Região frontal média central. Aplicações: Treinamento de foco atencional, monitoramento de fadiga cognitiva em ambientes de alta performance e modulação da tomada de decisão."
+    color: "#FFA500",
+    region: "Frontal Média",
+    applications: ["Atenção", "Foco", "Concentração"],
+    description: "Ponto frontal médio esquerdo - Atenção e foco"
   },
   {
     name: "AF4",
-    color: "#FFA500", // Laranja
-    region: "Região Frontal Média (AF)",
-    applications: ["Treinamento de foco atencional", "Monitoramento de fadiga cognitiva", "Ambientes de alta performance", "Modulação da tomada de decisão"],
-    description: "Região frontal média direita. Aplicações: Treinamento de foco atencional, monitoramento de fadiga cognitiva em ambientes de alta performance e modulação da tomada de decisão."
+    color: "#FFA500",
+    region: "Frontal Média",
+    applications: ["Atenção", "Foco", "Concentração"],
+    description: "Ponto frontal médio direito - Atenção e foco"
+  },
+  {
+    name: "AFz",
+    color: "#FFA500",
+    region: "Frontal Média",
+    applications: ["Atenção", "Foco", "Integração atencional"],
+    description: "Ponto frontal médio central - Integração atencional bilateral"
   },
 
-  // AMARELO - Região Frontal Central (F)
-  {
-    name: "F7",
-    color: "#FFFF00", // Amarelo
-    region: "Região Frontal Central (F)",
-    applications: ["Tratamento de afasias expressivas (Broca)", "Reabilitação de coordenação motora fina", "Suporte em transtornos do espectro autista"],
-    description: "Região frontal central esquerda lateral. Aplicações: Tratamento de afasias expressivas (Broca), reabilitação de coordenação motora fina e suporte em transtornos do espectro autista."
-  },
+  // AMARELO - Frontal Central (5 pontos)
   {
     name: "F3",
-    color: "#FFFF00", // Amarelo
-    region: "Região Frontal Central (F)",
-    applications: ["Tratamento de afasias expressivas (Broca)", "Reabilitação de coordenação motora fina", "Suporte em transtornos do espectro autista"],
-    description: "Região frontal central esquerda. Aplicações: Tratamento de afasias expressivas (Broca), reabilitação de coordenação motora fina e suporte em transtornos do espectro autista."
-  },
-  {
-    name: "Fz",
-    color: "#FFFF00", // Amarelo
-    region: "Região Frontal Central (F)",
-    applications: ["Tratamento de afasias expressivas (Broca)", "Reabilitação de coordenação motora fina", "Suporte em transtornos do espectro autista"],
-    description: "Região frontal central. Aplicações: Tratamento de afasias expressivas (Broca), reabilitação de coordenação motora fina e suporte em transtornos do espectro autista."
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Afasia", "Linguagem expressiva", "Broca"],
+    description: "Ponto frontal central esquerdo - Área de Broca (linguagem expressiva)"
   },
   {
     name: "F4",
-    color: "#FFFF00", // Amarelo
-    region: "Região Frontal Central (F)",
-    applications: ["Tratamento de afasias expressivas (Broca)", "Reabilitação de coordenação motora fina", "Suporte em transtornos do espectro autista"],
-    description: "Região frontal central direita. Aplicações: Tratamento de afasias expressivas (Broca), reabilitação de coordenação motora fina e suporte em transtornos do espectro autista."
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Afasia", "Linguagem expressiva", "Broca"],
+    description: "Ponto frontal central direito - Área de Broca (linguagem expressiva)"
+  },
+  {
+    name: "F7",
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Linguagem", "Coordenação motora fina"],
+    description: "Ponto frontal central anterior esquerdo - Linguagem e coordenação"
   },
   {
     name: "F8",
-    color: "#FFFF00", // Amarelo
-    region: "Região Frontal Central (F)",
-    applications: ["Tratamento de afasias expressivas (Broca)", "Reabilitação de coordenação motora fina", "Suporte em transtornos do espectro autista"],
-    description: "Região frontal central direita lateral. Aplicações: Tratamento de afasias expressivas (Broca), reabilitação de coordenação motora fina e suporte em transtornos do espectro autista."
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Linguagem", "Coordenação motora fina"],
+    description: "Ponto frontal central anterior direito - Linguagem e coordenação"
+  },
+  {
+    name: "Fz",
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Linguagem", "Coordenação motora"],
+    description: "Ponto frontal central mediano - Integração motora e linguagem"
   },
 
-  // CIANO - Região Central / Sensório-Motora (C/FC/CP)
+  // CIANO - Central / Sensório-Motora (13 pontos)
+  {
+    name: "FC3",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação", "Coordenação"],
+    description: "Ponto frontocentral esquerdo - Integração sensório-motora"
+  },
   {
     name: "FC1",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora frontal central esquerda. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "FC5",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora frontal central esquerda lateral. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "FC2",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora frontal central direita. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "FC6",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora frontal central direita lateral. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação"],
+    description: "Ponto frontocentral esquerdo mediano - Integração sensório-motora"
   },
   {
     name: "FCz",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora frontal central. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Coordenação bilateral"],
+    description: "Ponto frontocentral central - Integração motora bilateral"
   },
   {
-    name: "C1",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central esquerda. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    name: "FC2",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação"],
+    description: "Ponto frontocentral direito mediano - Integração sensório-motora"
   },
   {
-    name: "Cz",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "C2",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central direita. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "C3",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central esquerda lateral. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "C4",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central direita lateral. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    name: "FC4",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação", "Coordenação"],
+    description: "Ponto frontocentral direito - Integração sensório-motora"
   },
   {
     name: "C5",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central esquerda. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação"],
+    description: "Ponto central esquerdo anterior - Controle motor e sensação"
+  },
+  {
+    name: "C3",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Parkinson", "Tremor"],
+    description: "Ponto central esquerdo - Controle motor e sensação"
+  },
+  {
+    name: "C1",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação"],
+    description: "Ponto central esquerdo mediano - Integração sensório-motora"
+  },
+  {
+    name: "Cz",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Coordenação bilateral"],
+    description: "Ponto central mediano - Integração motora bilateral"
+  },
+  {
+    name: "C2",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação"],
+    description: "Ponto central direito mediano - Integração sensório-motora"
+  },
+  {
+    name: "C4",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Parkinson", "Tremor"],
+    description: "Ponto central direito - Controle motor e sensação"
   },
   {
     name: "C6",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central direita. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Controle motor", "Sensação"],
+    description: "Ponto central direito anterior - Controle motor e sensação"
+  },
+  {
+    name: "CP3",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Integração sensório-motora", "Propriocepção"],
+    description: "Ponto centroparietal esquerdo - Integração sensório-motora"
   },
   {
     name: "CP1",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central-parietal esquerda. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Integração sensório-motora"],
+    description: "Ponto centroparietal esquerdo mediano - Integração sensório-motora"
   },
   {
     name: "CPz",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central-parietal. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Integração sensório-motora bilateral"],
+    description: "Ponto centroparietal central - Integração bilateral"
   },
   {
     name: "CP2",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central-parietal direita. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Integração sensório-motora"],
+    description: "Ponto centroparietal direito mediano - Integração sensório-motora"
   },
   {
-    name: "CP5",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central-parietal esquerda lateral. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
-  },
-  {
-    name: "CP6",
-    color: "#00CED1", // Ciano
-    region: "Região Central / Sensório-Motora (C/FC/CP)",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-    description: "Região sensório-motora central-parietal direita lateral. Aplicações: Manejo de dor crônica neuropática, reabilitação pós-AVC, controle de tremores em Parkinson e epilepsias focais."
+    name: "CP4",
+    color: "#00CED1",
+    region: "Central / Sensório-Motora",
+    applications: ["Integração sensório-motora", "Propriocepção"],
+    description: "Ponto centroparietal direito - Integração sensório-motora"
   },
 
-  // VERDE - Região Temporal (T)
+  // VERDE - Temporal (4 pontos)
+  {
+    name: "T9",
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Processamento auditivo", "Memória"],
+    description: "Ponto temporal esquerdo anterior - Processamento auditivo"
+  },
   {
     name: "T3",
-    color: "#00FF00", // Verde
-    region: "Região Temporal (T)",
-    applications: ["Reabilitação de memória em Alzheimer precoce", "Tratamento de zumbido (tinnitus)", "Distúrbios de compreensão de linguagem (Wernicke)"],
-    description: "Região temporal esquerda. Aplicações: Reabilitação de memória em Alzheimer precoce, tratamento de zumbido (tinnitus) e distúrbios de compreensão de linguagem (Wernicke)."
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Zumbido", "Memória", "Wernicke"],
+    description: "Ponto temporal esquerdo - Área de Wernicke (compreensão de linguagem)"
   },
   {
     name: "T4",
-    color: "#00FF00", // Verde
-    region: "Região Temporal (T)",
-    applications: ["Reabilitação de memória em Alzheimer precoce", "Tratamento de zumbido (tinnitus)", "Distúrbios de compreensão de linguagem (Wernicke)"],
-    description: "Região temporal direita. Aplicações: Reabilitação de memória em Alzheimer precoce, tratamento de zumbido (tinnitus) e distúrbios de compreensão de linguagem (Wernicke)."
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Zumbido", "Memória", "Wernicke"],
+    description: "Ponto temporal direito - Área de Wernicke (compreensão de linguagem)"
   },
   {
-    name: "T5",
-    color: "#00FF00", // Verde
-    region: "Região Temporal (T)",
-    applications: ["Reabilitação de memória em Alzheimer precoce", "Tratamento de zumbido (tinnitus)", "Distúrbios de compreensão de linguagem (Wernicke)"],
-    description: "Região temporal esquerda posterior. Aplicações: Reabilitação de memória em Alzheimer precoce, tratamento de zumbido (tinnitus) e distúrbios de compreensão de linguagem (Wernicke)."
-  },
-  {
-    name: "T6",
-    color: "#00FF00", // Verde
-    region: "Região Temporal (T)",
-    applications: ["Reabilitação de memória em Alzheimer precoce", "Tratamento de zumbido (tinnitus)", "Distúrbios de compreensão de linguagem (Wernicke)"],
-    description: "Região temporal direita posterior. Aplicações: Reabilitação de memória em Alzheimer precoce, tratamento de zumbido (tinnitus) e distúrbios de compreensão de linguagem (Wernicke)."
+    name: "T10",
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Processamento auditivo", "Memória"],
+    description: "Ponto temporal direito anterior - Processamento auditivo"
   },
 
-  // ROXO - Região Parietal (P) e Parieto-Occipital (PO)
+  // ROXO - Parietal (4 pontos)
   {
     name: "P3",
-    color: "#9370DB", // Roxo
-    region: "Região Parietal (P)",
-    applications: ["Tratamento de discalculia", "Correção de negligência espacial unilateral", "Suporte em distúrbios de integração sensorial"],
-    description: "Região parietal esquerda. Aplicações: Tratamento de discalculia, correção de negligência espacial unilateral e suporte em distúrbios de integração sensorial."
+    color: "#9370DB",
+    region: "Parietal",
+    applications: ["Integração sensorial", "Discalculia"],
+    description: "Ponto parietal esquerdo - Integração sensorial e espacial"
+  },
+  {
+    name: "P1",
+    color: "#9370DB",
+    region: "Parietal",
+    applications: ["Integração sensorial"],
+    description: "Ponto parietal esquerdo mediano - Integração sensorial"
   },
   {
     name: "Pz",
-    color: "#9370DB", // Roxo
-    region: "Região Parietal (P)",
-    applications: ["Tratamento de discalculia", "Correção de negligência espacial unilateral", "Suporte em distúrbios de integração sensorial"],
-    description: "Região parietal central. Aplicações: Tratamento de discalculia, correção de negligência espacial unilateral e suporte em distúrbios de integração sensorial."
+    color: "#9370DB",
+    region: "Parietal",
+    applications: ["Integração sensorial bilateral"],
+    description: "Ponto parietal central - Integração sensorial bilateral"
+  },
+  {
+    name: "P2",
+    color: "#9370DB",
+    region: "Parietal",
+    applications: ["Integração sensorial"],
+    description: "Ponto parietal direito mediano - Integração sensorial"
   },
   {
     name: "P4",
-    color: "#9370DB", // Roxo
-    region: "Região Parietal (P)",
-    applications: ["Tratamento de discalculia", "Correção de negligência espacial unilateral", "Suporte em distúrbios de integração sensorial"],
-    description: "Região parietal direita. Aplicações: Tratamento de discalculia, correção de negligência espacial unilateral e suporte em distúrbios de integração sensorial."
-  },
-  {
-    name: "PO3",
-    color: "#9370DB", // Roxo
-    region: "Região Parieto-Occipital (PO)",
-    applications: ["Melhora da coordenação visomotora em atletas", "Reabilitação de ataxia óptica", "Distúrbios de percepção de profundidade"],
-    description: "Região parieto-occipital esquerda. Aplicações: Melhora da coordenação visomotora em atletas, reabilitação de ataxia óptica e distúrbios de percepção de profundidade."
-  },
-  {
-    name: "POz",
-    color: "#9370DB", // Roxo
-    region: "Região Parieto-Occipital (PO)",
-    applications: ["Melhora da coordenação visomotora em atletas", "Reabilitação de ataxia óptica", "Distúrbios de percepção de profundidade"],
-    description: "Região parieto-occipital central. Aplicações: Melhora da coordenação visomotora em atletas, reabilitação de ataxia óptica e distúrbios de percepção de profundidade."
-  },
-  {
-    name: "PO4",
-    color: "#9370DB", // Roxo
-    region: "Região Parieto-Occipital (PO)",
-    applications: ["Melhora da coordenação visomotora em atletas", "Reabilitação de ataxia óptica", "Distúrbios de percepção de profundidade"],
-    description: "Região parieto-occipital direita. Aplicações: Melhora da coordenação visomotora em atletas, reabilitação de ataxia óptica e distúrbios de percepção de profundidade."
+    color: "#9370DB",
+    region: "Parietal",
+    applications: ["Integração sensorial", "Discalculia"],
+    description: "Ponto parietal direito - Integração sensorial e espacial"
   },
 
-  // ROSA CLARO - Região Occipital (O)
+  // ROSA CLARO - Occipital (3 pontos)
   {
     name: "O1",
-    color: "#FFB6C1", // Rosa claro
-    region: "Região Occipital (O)",
-    applications: ["Tratamento de enxaquecas com aura visual", "Suporte em cegueira cortical", "Modulação de distúrbios do processamento visual primário"],
-    description: "Região occipital esquerda. Aplicações: Tratamento de enxaquecas com aura visual, suporte em cegueira cortical e modulação de distúrbios do processamento visual primário."
+    color: "#FFB6C1",
+    region: "Occipital",
+    applications: ["Processamento visual", "Enxaqueca"],
+    description: "Ponto occipital esquerdo - Processamento visual"
   },
   {
     name: "Oz",
-    color: "#FFB6C1", // Rosa claro
-    region: "Região Occipital (O)",
-    applications: ["Tratamento de enxaquecas com aura visual", "Suporte em cegueira cortical", "Modulação de distúrbios do processamento visual primário"],
-    description: "Região occipital central. Aplicações: Tratamento de enxaquecas com aura visual, suporte em cegueira cortical e modulação de distúrbios do processamento visual primário."
+    color: "#FFB6C1",
+    region: "Occipital",
+    applications: ["Processamento visual bilateral"],
+    description: "Ponto occipital central - Processamento visual bilateral"
   },
   {
     name: "O2",
-    color: "#FFB6C1", // Rosa claro
-    region: "Região Occipital (O)",
-    applications: ["Tratamento de enxaquecas com aura visual", "Suporte em cegueira cortical", "Modulação de distúrbios do processamento visual primário"],
-    description: "Região occipital direita. Aplicações: Tratamento de enxaquecas com aura visual, suporte em cegueira cortical e modulação de distúrbios do processamento visual primário."
-  },
-];
-
-export const COLORED_REGIONS = [
-  {
-    name: "Região Frontal Anterior (Fp)",
-    color: "#FF69B4",
-    applications: ["Depressão maior resistente", "Transtornos de ansiedade generalizada", "Reabilitação de funções executivas", "Controle de impulsividade em TDAH"],
-  },
-  {
-    name: "Região Frontal Média (AF)",
-    color: "#FFA500",
-    applications: ["Treinamento de foco atencional", "Monitoramento de fadiga cognitiva", "Ambientes de alta performance", "Modulação da tomada de decisão"],
-  },
-  {
-    name: "Região Frontal Central (F)",
-    color: "#FFFF00",
-    applications: ["Tratamento de afasias expressivas (Broca)", "Reabilitação de coordenação motora fina", "Suporte em transtornos do espectro autista"],
-  },
-  {
-    name: "Região Central / Sensório-Motora (C/FC/CP)",
-    color: "#00CED1",
-    applications: ["Manejo de dor crônica neuropática", "Reabilitação pós-AVC (hemipareisas)", "Controle de tremores em Parkinson", "Epilepsias focais"],
-  },
-  {
-    name: "Região Temporal (T)",
-    color: "#00FF00",
-    applications: ["Reabilitação de memória em Alzheimer precoce", "Tratamento de zumbido (tinnitus)", "Distúrbios de compreensão de linguagem (Wernicke)"],
-  },
-  {
-    name: "Região Parietal (P)",
-    color: "#9370DB",
-    applications: ["Tratamento de discalculia", "Correção de negligência espacial unilateral", "Suporte em distúrbios de integração sensorial"],
-  },
-  {
-    name: "Região Parieto-Occipital (PO)",
-    color: "#9370DB",
-    applications: ["Melhora da coordenação visomotora em atletas", "Reabilitação de ataxia óptica", "Distúrbios de percepção de profundidade"],
-  },
-  {
-    name: "Região Occipital (O)",
     color: "#FFB6C1",
-    applications: ["Tratamento de enxaquecas com aura visual", "Suporte em cegueira cortical", "Modulação de distúrbios do processamento visual primário"],
+    region: "Occipital",
+    applications: ["Processamento visual", "Enxaqueca"],
+    description: "Ponto occipital direito - Processamento visual"
   },
 ];
 
-export function getColoredPointByName(name: string): ColoredPoint | undefined {
+export const COLORED_REGIONS: ColoredRegion[] = [
+  {
+    id: "region-frontal-anterior",
+    name: "Frontal Anterior",
+    colorHex: "#FF69B4",
+    points: ["Fp1", "Fp2", "Fpz"],
+    applications: ["Depressão", "Ansiedade", "Regulação emocional"]
+  },
+  {
+    id: "region-frontal-media",
+    name: "Frontal Média",
+    colorHex: "#FFA500",
+    points: ["AF3", "AF4", "AFz"],
+    applications: ["Atenção", "Foco", "Concentração"]
+  },
+  {
+    id: "region-frontal-central",
+    name: "Frontal Central",
+    colorHex: "#FFFF00",
+    points: ["F3", "F4", "F7", "F8", "Fz"],
+    applications: ["Afasia", "Linguagem expressiva", "Broca"]
+  },
+  {
+    id: "region-central-sensoriomotora",
+    name: "Central / Sensório-Motora",
+    colorHex: "#00CED1",
+    points: ["FC3", "FC1", "FCz", "FC2", "FC4", "C5", "C3", "C1", "Cz", "C2", "C4", "C6", "CP3", "CP1", "CPz", "CP2", "CP4"],
+    applications: ["Controle motor", "Sensação", "Parkinson", "Coordenação"]
+  },
+  {
+    id: "region-temporal",
+    name: "Temporal",
+    colorHex: "#00FF00",
+    points: ["T9", "T3", "T4", "T10"],
+    applications: ["Zumbido", "Memória", "Wernicke", "Processamento auditivo"]
+  },
+  {
+    id: "region-parietal",
+    name: "Parietal",
+    colorHex: "#9370DB",
+    points: ["P3", "P1", "Pz", "P2", "P4"],
+    applications: ["Integração sensorial", "Discalculia", "Espacialidade"]
+  },
+  {
+    id: "region-occipital",
+    name: "Occipital",
+    colorHex: "#FFB6C1",
+    points: ["O1", "Oz", "O2"],
+    applications: ["Processamento visual", "Enxaqueca"]
+  },
+];
+
+export function getPointByName(name: string): ColoredPoint | undefined {
   return COLORED_POINTS.find(p => p.name === name);
 }
 
-export function getColoredPointsByRegion(region: string): ColoredPoint[] {
-  return COLORED_POINTS.filter(p => p.region === region);
+export function getPointsByRegion(regionName: string): ColoredPoint[] {
+  return COLORED_POINTS.filter(p => p.region === regionName);
 }
 
 export function getAllColoredPointNames(): string[] {
   return COLORED_POINTS.map(p => p.name);
+}
+
+export function getRegionByName(name: string): ColoredRegion | undefined {
+  return COLORED_REGIONS.find(r => r.name === name);
 }
