@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, ScrollView, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView, Platform, Animated } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import { RegionInfoModal } from "./region-info-modal";
 import { PointInfoModal } from "./point-info-modal";
 import { IconSymbol } from "./ui/icon-symbol";
+import { usePointHighlight } from "@/hooks/use-point-highlight";
 
 interface Helmet3DSelectorProps {
   selectedPoints: string[];
@@ -210,6 +211,9 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {region.points.map((pointName) => {
                 const isSelected = selectedPoints.includes(pointName);
+                const isHighlighted = selectedPointId === pointName;
+                const { scaleAnim } = usePointHighlight(isHighlighted);
+                
                 return (
                   <View
                     key={pointName}
@@ -219,31 +223,42 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
                       gap: 4,
                     }}
                   >
-                    <TouchableOpacity
-                      onPress={() => {
-                        togglePoint(pointName);
-                        onPointIdChange?.(pointName);
-                      }}
-                      activeOpacity={0.7}
+                    <Animated.View
                       style={{
-                        paddingHorizontal: 16,
-                        paddingVertical: 10,
-                        borderRadius: 8,
-                        backgroundColor: isSelected ? region.colorHex : colors.surface,
-                        borderWidth: selectedPointId === pointName ? 3 : 1,
-                        borderColor: selectedPointId === pointName ? colors.primary : (isSelected ? region.colorHex : colors.border),
+                        transform: [{ scale: scaleAnim }],
                       }}
                     >
-                      <Text
+                      <TouchableOpacity
+                        onPress={() => {
+                          togglePoint(pointName);
+                          onPointIdChange?.(pointName);
+                        }}
+                        activeOpacity={0.7}
                         style={{
-                          fontSize: 14,
-                          fontWeight: "600",
-                          color: isSelected ? "#FFFFFF" : colors.foreground,
+                          paddingHorizontal: 16,
+                          paddingVertical: 10,
+                          borderRadius: 8,
+                          backgroundColor: isSelected ? region.colorHex : colors.surface,
+                          borderWidth: isHighlighted ? 3 : (isSelected ? 2 : 1),
+                          borderColor: isHighlighted ? region.colorHex : (isSelected ? region.colorHex : colors.border),
+                          shadowColor: isHighlighted ? region.colorHex : "transparent",
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: isHighlighted ? 0.4 : 0,
+                          shadowRadius: isHighlighted ? 8 : 0,
+                          elevation: isHighlighted ? 8 : 0,
                         }}
                       >
-                        {pointName}
-                      </Text>
-                    </TouchableOpacity>
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: "600",
+                            color: isSelected ? "#FFFFFF" : colors.foreground,
+                          }}
+                        >
+                          {pointName}
+                        </Text>
+                      </TouchableOpacity>
+                    </Animated.View>
                     <TouchableOpacity
                       onPress={() => {
                         if (Platform.OS !== "web") {

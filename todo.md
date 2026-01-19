@@ -540,3 +540,11 @@
 - [ ] Implementar UI para mostrar últimas 5 buscas
 - [ ] Adicionar botão para limpar histórico
 - [ ] Integrar no modal de busca de protocolos
+
+## Alerta Visual com Relação Bidirecional - Nova Sessão
+- [x] Implementar estado compartilhado para ponto selecionado
+- [x] Criar animações de destaque (borda colorida, escala, mudança de fundo)
+- [x] Integrar alerta visual no helmet-3d-selector (capacete)
+- [x] Integrar alerta visual na seção de pontos individuais
+- [x] Testar funcionamento em web e mobile
+- [x] Validar compilação TypeScript

@@ -23,6 +23,7 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
   const [totalDuration, setTotalDuration] = useState("");
   const [notes, setNotes] = useState("");
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
+  const [selectedPointId, setSelectedPointId] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
@@ -272,6 +273,8 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
               selectedPoints={selectedPoints}
               onPointsChange={setSelectedPoints}
               title="Pontos de Estimulação *"
+              selectedPointId={selectedPointId}
+              onPointIdChange={setSelectedPointId}
             />
 
             {/* Observações */}

@@ -31,6 +31,7 @@ export default function TemplatesScreen() {
   const [totalDuration, setTotalDuration] = useState("");
   const [notes, setNotes] = useState("");
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
+  const [selectedPointId, setSelectedPointId] = useState<string | undefined>();
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -274,6 +275,8 @@ export default function TemplatesScreen() {
             selectedPoints={selectedPoints}
             onPointsChange={setSelectedPoints}
             title="Pontos de Estimulação *"
+            selectedPointId={selectedPointId}
+            onPointIdChange={setSelectedPointId}
           />
 
           {/* Frequência e Duração */}

@@ -24,6 +24,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
   const [observations, setObservations] = useState("");
   const [patientReactions, setPatientReactions] = useState("");
   const [selectedPoints, setSelectedPoints] = useState<string[]>([]);
+  const [selectedPointId, setSelectedPointId] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isScheduled, setIsScheduled] = useState(false);
@@ -173,6 +174,8 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
               selectedPoints={selectedPoints}
               onPointsChange={setSelectedPoints}
               title="Pontos de Estimulação *"
+              selectedPointId={selectedPointId}
+              onPointIdChange={setSelectedPointId}
             />
 
             {/* Campos */}
