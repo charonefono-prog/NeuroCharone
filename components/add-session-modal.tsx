@@ -46,7 +46,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
     }
 
     if (joules.trim() && (isNaN(Number(joules)) || Number(joules) <= 0)) {
-      setError("Joules inv\u00e1lido (digite apenas n\u00fameros)");
+      setError("Joules inválido (digite apenas números)");
       return;
     }
 
@@ -61,7 +61,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
 
       let notificationId: string | null = null;
 
-      // Se for sess\u00e3o agendada, criar notifica\u00e7\u00e3o
+      // Se for sessão agendada, criar notificação
       if (isScheduled) {
         const patients = await getPatients();
         const patient = patients.find((p) => p.id === patientId);
@@ -88,7 +88,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
 
-      // Limpar formul\u00e1rio
+      // Limpar formulário
       setDurationMinutes("");
       setJoules("");
       setSymptomScore("");
@@ -192,10 +192,10 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                      Agendar Sess\u00e3o Futura
+                      Agendar Sessão Futura
                     </Text>
                     <Text style={{ fontSize: 12, color: colors.muted, marginTop: 4 }}>
-                      Ative para agendar uma sess\u00e3o futura com notifica\u00e7\u00e3o
+                      Ative para agendar uma sessão futura com notificação
                     </Text>
                   </View>
                   <Switch
@@ -238,7 +238,7 @@ export function AddSessionModal({ visible, patientId, planId, onClose, onSuccess
                         padding: 16,
                       }}
                     >
-                      <Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>Hor\u00e1rio</Text>
+                      <Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>Horário</Text>
                       <Text style={{ fontSize: 16, color: colors.foreground }}>
                         {scheduledDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                       </Text>

@@ -95,7 +95,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         }}
       >
         <Image
-          source={require("@/assets/images/helmet-colored.png")}
+          source={require("@/assets/images/helmet-improved.png")}
           style={{
             width: "100%",
             height: 320,
