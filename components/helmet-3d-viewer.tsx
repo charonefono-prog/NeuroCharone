@@ -1,8 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, Alert, ScrollView } from "react-native";
-import * as THREE from "three";
-// @ts-ignore
-import { STLLoader } from "stl-loader";
+
+// Only import THREE on web platform
+let THREE: any = null;
+let STLLoader: any = null;
+
+if (typeof window !== "undefined") {
+  try {
+    THREE = require("three");
+    STLLoader = require("stl-loader").STLLoader;
+  } catch (e) {
+    console.warn("Three.js not available", e);
+  }
+}
 
 interface Point {
   id: string;
@@ -134,16 +144,19 @@ export function Helmet3DViewer({
   showSidebar = true,
 }: Helmet3DViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const helmetGroupRef = useRef<THREE.Group | null>(null);
-  const pointsRef = useRef<Map<string, THREE.Mesh>>(new Map());
+  const sceneRef = useRef<any>(null);
+  const cameraRef = useRef<any>(null);
+  const rendererRef = useRef<any>(null);
+  const helmetGroupRef = useRef<any>(null);
+  const pointsRef = useRef<Map<string, any>>(new Map());
   const [selectedPoint, setSelectedPoint] = useState<Point | null>(null);
   const [isRotating, setIsRotating] = useState(true);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !THREE) {
+      console.warn("Three.js not available or container not ready");
+      return;
+    }
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -189,7 +202,7 @@ export function Helmet3DViewer({
 
     // Load STL models with proper URLs
     const loadSTLModel = (url: string) => {
-      return new Promise<THREE.BufferGeometry>((resolve, reject) => {
+      return new Promise<any>((resolve, reject) => {
         loader.load(url, resolve, undefined, reject);
       });
     };
@@ -198,7 +211,7 @@ export function Helmet3DViewer({
       loadSTLModel("/assets/models/M4_Medium_Front.stl"),
       loadSTLModel("/assets/models/M4_Medium_Back.stl"),
     ])
-      .then(([frontGeometry, backGeometry]) => {
+      .then(([frontGeometry, backGeometry]: any[]) => {
         // Front model
         const frontMaterial = new THREE.MeshPhongMaterial({
           color: 0x3498db,
@@ -251,7 +264,7 @@ export function Helmet3DViewer({
 
       const intersects = raycaster.intersectObjects(helmetGroup.children);
       for (let i = 0; i < intersects.length; i++) {
-        const obj = intersects[i].object as THREE.Mesh;
+        const obj = intersects[i].object as any;
         if (obj.userData.pointId) {
           const pointId = obj.userData.pointId;
           const point = HELMET_POINTS.find((p) => p.id === pointId);
@@ -302,13 +315,13 @@ export function Helmet3DViewer({
 
   // Highlight selected point
   useEffect(() => {
-    pointsRef.current.forEach((mesh, pointId) => {
+    pointsRef.current.forEach((mesh: any, pointId: string) => {
       if (pointId === selectedPointId) {
-        (mesh.material as THREE.MeshPhongMaterial).emissive.setHex(0xffff00);
-        (mesh.material as THREE.MeshPhongMaterial).emissiveIntensity = 0.8;
+        mesh.material.emissive.setHex(0xffff00);
+        mesh.material.emissiveIntensity = 0.8;
       } else {
-        (mesh.material as THREE.MeshPhongMaterial).emissive.setHex(0x000000);
-        (mesh.material as THREE.MeshPhongMaterial).emissiveIntensity = 0;
+        mesh.material.emissive.setHex(0x000000);
+        mesh.material.emissiveIntensity = 0;
       }
     });
   }, [selectedPointId]);
