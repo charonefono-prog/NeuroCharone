@@ -388,3 +388,9 @@
 - [x] Separar botão de informação do botão de seleção
 - [x] Adicionar botão circular de informação ao lado de cada ponto
 - [x] Adicionar mapeamento de ícones faltantes (info.circle, xmark, photo.fill, camera.fill, play.fill)
+
+## Correção de Geração de Relatório PDF
+- [x] Investigar onde está o botão de geração de relatório
+- [x] Verificar por que a geração não estava funcionando
+- [x] Adicionar import faltante de Alert
+- [x] Corrigir funcionalidade de geração de PDF
