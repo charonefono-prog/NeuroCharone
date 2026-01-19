@@ -581,3 +581,10 @@
 - [x] Implementar fórmula que lida com divisão por zero
 - [x] Testar com diferentes valores de score
 - [x] Validar renderização da percentagem corrigida
+
+
+## Gráfico de Evolução de Sintomas - Nova Sessão
+- [x] Criar componente de gráfico em linha
+- [x] Integrar gráfico na aba Antes/Depois
+- [x] Estilizar com cores da marca
+- [x] Testar com dados de múltiplas sessões

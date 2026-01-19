@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import type { Session, TherapeuticPlan, Patient } from '@/lib/local-storage';
+import { SymptomEvolutionLineChart } from './symptom-evolution-line-chart';
 
 interface BeforeAfterComparisonProps {
   patient: Patient;
@@ -358,6 +359,9 @@ export function BeforeAfterComparison({
             Score: {metrics.initialScore.toFixed(1)} → {metrics.currentScore.toFixed(1)}
           </Text>
         </View>
+
+        {/* Gráfico de Evolução em Linha */}
+        <SymptomEvolutionLineChart patient={patient} sessions={sessions} />
 
         {/* Gráfico de Progresso */}
         <View>
