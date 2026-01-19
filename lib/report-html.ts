@@ -73,18 +73,6 @@ export function generateReportHTML(data: ReportData): string {
             margin-bottom: 8px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .header-left h1 .developer {
-            font-size: 14px;
-            color: #95a5a6;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            border-left: 2px solid #e8eef7;
-            padding-left: 12px;
         }
         
         .header-left .subtitle {
@@ -348,19 +336,10 @@ export function generateReportHTML(data: ReportData): string {
     <div class="container">
         <div class="header">
             <div class="header-left">
-                <h1>
-                    Relatório Terapêutico
-                    <span class="developer">by Carlos Charone</span>
-                </h1>
+                <h1>Relatório Terapêutico</h1>
                 <div class="subtitle">NeuroLaserMap</div>
             </div>
-            <div class="header-right">
-                <div class="developer-badge">
-                    <span class="label">Desenvolvido por</span>
-                    <span class="name">Carlos Charone</span>
-                    <span class="cria">CRIA 9-10025-5</span>
-                </div>
-            </div>
+
         </div>
         
         <div class="section">
@@ -439,11 +418,6 @@ export function generateReportHTML(data: ReportData): string {
         ` : ''}
         
         <div class="footer">
-            <div class="footer-developer">
-                <div class="title">Sistema Desenvolvido por</div>
-                <div class="name">Carlos Charone</div>
-                <div class="cria">CRIA 9-10025-5</div>
-            </div>
             <div class="footer-info">
                 <p>NeuroLaserMap - Sistema de Mapeamento de Neuromodulação</p>
                 <p style="margin-top: 8px;">Relatório gerado em ${new Date().toLocaleString('pt-BR')}</p>

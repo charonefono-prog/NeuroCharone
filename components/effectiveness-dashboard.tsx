@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
-import { View, Text, ScrollView, Dimensions } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, ScrollView, Dimensions, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
+import * as Haptics from 'expo-haptics';
 import type { Session, TherapeuticPlan, Patient } from '@/lib/local-storage';
+import { downloadEffectivenessReportHTML, exportEffectivenessReportPDF } from '@/lib/effectiveness-pdf-export';
 
 interface EffectivenessDashboardProps {
   sessions: Session[];
@@ -32,6 +34,36 @@ export function EffectivenessDashboard({
 }: EffectivenessDashboardProps) {
   const colors = useColors();
   const screenWidth = Dimensions.get('window').width;
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportReport = async () => {
+    try {
+      setExporting(true);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+
+      const patient = patients[0];
+      if (!patient) return;
+
+      if (Platform.OS === 'web') {
+        downloadEffectivenessReportHTML(patient, sessions, plans);
+      } else {
+        await exportEffectivenessReportPDF(patient, sessions, plans);
+      }
+
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    } catch (error) {
+      console.error('Erro ao exportar:', error);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    } finally {
+      setExporting(false);
+    }
+  };
 
   // Calcular estatísticas por protocolo
   const protocolStats = useMemo(() => {
@@ -401,26 +433,60 @@ export function EffectivenessDashboard({
       contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={{ gap: 20 }}>
-        {/* Título */}
-        <View>
-          <Text
+        {/* Título e Botão de Exportação */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: 12,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '700',
+                color: colors.foreground,
+                marginBottom: 4,
+              }}
+            >
+              Dashboard de Efetividade
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.muted,
+              }}
+            >
+              Análise de resultados por protocolo e região
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={handleExportReport}
+            disabled={exporting}
             style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: colors.foreground,
-              marginBottom: 4,
+              backgroundColor: colors.primary,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 6,
+              opacity: exporting ? 0.6 : 1,
             }}
           >
-            Dashboard de Efetividade
-          </Text>
-          <Text
-            style={{
-              fontSize: 12,
-              color: colors.muted,
-            }}
-          >
-            Análise de resultados por protocolo e região
-          </Text>
+            {exporting ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: '#FFFFFF',
+                }}
+              >
+                📄 Exportar
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Métricas Gerais */}
