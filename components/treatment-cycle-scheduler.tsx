@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Platform, Alert } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
-import type { TherapeuticPlan, Session } from '@/lib/local-storage';
+import type { TherapeuticPlan, Session, Patient } from '@/lib/local-storage';
 import * as Haptics from 'expo-haptics';
+import { exportCycleToPDF, shareCycleReport } from '@/lib/cycle-pdf-export';
+import type { CycleReportData } from '@/lib/cycle-report-generator';
 
 interface TreatmentCycle {
   id: string;
