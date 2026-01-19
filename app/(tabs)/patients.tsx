@@ -151,7 +151,7 @@ export default function PatientsScreen() {
           {/* Header */}
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
             <View style={{ gap: 8, flex: 1 }}>
-              <Text style={{ fontSize: 36, fontWeight: "900", color: colors.foreground, letterSpacing: -1 }}>
+              <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground, letterSpacing: -0.5 }}>
                 Pacientes
               </Text>
               <Text style={{ fontSize: 14, color: colors.muted }}>

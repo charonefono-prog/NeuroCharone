@@ -560,3 +560,10 @@
 - [x] Alterar "CREFONO" para "CRFa 9 - 10025-5" no relatório
 - [x] Mudar extensão de .html para .htm para evitar conflitos
 - [x] Melhorar tratamento de erros na geração de relatório
+
+
+## Revisão de Tipografia - Nova Sessão
+- [x] Criar padrão de tipografia consistente
+- [x] Revisar e ajustar fontes em telas principais
+- [x] Revisar e ajustar fontes em componentes
+- [x] Testar e validar mudanças

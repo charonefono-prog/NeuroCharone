@@ -123,10 +123,10 @@ export default function HomeScreen() {
         <View style={{ flex: 1, gap: 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+            <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
               NeuroLaserMap
             </Text>
-            <Text style={{ fontSize: 16, color: colors.muted }}>
+            <Text style={{ fontSize: 14, color: colors.muted }}>
               Bem-vindo ao sistema de mapeamento de neuromodulação
             </Text>
           </View>
@@ -148,10 +148,10 @@ export default function HomeScreen() {
                 }}
               >
                 <IconSymbol name="house.fill" size={24} color={colors.primary} />
-                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                <Text style={{ fontSize: 24, fontWeight: "700", color: colors.foreground, marginTop: 8 }}>
                   {patients.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: colors.muted }}>Total Pacientes</Text>
+                <Text style={{ fontSize: 12, fontWeight: "500", color: colors.muted }}>Total Pacientes</Text>
               </View>
 
               <View
@@ -165,10 +165,10 @@ export default function HomeScreen() {
                 }}
               >
                 <IconSymbol name="house.fill" size={24} color={colors.success} />
-                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                <Text style={{ fontSize: 24, fontWeight: "700", color: colors.foreground, marginTop: 8 }}>
                   {activePatients}
                 </Text>
-                <Text style={{ fontSize: 12, color: colors.muted }}>Ativos</Text>
+                <Text style={{ fontSize: 12, fontWeight: "500", color: colors.muted }}>Ativos</Text>
               </View>
             </View>
 
@@ -184,10 +184,10 @@ export default function HomeScreen() {
                 }}
               >
                 <IconSymbol name="house.fill" size={24} color={colors.warning} />
-                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                <Text style={{ fontSize: 24, fontWeight: "700", color: colors.foreground, marginTop: 8 }}>
                   {todaySessions}
                 </Text>
-                <Text style={{ fontSize: 12, color: colors.muted }}>Sessões Hoje</Text>
+                <Text style={{ fontSize: 12, fontWeight: "500", color: colors.muted }}>Sessões Hoje</Text>
               </View>
 
               <View
@@ -201,10 +201,10 @@ export default function HomeScreen() {
                 }}
               >
                 <IconSymbol name="house.fill" size={24} color={colors.primary} />
-                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground, marginTop: 8 }}>
+                <Text style={{ fontSize: 24, fontWeight: "700", color: colors.foreground, marginTop: 8 }}>
                   {thisWeekSessions}
                 </Text>
-                <Text style={{ fontSize: 12, color: colors.muted }}>Esta Semana</Text>
+                <Text style={{ fontSize: 12, fontWeight: "500", color: colors.muted }}>Esta Semana</Text>
               </View>
             </View>
           </View>

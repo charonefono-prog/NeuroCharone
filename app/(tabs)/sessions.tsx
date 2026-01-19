@@ -71,7 +71,7 @@ export default function SessionsScreen() {
         <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+            <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
               Sessões
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
@@ -84,10 +84,10 @@ export default function SessionsScreen() {
             {sortedSessions.length === 0 ? (
               <View style={{ padding: 32, alignItems: "center" }}>
                 <IconSymbol name="house.fill" size={48} color={colors.muted} />
-                <Text style={{ fontSize: 16, color: colors.muted, marginTop: 16, textAlign: "center" }}>
+                <Text style={{ fontSize: 14, color: colors.muted, marginTop: 16, textAlign: "center" }}>
                   Nenhuma sessão registrada
                 </Text>
-                <Text style={{ fontSize: 14, color: colors.muted, marginTop: 8, textAlign: "center" }}>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
                   As sessões aparecerão aqui após serem registradas
                 </Text>
               </View>

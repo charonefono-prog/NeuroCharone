@@ -78,7 +78,7 @@ export default function ProfileScreen() {
         <View style={{ flex: 1, gap: 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
+            <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
               Perfil
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
