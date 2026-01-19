@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, Platform } from "react-native";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
-import { helmetRegions, getRegionById } from "@/shared/helmet-data";
+import { helmetRegions, getRegionById, helmetPoints } from "@/shared/helmet-data";
 import * as Haptics from "expo-haptics";
 import { RegionInfoModal } from "./region-info-modal";
 import { PointInfoModal } from "./point-info-modal";
@@ -94,14 +94,14 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
           borderColor: colors.border,
         }}
       >
-        <Image
-          source={require("@/assets/images/helmet-improved.png")}
-          style={{
-            width: "100%",
-            height: 320,
-            resizeMode: "contain",
-          }}
-        />
+          <Image
+            source={require("@/assets/images/helmet-diagram.png")}
+            style={{
+              width: "100%",
+              height: 320,
+              resizeMode: "contain",
+            }}
+          />
         <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
           Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
         </Text>
