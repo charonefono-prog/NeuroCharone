@@ -25,13 +25,7 @@
           "x64"
         ]
       }
-    ],
-    "certificateFile": null,
-    "certificatePassword": null,
-    "signingHashAlgorithms": [
-      "sha256"
-    ],
-    "sign": null
+    ]
   },
   "nsis": {
     "oneClick": false,
