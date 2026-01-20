@@ -1,0 +1,10 @@
+{
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "seu-usuario",
+      "repo": "neuromodulation_mapper",
+      "releaseType": "release"
+    }
+  ]
+}
