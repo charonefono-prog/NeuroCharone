@@ -1,11 +1,13 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getPatients, type Patient } from '@/lib/local-storage';
 
 interface TherapeuticCycle {
   id: string;
   patientId: string;
+  patientName: string;
   objectives: string;
   plannedSessions: number;
   estimatedDuration: number;
@@ -19,7 +21,10 @@ interface TherapeuticCycle {
 
 export default function CyclesScreen() {
   const [cycles, setCycles] = useState<TherapeuticCycle[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showPatientModal, setShowPatientModal] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [formData, setFormData] = useState({
     objectives: '',
     plannedSessions: '10',
@@ -30,7 +35,17 @@ export default function CyclesScreen() {
 
   useEffect(() => {
     loadCycles();
+    loadPatients();
   }, []);
+
+  const loadPatients = async () => {
+    try {
+      const patientsData = await getPatients();
+      setPatients(patientsData);
+    } catch (error) {
+      console.error('Erro ao carregar pacientes:', error);
+    }
+  };
 
   const loadCycles = async () => {
     try {
@@ -44,6 +59,10 @@ export default function CyclesScreen() {
   };
 
   const saveCycle = async () => {
+    if (!selectedPatient) {
+      Alert.alert('Erro', 'Por favor, selecione um paciente');
+      return;
+    }
     if (!formData.objectives.trim()) {
       Alert.alert('Erro', 'Por favor, preencha os objetivos do ciclo');
       return;
@@ -51,7 +70,8 @@ export default function CyclesScreen() {
 
     const newCycle: TherapeuticCycle = {
       id: Date.now().toString(),
-      patientId: '1', // Será vinculado ao paciente selecionado
+      patientId: selectedPatient.id,
+      patientName: selectedPatient.name,
       objectives: formData.objectives,
       plannedSessions: parseInt(formData.plannedSessions),
       estimatedDuration: parseInt(formData.estimatedDuration),
@@ -76,6 +96,7 @@ export default function CyclesScreen() {
       frequency: '2x por semana',
       intensity: 'média',
     });
+    setSelectedPatient(null);
     setShowForm(false);
 
     Alert.alert('Sucesso', 'Ciclo terapêutico criado com sucesso!');
@@ -133,6 +154,20 @@ export default function CyclesScreen() {
           {showForm && (
             <View className="bg-surface p-4 rounded-lg gap-3 border border-border">
               <Text className="text-lg font-semibold text-foreground">Criar Novo Ciclo</Text>
+
+              {/* Seletor de Paciente */}
+              <View>
+                <Text className="text-sm font-medium text-foreground mb-1">Paciente *</Text>
+                <TouchableOpacity
+                  className="bg-background p-3 rounded border border-border flex-row justify-between items-center"
+                  onPress={() => setShowPatientModal(true)}
+                >
+                  <Text className={selectedPatient ? 'text-foreground font-semibold' : 'text-muted'}>
+                    {selectedPatient ? selectedPatient.name : 'Selecione um paciente...'}
+                  </Text>
+                  <Text className="text-primary text-lg">›</Text>
+                </TouchableOpacity>
+              </View>
 
               {/* Objetivos */}
               <View>
@@ -266,6 +301,44 @@ export default function CyclesScreen() {
             </View>
           )}
 
+          {/* Modal de Seleção de Paciente */}
+          <Modal
+            visible={showPatientModal}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setShowPatientModal(false)}
+          >
+            <ScreenContainer className="p-4">
+              <View className="flex-row justify-between items-center mb-4">
+                <Text className="text-2xl font-bold text-foreground">Selecionar Paciente</Text>
+                <TouchableOpacity onPress={() => setShowPatientModal(false)}>
+                  <Text className="text-2xl text-primary">✕</Text>
+                </TouchableOpacity>
+              </View>
+              <FlatList
+                data={patients}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className="bg-surface p-4 rounded-lg mb-2 border border-border"
+                    onPress={() => {
+                      setSelectedPatient(item);
+                      setShowPatientModal(false);
+                    }}
+                  >
+                    <Text className="text-lg font-semibold text-foreground">{item.name}</Text>
+                    <Text className="text-sm text-muted mt-1">{item.age} anos</Text>
+                  </TouchableOpacity>
+                )}
+                ListEmptyComponent={
+                  <View className="items-center py-8">
+                    <Text className="text-muted">Nenhum paciente cadastrado</Text>
+                  </View>
+                }
+              />
+            </ScreenContainer>
+          </Modal>
+
           {/* Lista de Ciclos */}
           <View className="gap-3">
             {cycles.length === 0 ? (
@@ -278,9 +351,12 @@ export default function CyclesScreen() {
             ) : (
               cycles.map((cycle) => (
                 <View key={cycle.id} className="bg-surface p-4 rounded-lg border border-border gap-2">
-                  {/* Status */}
+                  {/* Paciente e Status */}
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-lg font-bold text-foreground">Ciclo #{cycle.id.slice(-4)}</Text>
+                    <View>
+                      <Text className="text-xs text-muted">Paciente</Text>
+                      <Text className="text-base font-semibold text-foreground">{cycle.patientName}</Text>
+                    </View>
                     <View
                       className="px-3 py-1 rounded-full"
                       style={{ backgroundColor: getStatusColor(cycle.status) }}
