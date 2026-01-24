@@ -608,3 +608,12 @@
 - [x] Remover mediaTypes "videos" do ImagePicker
 - [x] Remover renderização condicional de vídeo
 - [x] Simplificar componente para apenas fotos
+
+
+## Estabilidade e Manutenção do Servidor
+- [x] Validar integridade de todas as dependências
+- [x] Criar script de verificação de saúde do servidor
+- [x] Implementar monitoramento de performance
+- [x] Criar testes automatizados para evitar regressões
+- [x] Documentar troubleshooting de problemas comuns
+- [ ] Criar checkpoint estável antes da publicação
