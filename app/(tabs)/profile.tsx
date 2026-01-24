@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, Switch, TextInput, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert, Switch, TextInput, Platform, Modal, FlatList, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -8,6 +8,27 @@ import { useThemeContext } from "@/lib/theme-provider";
 import { getReminderAdvance, setReminderAdvance, requestNotificationPermissions } from "@/lib/notifications";
 import { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+interface ProfessionalProfile {
+  title: "Dr" | "Dra";
+  firstName: string;
+  lastName: string;
+  registrationNumber: string;
+  specialty: string;
+  email: string;
+  phone: string;
+}
+
+const DEFAULT_PROFILE: ProfessionalProfile = {
+  title: "Dr",
+  firstName: "",
+  lastName: "",
+  registrationNumber: "",
+  specialty: "",
+  email: "",
+  phone: "",
+};
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -16,13 +37,49 @@ export default function ProfileScreen() {
   const isDark = colorScheme === "dark";
   const [reminderAdvance, setReminderAdvanceState] = useState<number>(60);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showTitleModal, setShowTitleModal] = useState(false);
+  const [profile, setProfile] = useState<ProfessionalProfile>(DEFAULT_PROFILE);
+  const [editingProfile, setEditingProfile] = useState<ProfessionalProfile>(DEFAULT_PROFILE);
 
   useEffect(() => {
-    // Sugerir backup se necessário
+    loadProfile();
     suggestBackupIfNeeded();
-    // Carregar configuração de lembretes
     loadReminderSettings();
   }, []);
+
+  const loadProfile = async () => {
+    try {
+      const saved = await AsyncStorage.getItem("professionalProfile");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setProfile(parsed);
+        setEditingProfile(parsed);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar perfil:", error);
+    }
+  };
+
+  const saveProfile = async () => {
+    try {
+      // Validação básica
+      if (!editingProfile.firstName.trim() || !editingProfile.lastName.trim()) {
+        Alert.alert("Erro", "Nome completo é obrigatório");
+        return;
+      }
+
+      await AsyncStorage.setItem("professionalProfile", JSON.stringify(editingProfile));
+      setProfile(editingProfile);
+      setIsEditing(false);
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      Alert.alert("Sucesso", "Perfil salvo com sucesso!");
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível salvar o perfil");
+    }
+  };
 
   const loadReminderSettings = async () => {
     const advance = await getReminderAdvance();
@@ -72,6 +129,16 @@ export default function ProfileScreen() {
     setColorScheme(isDark ? "light" : "dark");
   };
 
+  const getInitials = () => {
+    const first = editingProfile.firstName.charAt(0).toUpperCase();
+    const last = editingProfile.lastName.charAt(0).toUpperCase();
+    return first + last || "??";
+  };
+
+  const getFullName = () => {
+    return `${profile.title}. ${profile.firstName} ${profile.lastName}`.trim();
+  };
+
   return (
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -82,7 +149,7 @@ export default function ProfileScreen() {
               Perfil
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
-              Informações do profissional
+              {isEditing ? "Editar informações profissionais" : "Informações do profissional"}
             </Text>
           </View>
 
@@ -97,62 +164,352 @@ export default function ProfileScreen() {
               gap: 16,
             }}
           >
-            {/* Avatar e Nome */}
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+            {!isEditing ? (
+              <>
+                {/* Avatar e Nome - Modo Visualização */}
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+                  <View
+                    style={{
+                      width: 64,
+                      height: 64,
+                      borderRadius: 32,
+                      backgroundColor: colors.primary + "20",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.primary }}>
+                      {getInitials()}
+                    </Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+                      {getFullName() || "Não preenchido"}
+                    </Text>
+                    <Text style={{ fontSize: 14, color: colors.muted, marginTop: 2 }}>
+                      {profile.registrationNumber ? `Registro: ${profile.registrationNumber}` : "Registro não informado"}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Informações - Modo Visualização */}
+                <View style={{ gap: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
+                  {profile.specialty && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Especialidade
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {profile.specialty}
+                      </Text>
+                    </View>
+                  )}
+
+                  {profile.email && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Email
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {profile.email}
+                      </Text>
+                    </View>
+                  )}
+
+                  {profile.phone && (
+                    <View style={{ gap: 4 }}>
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
+                        Telefone
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.foreground }}>
+                        {profile.phone}
+                      </Text>
+                    </View>
+                  )}
+
+                  {!profile.firstName && (
+                    <View style={{ gap: 4, paddingTop: 8 }}>
+                      <Text style={{ fontSize: 14, color: colors.muted, fontStyle: "italic" }}>
+                        👉 Toque em "Editar Perfil" para preencher suas informações
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                {/* Botão Editar */}
+                <TouchableOpacity
+                  onPress={() => setIsEditing(true)}
+                  style={{
+                    backgroundColor: colors.primary,
+                    paddingVertical: 12,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    marginTop: 8,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>
+                    ✏️ Editar Perfil
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {/* Modo Edição */}
+                <View style={{ gap: 16 }}>
+                  {/* Título */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Título *
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => setShowTitleModal(true)}
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ fontSize: 16, color: colors.foreground, fontWeight: "600" }}>
+                        {editingProfile.title}
+                      </Text>
+                      <Text style={{ fontSize: 16, color: colors.muted }}>›</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Nome */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Nome *
+                    </Text>
+                    <TextInput
+                      placeholder="Nome"
+                      value={editingProfile.firstName}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, firstName: text })}
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+
+                  {/* Sobrenome */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Sobrenome *
+                    </Text>
+                    <TextInput
+                      placeholder="Sobrenome"
+                      value={editingProfile.lastName}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, lastName: text })}
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+
+                  {/* Registro Profissional */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Registro Profissional
+                    </Text>
+                    <TextInput
+                      placeholder="Ex: 12345-6"
+                      value={editingProfile.registrationNumber}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, registrationNumber: text })}
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+
+                  {/* Especialidade */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Especialidade
+                    </Text>
+                    <TextInput
+                      placeholder="Ex: Neuromodulação Craniana"
+                      value={editingProfile.specialty}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, specialty: text })}
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+
+                  {/* Email */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Email
+                    </Text>
+                    <TextInput
+                      placeholder="seu.email@exemplo.com"
+                      value={editingProfile.email}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, email: text })}
+                      keyboardType="email-address"
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+
+                  {/* Telefone */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Telefone
+                    </Text>
+                    <TextInput
+                      placeholder="(11) 99999-9999"
+                      value={editingProfile.phone}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, phone: text })}
+                      keyboardType="phone-pad"
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+                </View>
+
+                {/* Botões de Ação */}
+                <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsEditing(false);
+                      setEditingProfile(profile);
+                    }}
+                    style={{
+                      flex: 1,
+                      backgroundColor: colors.border,
+                      paddingVertical: 12,
+                      borderRadius: 8,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: colors.foreground, fontWeight: "600", fontSize: 16 }}>
+                      Cancelar
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={saveProfile}
+                    style={{
+                      flex: 1,
+                      backgroundColor: colors.primary,
+                      paddingVertical: 12,
+                      borderRadius: 8,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>
+                      ✓ Salvar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+
+          {/* Modal de Título */}
+          <Modal visible={showTitleModal} transparent animationType="fade">
+            <Pressable
+              style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center" }}
+              onPress={() => setShowTitleModal(false)}
+            >
               <View
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 32,
-                  backgroundColor: colors.primary + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  backgroundColor: colors.surface,
+                  borderRadius: 12,
+                  padding: 20,
+                  width: "80%",
+                  gap: 12,
                 }}
               >
-                <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.primary }}>
-                  CC
+                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground, marginBottom: 8 }}>
+                  Selecione o Título
                 </Text>
+                {(["Dr", "Dra"] as const).map((title) => (
+                  <TouchableOpacity
+                    key={title}
+                    onPress={() => {
+                      setEditingProfile({ ...editingProfile, title });
+                      setShowTitleModal(false);
+                    }}
+                    style={{
+                      paddingVertical: 12,
+                      paddingHorizontal: 16,
+                      backgroundColor: editingProfile.title === title ? colors.primary + "20" : colors.background,
+                      borderRadius: 8,
+                      borderWidth: editingProfile.title === title ? 2 : 1,
+                      borderColor: editingProfile.title === title ? colors.primary : colors.border,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: editingProfile.title === title ? colors.primary : colors.foreground,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {title}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-                  Carlos Charone
-                </Text>
-                <Text style={{ fontSize: 14, color: colors.muted, marginTop: 2 }}>
-                  CRFa 9 - 10025-5
-                </Text>
-              </View>
-            </View>
-
-            {/* Informações */}
-            <View style={{ gap: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
-              <View style={{ gap: 4 }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                  Especialidade
-                </Text>
-                <Text style={{ fontSize: 16, color: colors.foreground }}>
-                  Neuromodulação Craniana
-                </Text>
-              </View>
-
-              <View style={{ gap: 4 }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                  Email
-                </Text>
-                <Text style={{ fontSize: 16, color: colors.foreground }}>
-                  carlos.charone@email.com
-                </Text>
-              </View>
-
-              <View style={{ gap: 4 }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                  Telefone
-                </Text>
-                <Text style={{ fontSize: 16, color: colors.foreground }}>
-                  (11) 99999-9999
-                </Text>
-              </View>
-            </View>
-          </View>
+            </Pressable>
+          </Modal>
 
           {/* Sobre o Aplicativo */}
           <View
@@ -169,8 +526,7 @@ export default function ProfileScreen() {
               Sobre o NeuroLaserMap
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted, lineHeight: 20 }}>
-              Sistema profissional para mapeamento de neuromodulação craniana, permitindo registro de
-              pacientes, criação de planos terapêuticos e acompanhamento de sessões de tratamento.
+              Sistema profissional para mapeamento de neuromodulação craniana, permitindo registro de pacientes, criação de planos terapêuticos e acompanhamento de sessões de tratamento.
             </Text>
             <View style={{ gap: 4, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.border }}>
               <Text style={{ fontSize: 12, color: colors.muted }}>
@@ -178,9 +534,6 @@ export default function ProfileScreen() {
               </Text>
               <Text style={{ fontSize: 12, color: colors.muted }}>
                 Desenvolvido por Carlos Charone
-              </Text>
-              <Text style={{ fontSize: 12, color: colors.muted }}>
-                CREFONO: 9-10025-5
               </Text>
             </View>
           </View>
@@ -281,14 +634,14 @@ export default function ProfileScreen() {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: colors.primary + "20",
+                    backgroundColor: isDark ? colors.primary + "20" : colors.warning + "20",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
                   <Text style={{ fontSize: 20 }}>{isDark ? "🌙" : "☀️"}</Text>
                 </View>
-                <View style={{ flex: 1 }}>
+                <View>
                   <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                     Modo Escuro
                   </Text>
@@ -297,73 +650,23 @@ export default function ProfileScreen() {
                   </Text>
                 </View>
               </View>
-              <Switch
-                value={isDark}
-                onValueChange={toggleTheme}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
-              />
+              <Switch value={isDark} onValueChange={toggleTheme} />
             </View>
           </View>
 
-          {/* Templates de Planos */}
+          {/* Backup */}
           <View style={{ gap: 12 }}>
             <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Templates de Planos
-            </Text>
-            
-            <TouchableOpacity
-              onPress={() => router.push("/templates")}
-              activeOpacity={0.7}
-              style={{
-                backgroundColor: colors.primary + "20",
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.primary,
-                padding: 16,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.primary + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>📋</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
-                  Gerenciar Templates
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.primary, marginTop: 2, opacity: 0.8 }}>
-                  Criar e editar templates personalizados
-                </Text>
-              </View>
-              <IconSymbol name="chevron.right" size={20} color={colors.primary} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Backup e Restauração */}
-          <View style={{ gap: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Backup de Dados
+              Dados
             </Text>
             
             <TouchableOpacity
               onPress={handleBackup}
-              activeOpacity={0.7}
               style={{
-                backgroundColor: colors.success + "20",
+                backgroundColor: colors.surface,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: colors.success,
+                borderColor: colors.border,
                 padding: 16,
                 flexDirection: "row",
                 alignItems: "center",
@@ -375,7 +678,7 @@ export default function ProfileScreen() {
                   width: 40,
                   height: 40,
                   borderRadius: 20,
-                  backgroundColor: colors.success,
+                  backgroundColor: colors.warning + "20",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
@@ -384,81 +687,14 @@ export default function ProfileScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                  Exportar Backup
+                  Fazer Backup
                 </Text>
                 <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
-                  Salvar todos os dados em arquivo JSON
+                  Exportar todos os dados do aplicativo
                 </Text>
               </View>
+              <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
             </TouchableOpacity>
-
-            <View
-              style={{
-                backgroundColor: colors.warning + "10",
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.warning + "30",
-                padding: 12,
-                flexDirection: "row",
-                gap: 8,
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>⚠️</Text>
-              <Text style={{ flex: 1, fontSize: 12, color: colors.muted, lineHeight: 18 }}>
-                Recomendamos fazer backup semanal dos seus dados. Os dados são armazenados localmente no dispositivo.
-              </Text>
-            </View>
-          </View>
-
-          {/* Funcionalidades */}
-          <View style={{ gap: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Funcionalidades
-            </Text>
-            
-            <View style={{ gap: 8 }}>
-              {[
-                { icon: "house.fill", title: "Gerenciamento de Pacientes", desc: "Cadastro e acompanhamento completo" },
-                { icon: "house.fill", title: "Planos Terapêuticos", desc: "Criação de protocolos personalizados" },
-                { icon: "house.fill", title: "Mapeamento do Capacete", desc: "Visualização dos pontos de estimulação" },
-                { icon: "house.fill", title: "Registro de Sessões", desc: "Histórico detalhado de tratamentos" },
-              ].map((item, index) => (
-                <View
-                  key={index}
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    padding: 16,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: colors.primary + "20",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <IconSymbol name={item.icon as any} size={20} color={colors.primary} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                      {item.title}
-                    </Text>
-                    <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
-                      {item.desc}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
           </View>
         </View>
       </ScrollView>

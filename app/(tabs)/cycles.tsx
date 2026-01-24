@@ -71,7 +71,7 @@ export default function CyclesScreen() {
     const newCycle: TherapeuticCycle = {
       id: Date.now().toString(),
       patientId: selectedPatient.id,
-      patientName: selectedPatient.name,
+      patientName: selectedPatient.fullName,
       objectives: formData.objectives,
       plannedSessions: parseInt(formData.plannedSessions),
       estimatedDuration: parseInt(formData.estimatedDuration),
@@ -163,7 +163,7 @@ export default function CyclesScreen() {
                   onPress={() => setShowPatientModal(true)}
                 >
                   <Text className={selectedPatient ? 'text-foreground font-semibold' : 'text-muted'}>
-                    {selectedPatient ? selectedPatient.name : 'Selecione um paciente...'}
+                    {selectedPatient ? selectedPatient.fullName : 'Selecione um paciente...'}
                   </Text>
                   <Text className="text-primary text-lg">›</Text>
                 </TouchableOpacity>
@@ -326,8 +326,8 @@ export default function CyclesScreen() {
                       setShowPatientModal(false);
                     }}
                   >
-                    <Text className="text-lg font-semibold text-foreground">{item.name}</Text>
-                    <Text className="text-sm text-muted mt-1">{item.age} anos</Text>
+                    <Text className="text-lg font-semibold text-foreground">{item.fullName}</Text>
+                    <Text className="text-sm text-muted mt-1">Paciente cadastrado</Text>
                   </TouchableOpacity>
                 )}
                 ListEmptyComponent={
