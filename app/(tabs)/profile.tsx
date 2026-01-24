@@ -9,6 +9,10 @@ import { getReminderAdvance, setReminderAdvance, requestNotificationPermissions 
 import { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { pickImage, takePhoto, saveProfilePhoto, deleteProfilePhoto } from "@/lib/photo-picker";
+import { exportProfessionalReportHTML } from "@/lib/professional-report-generator";
+import { getPlans, getPatients } from "@/lib/local-storage";
+import { Image } from "react-native";
 
 interface ProfessionalProfile {
   title: "Dr" | "Dra";
@@ -18,6 +22,7 @@ interface ProfessionalProfile {
   specialty: string;
   email: string;
   phone: string;
+  photoUri?: string;
 }
 
 const DEFAULT_PROFILE: ProfessionalProfile = {
@@ -137,6 +142,77 @@ export default function ProfileScreen() {
 
   const getFullName = () => {
     return `${profile.title}. ${profile.firstName} ${profile.lastName}`.trim();
+  };
+
+  const handlePhotoUpload = async () => {
+    Alert.alert(
+      "Foto de Perfil",
+      "Escolha uma opcao",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Camera",
+          onPress: async () => {
+            const photoUri = await takePhoto();
+            if (photoUri) {
+              const savedPath = await saveProfilePhoto(photoUri);
+              if (savedPath) {
+                setEditingProfile({ ...editingProfile, photoUri: savedPath });
+              }
+            }
+          },
+        },
+        {
+          text: "Galeria",
+          onPress: async () => {
+            const photoUri = await pickImage();
+            if (photoUri) {
+              const savedPath = await saveProfilePhoto(photoUri);
+              if (savedPath) {
+                setEditingProfile({ ...editingProfile, photoUri: savedPath });
+              }
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleExportReport = async () => {
+    try {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+
+      const plans = await getPlans();
+      const patients = await getPatients();
+
+      const professionalCycles = plans.map((plan) => {
+        const patient = patients.find((p) => p.id === plan.patientId);
+        const status: "Planejado" | "Ativo" | "Concluído" = plan.isActive ? "Ativo" : "Planejado";
+        return {
+          id: plan.id,
+          patientId: plan.patientId,
+          patientName: patient?.fullName || "Desconhecido",
+          objectives: plan.objective,
+          plannedSessions: 0,
+          estimatedDuration: plan.totalDuration,
+          frequency: `${plan.frequency}x/semana`,
+          intensity: "Normal",
+          status: status,
+          startDate: plan.createdAt,
+        };
+      })
+
+      const success = await exportProfessionalReportHTML(profile, professionalCycles);
+      if (success) {
+        Alert.alert("Sucesso", "Relatorio exportado com sucesso!");
+      } else {
+        Alert.alert("Erro", "Nao foi possivel exportar o relatorio");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Ocorreu um erro ao exportar o relatorio");
+    }
   };
 
   return (
@@ -652,6 +728,49 @@ export default function ProfileScreen() {
               </View>
               <Switch value={isDark} onValueChange={toggleTheme} />
             </View>
+          </View>
+
+          {/* Relatorio */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Relatorios
+            </Text>
+            
+            <TouchableOpacity
+              onPress={handleExportReport}
+              style={{
+                backgroundColor: colors.surface,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.primary + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>📊</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                  Exportar Relatorio
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                  Gerar PDF com dados profissionais
+                </Text>
+              </View>
+              <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Backup */}

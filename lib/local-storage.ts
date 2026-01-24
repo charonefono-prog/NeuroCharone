@@ -23,6 +23,7 @@ export interface Patient {
   initialSymptomScore?: number; // Avalia\u00e7\u00e3o inicial dos sintomas (0-10)
   media?: MediaItem[]; // Fotos do paciente
   status: "active" | "paused" | "completed";
+  professionalId?: string; // ID do profissional responsável
   createdAt: string;
   updatedAt: string;
 }
