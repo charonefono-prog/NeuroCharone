@@ -679,3 +679,18 @@
 - [x] Criar graficos de evolucao pessoal
 - [ ] Adicionar filtros por data e tipo de escala
 - [ ] Implementar compartilhamento de relatorio pessoal
+
+
+## Exportacao de Historico de Paciente em PDF
+- [x] Implementar funcao de exportar historico do paciente em PDF
+- [x] Adicionar botao de exportar na tela de historico do paciente
+- [x] Testar exportacao com dados reais
+
+## Manual do Aplicativo em PDF
+- [x] Criar manual completo em PDF
+- [x] Documentar todas as funcionalidades
+- [x] Explicar relacao com capacete posicionador
+- [x] Descrever icones informativos (i)
+- [x] Listar todas as 17 escalas disponiveis
+- [x] Incluir nome do desenvolvedor
+- [x] Gerar PDF final com design sofisticado e clinico

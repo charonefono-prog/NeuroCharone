@@ -16,6 +16,7 @@ import { getPatientScaleHistory, getScaleStatistics } from "@/lib/scale-storage"
 import { ALL_SCALES } from "@/lib/clinical-scales";
 import { ScaleChart, ScaleLineChart } from "@/components/scale-chart";
 import * as Haptics from "expo-haptics";
+import { generatePatientHistoryPDF, sharePatientHistoryPDF } from "@/lib/patient-history-pdf";
 
 export default function PatientHistoryScreen() {
   const router = useRouter();
@@ -76,6 +77,21 @@ export default function PatientHistoryScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await logoutPatient();
     router.replace("/patient-login");
+  };
+
+  const handleExportHistory = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const filePath = await generatePatientHistoryPDF(
+        patientName!,
+        patientId!,
+        scalesByType,
+        statistics
+      );
+      await sharePatientHistoryPDF(filePath, patientName!);
+    } catch (error) {
+      console.error("Erro ao exportar histórico:", error);
+    }
   };
 
   const getScaleInfo = (scaleType: string) => {
@@ -251,6 +267,22 @@ export default function PatientHistoryScreen() {
           </View>
         )}
 
+        {/* Botão de Exportar */}
+        {availableScales.length > 0 && (
+          <TouchableOpacity
+            onPress={handleExportHistory}
+            style={{
+              backgroundColor: colors.primary,
+              borderRadius: 12,
+              padding: 12,
+              alignItems: "center",
+              marginTop: 16,
+            }}
+          >
+            <Text style={{ fontSize: 14, color: "white", fontWeight: "600" }}>📄 Exportar Histórico em PDF</Text>
+          </TouchableOpacity>
+        )}
+
         {/* Botão de Logout */}
         <TouchableOpacity
           onPress={handleLogout}
@@ -259,7 +291,7 @@ export default function PatientHistoryScreen() {
             borderRadius: 12,
             padding: 12,
             alignItems: "center",
-            marginTop: 16,
+            marginTop: 8,
             marginBottom: 24,
           }}
         >
