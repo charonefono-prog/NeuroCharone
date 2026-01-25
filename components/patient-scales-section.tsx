@@ -1,8 +1,10 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, FlatList, Modal, Platform } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import { useColors } from "@/hooks/use-colors";
+import { useProfessionalInfo } from "@/hooks/use-professional-info";
 import { getPatientScaleResponses, getScaleStatistics } from "@/lib/scale-storage";
 import { ALL_SCALES } from "@/lib/clinical-scales";
+import { exportAndShareScaleResult } from "@/lib/pdf-export-service";
 import { ScaleChart, ScaleLineChart } from "./scale-chart";
 
 interface PatientScalesSectionProps {
@@ -12,6 +14,7 @@ interface PatientScalesSectionProps {
 
 export function PatientScalesSection({ patientId, patientName }: PatientScalesSectionProps) {
   const colors = useColors();
+  const { professional } = useProfessionalInfo();
   const [loading, setLoading] = useState(true);
   const [scalesByType, setScalesByType] = useState<Record<string, any[]>>({});
   const [statistics, setStatistics] = useState<Record<string, any>>({});
@@ -272,13 +275,10 @@ export function PatientScalesSection({ patientId, patientName }: PatientScalesSe
                     }}
                     onPress={async () => {
                       try {
-                        const { useProfessionalInfo } = await import("@/hooks/use-professional-info");
-                        const { exportAndShareScaleResult } = await import("@/lib/pdf-export-service");
-                        const hook = useProfessionalInfo();
                         const lastResponse = scalesByType[selectedScaleType][scalesByType[selectedScaleType].length - 1];
                         const success = await exportAndShareScaleResult(
                           lastResponse,
-                          hook.professional,
+                          professional,
                           { id: patientId, fullName: patientName }
                         );
                         if (!success) alert("Erro ao exportar PDF");

@@ -1,8 +1,9 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Platform, Share } from "react-native";
 import { useColors } from "@/hooks/use-colors";
+import { useProfessionalInfo } from "@/hooks/use-professional-info";
 import { ScaleResponse } from "@/lib/clinical-scales";
+import { exportAndShareScaleResult } from "@/lib/pdf-export-service";
 import * as Haptics from "expo-haptics";
-import { Share } from "react-native";
 
 interface ScaleResultScreenProps {
   result: ScaleResponse;
@@ -18,6 +19,7 @@ export function ScaleResultScreen({
   onViewHistory,
 }: ScaleResultScreenProps) {
   const colors = useColors();
+  const { professional } = useProfessionalInfo();
 
   const handleShare = async () => {
     try {
@@ -41,13 +43,10 @@ export function ScaleResultScreen({
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
-      const { useProfessionalInfo } = await import("@/hooks/use-professional-info");
-      const { exportAndShareScaleResult } = await import("@/lib/pdf-export-service");
       
-      const hook = useProfessionalInfo();
       const success = await exportAndShareScaleResult(
         result,
-        hook.professional,
+        professional,
         {
           id: result.patientId,
           fullName: result.patientName,

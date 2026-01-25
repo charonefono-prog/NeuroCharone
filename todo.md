@@ -666,3 +666,8 @@
 - [x] Integrar dados do profissional na geracao de PDF
 - [x] Implementar compartilhamento de arquivo PDF
 - [ ] Testar exportacao e compartilhamento de PDF
+
+## Correccao de Erros - PDF
+- [x] Investigar e corrigir erro ao exportar PDF
+- [x] Validar funcao exportAndShareScaleResult
+- [x] Testar exportacao com dados reais
