@@ -685,3 +685,7 @@
 - [x] Atualizar Escala de House-Brackmann com informacoes detalhadas dos 6 graus
 - [x] Adicionar escala MDS-UPDRS (Movement Disorder Society - Unified Parkinson's Disease Rating Scale)
 - [x] Testar novas escalas
+
+
+## Novas Escalas - Lote 4
+- [x] Adicionar escala ODDRS (Oppositional Defiant Disorder Rating Scale)

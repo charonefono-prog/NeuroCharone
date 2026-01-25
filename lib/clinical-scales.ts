@@ -21,7 +21,8 @@ export type ScaleType =
   | "mdq"
   | "snapiv"
   | "amisos"
-  | "mdsupdrs";
+  | "mdsupdrs"
+  | "oddrs";
 
 export interface ScaleResponse {
   id: string;
@@ -899,6 +900,36 @@ export const AMISOS_SCALE = {
 };
 
 // ============================================
+// 19. ODDRS (Oppositional Defiant Disorder Rating Scale)
+// ============================================
+export const ODDRS_SCALE = {
+  type: "oddrs" as ScaleType,
+  name: "ODDRS (Escala de Avaliacao do Transtorno Opositivo Desafiador)",
+  description: "Avalia sintomas de transtorno opositivo desafiador em criancas e adolescentes",
+  totalItems: 8,
+  items: [
+    { id: "oddrs_1", question: "Frequentemente perde a paciencia?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_2", question: "Frequentemente discute com adultos?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_3", question: "Frequentemente desafia ou se recusa a obedecer regras?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_4", question: "Frequentemente faz coisas para irritar outras pessoas?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_5", question: "Frequentemente culpa outras pessoas por seus erros?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_6", question: "Frequentemente e facilmente se sente ofendido?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_7", question: "Frequentemente e facilmente se sente raivoso?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "oddrs_8", question: "Frequentemente e facilmente e rancoroso ou vingativo?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+  ],
+  calculateScore: (answers: Record<string, number | string>) => {
+    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    const total = values.reduce((a, b) => a + b, 0);
+    let interpretation = "";
+    if (total <= 6) interpretation = "Sintomas minimos ou ausentes";
+    else if (total <= 12) interpretation = "Sintomas leves";
+    else if (total <= 18) interpretation = "Sintomas moderados";
+    else interpretation = "Sintomas severos";
+    return { score: total, interpretation };
+  },
+};
+
+// ============================================
 // 18. MDS-UPDRS (Movement Disorder Society - Unified Parkinson's Disease Rating Scale)
 // ============================================
 export const MDSUPDRS_SCALE = {
@@ -928,7 +959,7 @@ export const MDSUPDRS_SCALE = {
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, MDSUPDRS_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, MDSUPDRS_SCALE
 ];
 
 // Função para obter uma escala específica
