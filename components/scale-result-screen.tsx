@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { ScaleResponse } from "@/lib/clinical-scales";
 import * as Haptics from "expo-haptics";
@@ -55,17 +55,29 @@ export function ScaleResultScreen({
   };
 
   const getScorePercentage = () => {
-    // Calcular percentual baseado no tipo de escala
-    if (scale.type === "doss") {
-      return Math.round((result.totalScore / 7) * 100);
-    } else if (scale.type === "btss") {
-      return Math.round((result.totalScore / 30) * 100);
-    } else if (scale.type === "bdae") {
-      return Math.round((result.totalScore / 24) * 100);
-    } else if (scale.type === "cm" || scale.type === "qcs") {
-      return result.totalScore;
-    } else if (scale.type === "sara") {
-      return Math.round((result.totalScore / 40) * 100);
+    const scaleMaxScores: Record<string, number> = {
+      doss: 7,
+      btss: 30,
+      bdae: 24,
+      cm: 100,
+      qcs: 100,
+      sara: 40,
+      pdq39: 30,
+      fois: 7,
+      dsfs: 10,
+      grbasi: 18,
+      eat10: 40,
+      stopbang: 8,
+      hb: 6,
+      phq9: 27,
+      mdq: 13,
+      snapiv: 54,
+      amisos: 56,
+    };
+    
+    const maxScore = scaleMaxScores[scale.type];
+    if (maxScore) {
+      return Math.round((result.totalScore / maxScore) * 100);
     }
     return 0;
   };

@@ -652,3 +652,4 @@
 - [x] Implementar A-MISO-S (Amsterdam Misophonia Scale)
 - [x] Testar todas as novas escalas
 - [x] Validar cálculos e interpretações
+- [x] Corrigir cálculo de porcentagem nas escalas
