@@ -697,3 +697,6 @@
 - [x] Criar relatório comparativo de comportamento (ODDRS + SNAP-IV)
 - [x] Implementar alertas de severidade para escalas críticas
 - [x] Testar todas as novas funcionalidades
+
+## Correccao de Bugs - Porcentagem
+- [x] Corrigir cálculo de porcentagem para CONNERS e VANDERBILT (mostrando 0%)
