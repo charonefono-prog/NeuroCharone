@@ -99,11 +99,10 @@ export function ScaleResultScreen({
       mdq: 13,
       snapiv: 54,
       amisos: 56,
-      mdsupdrs: 108,
+      mdsupdrs: 20,
       oddrs: 24,
       conners: 30,
       vanderbilt: 24,
-      mdsupdrs_fono: 20,
     };
     
     const maxScore = scaleMaxScores[scale.type];

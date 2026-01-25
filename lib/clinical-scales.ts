@@ -996,82 +996,25 @@ export const ODDRS_SCALE = {
 // ============================================
 // 18. MDS-UPDRS (Movement Disorder Society - Unified Parkinson's Disease Rating Scale)
 // ============================================
-// MDS-UPDRS Completa - 27 itens
 export const MDSUPDRS_SCALE = {
-  type: "mdsupdrs" as any,
+  type: "mdsupdrs" as ScaleType,
   name: "MDS-UPDRS (Escala Unificada de Avaliacao da Doenca de Parkinson)",
-  description: "Avalia sintomas motores e nao-motores em Parkinson - Escala completa com 27 itens",
-  totalItems: 27,
+  description: "Avalia sintomas motores e nao-motores em Parkinson",
+  totalItems: 4,
   items: [
-    // Parte I: Experiencias nao-motoras da vida diaria
-    { id: "mdsupdrs_1", question: "Cognicao: Dificuldade de concentracao ou memoria?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_2", question: "Depressao: Sentimentos de tristeza ou desesperanca?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_3", question: "Ansiedade: Sentimentos de nervosismo ou preocupacao?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_4", question: "Apatia: Dificuldade em iniciar atividades?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_5", question: "Sono noturno: Insonia ou sono fragmentado?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_6", question: "Sonolencia diurna: Adormecer durante o dia?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_7", question: "Dor: Dor ou desconforto corporal?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    // Parte II: Experiencias motoras da vida diaria
-    { id: "mdsupdrs_8", question: "Fala: Dificuldade em falar ou voz fraca?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_9", question: "Salivacao: Excesso de saliva ou baba?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_10", question: "Deglutição: Dificuldade em engolir?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_11", question: "Escrita: Letra pequena ou ilegivel?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_12", question: "Tremor de repouso: Tremor em maos ou pernas?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_13", question: "Lentidao de movimentos: Movimentos lentos ou dificeis?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    // Parte III: Exame motor
-    { id: "mdsupdrs_14", question: "Expressao facial: Reducao da expressao facial?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_15", question: "Rigidez - Pescoco", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_16", question: "Rigidez - Braco direito", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_17", question: "Rigidez - Braco esquerdo", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_18", question: "Rigidez - Perna direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_19", question: "Rigidez - Perna esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_20", question: "Tremor de acao: Tremor ao movimento?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_21", question: "Estabilidade postural: Dificuldade em equilibrio?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_22", question: "Marcha: Dificuldade ao caminhar?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_23", question: "Congelamento da marcha: Pes congelados ao caminhar?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    // Parte IV: Complicacoes motoras
-    { id: "mdsupdrs_24", question: "Discinesia: Movimentos involuntarios?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_25", question: "Flutuacoes motoras: Variacoes no desempenho motor?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_26", question: "Complicacoes nao-motoras: Alucinacoes ou psicose?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_27", question: "Queda de pressao: Tontura ao levantar?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_1", question: "Rigidez - Pescoco", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_2", question: "Rigidez - Braco direito", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_3", question: "Rigidez - Braco esquerdo", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_4", question: "Rigidez - Perna direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
     const total = values.reduce((a, b) => a + b, 0);
     let interpretation = "";
-    if (total <= 20) interpretation = "Doenca de Parkinson minima";
-    else if (total <= 50) interpretation = "Doenca de Parkinson leve";
-    else if (total <= 80) interpretation = "Doenca de Parkinson moderada";
-    else if (total <= 108) interpretation = "Doenca de Parkinson severa";
-    else interpretation = "Doenca de Parkinson muito severa";
-    return { score: total, interpretation };
-  },
-};
-
-// ============================================
-// 22. MDS-UPDRS Variante Fonoaudiológica
-// ============================================
-export const MDSUPDRS_FONO_SCALE = {
-  type: "mdsupdrs_fono" as ScaleType,
-  name: "MDS-UPDRS Variante Fonoaudiológica",
-  description: "Avalia aspectos fonoaudiológicos em Parkinson - Foco em fala, deglutição e expressão facial",
-  totalItems: 5,
-  items: [
-    { id: "mdsupdrs_fono_1", question: "Fala: Dificuldade em falar ou voz fraca?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_fono_2", question: "Salivacao: Excesso de saliva ou baba?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_fono_3", question: "Deglutição: Dificuldade em engolir?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_fono_4", question: "Expressao facial: Reducao da expressao facial?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_fono_5", question: "Rigidez - Pescoco: Rigidez no pescoco?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-  ],
-  calculateScore: (answers: Record<string, number | string>) => {
-    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
-    const total = values.reduce((a, b) => a + b, 0);
-    let interpretation = "";
-    if (total <= 5) interpretation = "Funcao fonoaudiologica normal ou minima alteracao";
-    else if (total <= 10) interpretation = "Alteracoes fonoaudiologicas leves";
-    else if (total <= 15) interpretation = "Alteracoes fonoaudiologicas moderadas";
-    else if (total <= 20) interpretation = "Alteracoes fonoaudiologicas severas";
-    else interpretation = "Alteracoes fonoaudiologicas muito severas";
+    if (total <= 5) interpretation = "Rigidez minima ou ausente";
+    else if (total <= 10) interpretation = "Rigidez leve";
+    else if (total <= 15) interpretation = "Rigidez moderada";
+    else interpretation = "Rigidez severa";
     return { score: total, interpretation };
   },
 };
@@ -1080,7 +1023,7 @@ export const MDSUPDRS_FONO_SCALE = {
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, MDSUPDRS_FONO_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE
 ];
 
 // Função para obter uma escala específica

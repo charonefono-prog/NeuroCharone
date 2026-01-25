@@ -700,14 +700,3 @@
 
 ## Correccao de Bugs - Porcentagem
 - [x] Corrigir cálculo de porcentagem para CONNERS e VANDERBILT (mostrando 0%)
-
-## Correccao de Escalas - Completar MDS-UPDRS
-- [x] Expandir escala MDS-UPDRS com todos os itens completos
-- [x] Adicionar mais secoes (motor, nao-motor, complicacoes)
-- [x] Testar MDS-UPDRS completa
-
-
-## MDS Variante Fonoaudiológica
-- [x] Criar escala MDS Variante Fono com 5 itens
-- [x] Adicionar ao sistema de escalas
-- [x] Testar MDS Variante Fono
