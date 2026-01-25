@@ -270,7 +270,23 @@ export function PatientScalesSection({ patientId, patientName }: PatientScalesSe
                       padding: 16,
                       alignItems: "center",
                     }}
-                    onPress={() => alert("Exportacao de evolucao em PDF disponivel em breve!")}
+                    onPress={async () => {
+                      try {
+                        const { useProfessionalInfo } = await import("@/hooks/use-professional-info");
+                        const { exportAndShareScaleResult } = await import("@/lib/pdf-export-service");
+                        const hook = useProfessionalInfo();
+                        const lastResponse = scalesByType[selectedScaleType][scalesByType[selectedScaleType].length - 1];
+                        const success = await exportAndShareScaleResult(
+                          lastResponse,
+                          hook.professional,
+                          { id: patientId, fullName: patientName }
+                        );
+                        if (!success) alert("Erro ao exportar PDF");
+                      } catch (error) {
+                        console.error("Erro:", error);
+                        alert("Erro ao exportar PDF");
+                      }
+                    }}
                   >
                     <Text style={{ fontSize: 16, color: "white", fontWeight: "600" }}>
                       Exportar Evolucao em PDF

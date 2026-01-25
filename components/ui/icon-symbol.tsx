@@ -35,6 +35,7 @@ const MAPPING = {
   "camera.fill": "camera",
   "play.fill": "play-arrow",
   "cube.transparent": "cube",
+  "gearshape.fill": "settings",
 } as const satisfies Record<string, string>;
 
 /**

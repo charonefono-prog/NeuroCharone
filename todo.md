@@ -658,6 +658,11 @@
 ## Exportacao de Escalas - Novas Funcionalidades
 - [x] Adicionar botao de exportar em PDF no resultado da escala
 - [x] Adicionar botao de exportar evolucao em PDF na aba de efetividade
-- [ ] Implementar gerador de PDF para resultado individual
-- [ ] Implementar gerador de PDF para evolucao completa com graficos
-- [ ] Testar exportacao de PDF para todas as escalas
+- [x] Implementar gerador de PDF para resultado individual
+- [x] Implementar gerador de PDF para evolucao completa com graficos
+- [x] Testar exportacao de PDF para todas as escalas
+- [x] Criar tela de configuracao de profissional (nome, CRM, especialidade)
+- [x] Armazenar dados do profissional em AsyncStorage
+- [x] Integrar dados do profissional na geracao de PDF
+- [x] Implementar compartilhamento de arquivo PDF
+- [ ] Testar exportacao e compartilhamento de PDF

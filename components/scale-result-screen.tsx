@@ -41,9 +41,25 @@ export function ScaleResultScreen({
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
-      alert("Exportacao de PDF disponivel em breve!");
+      const { useProfessionalInfo } = await import("@/hooks/use-professional-info");
+      const { exportAndShareScaleResult } = await import("@/lib/pdf-export-service");
+      
+      const hook = useProfessionalInfo();
+      const success = await exportAndShareScaleResult(
+        result,
+        hook.professional,
+        {
+          id: result.patientId,
+          fullName: result.patientName,
+        }
+      );
+      
+      if (!success) {
+        alert("Erro ao exportar PDF");
+      }
     } catch (error) {
       console.error("Erro ao exportar PDF:", error);
+      alert("Erro ao exportar PDF");
     }
   };
 
