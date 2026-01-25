@@ -636,4 +636,19 @@
 - [x] Implementar armazenamento de múltiplas aplicações da mesma escala
 - [x] Criar gráficos comparativos de evolução
 - [x] Implementar exportação em PDF com escalas e gráficos
-- [ ] Testar todas as escalas e cálculos
+- [x] Testar todas as escalas e cálculos
+
+## Novas Escalas Clínicas - Lote 2
+- [x] Implementar PDQ-39 (Parkinson's Disease Questionnaire)
+- [x] Implementar FOIS (Functional Oral Intake Scale)
+- [x] Implementar DSFS (Drooling Severity and Frequency Scale)
+- [x] Implementar Escala GRBASI
+- [x] Implementar EAT-10 (Eating Assessment Tool-10)
+- [x] Implementar STOP-Bang
+- [x] Implementar Escala de House-Brackmann (H-B)
+- [x] Implementar PHQ-9 (Patient Health Questionnaire-9)
+- [x] Implementar MDQ (Mood Disorder Questionnaire)
+- [x] Implementar SNAP-IV
+- [x] Implementar A-MISO-S (Amsterdam Misophonia Scale)
+- [x] Testar todas as novas escalas
+- [x] Validar cálculos e interpretações
