@@ -1047,11 +1047,40 @@ export const MDSUPDRS_SCALE = {
     return { score: total, interpretation };
   },
 };
+
+// ============================================
+// 22. MDS-UPDRS Variante Fonoaudiológica
+// ============================================
+export const MDSUPDRS_FONO_SCALE = {
+  type: "mdsupdrs_fono" as ScaleType,
+  name: "MDS-UPDRS Variante Fonoaudiológica",
+  description: "Avalia aspectos fonoaudiológicos em Parkinson - Foco em fala, deglutição e expressão facial",
+  totalItems: 5,
+  items: [
+    { id: "mdsupdrs_fono_1", question: "Fala: Dificuldade em falar ou voz fraca?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_fono_2", question: "Salivacao: Excesso de saliva ou baba?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_fono_3", question: "Deglutição: Dificuldade em engolir?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_fono_4", question: "Expressao facial: Reducao da expressao facial?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_fono_5", question: "Rigidez - Pescoco: Rigidez no pescoco?", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+  ],
+  calculateScore: (answers: Record<string, number | string>) => {
+    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    const total = values.reduce((a, b) => a + b, 0);
+    let interpretation = "";
+    if (total <= 5) interpretation = "Funcao fonoaudiologica normal ou minima alteracao";
+    else if (total <= 10) interpretation = "Alteracoes fonoaudiologicas leves";
+    else if (total <= 15) interpretation = "Alteracoes fonoaudiologicas moderadas";
+    else if (total <= 20) interpretation = "Alteracoes fonoaudiologicas severas";
+    else interpretation = "Alteracoes fonoaudiologicas muito severas";
+    return { score: total, interpretation };
+  },
+};
+
 // Array com todas as escalas
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, MDSUPDRS_FONO_SCALE
 ];
 
 // Função para obter uma escala específica

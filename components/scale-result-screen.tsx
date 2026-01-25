@@ -103,6 +103,7 @@ export function ScaleResultScreen({
       oddrs: 24,
       conners: 30,
       vanderbilt: 24,
+      mdsupdrs_fono: 20,
     };
     
     const maxScore = scaleMaxScores[scale.type];
