@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { ScaleResultScreen } from "@/components/scale-result-screen";
 import { ALL_SCALES, ScaleType, calculateScaleScore } from "@/lib/clinical-scales";
 import { saveScaleResponse, getPatientScaleResponses, getScaleEvolution, getScaleStatistics } from "@/lib/scale-storage";
 import { getPatients } from "@/lib/local-storage";
@@ -23,10 +24,12 @@ export default function ScalesScreen() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showScaleForm, setShowScaleForm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [answers, setAnswers] = useState<Record<string, number | string>>({});
   const [notes, setNotes] = useState("");
   const [scaleHistory, setScaleHistory] = useState<any[]>([]);
   const [statistics, setStatistics] = useState<any>(null);
+  const [lastResult, setLastResult] = useState<any>(null);
 
   useEffect(() => {
     loadPatients();
@@ -92,13 +95,17 @@ export default function ScalesScreen() {
         if (Platform.OS !== "web") {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        Alert.alert("Sucesso", `Escala ${selectedScale.name} salva com sucesso!`);
+        
+        // Salvar resultado para exibir na tela de resultados
+        setLastResult(response);
+        
+        // Fechar formulário e mostrar resultados
         setShowScaleForm(false);
-        setSelectedScale(null);
-        setSelectedPatient(null);
+        setShowResults(true);
       }
     } catch (error) {
       Alert.alert("Erro", "Não foi possível salvar a escala");
+      console.error("Erro ao salvar escala:", error);
     }
   };
 
@@ -110,10 +117,18 @@ export default function ScalesScreen() {
       const stats = await getScaleStatistics(selectedPatient.id, selectedScale.type as ScaleType);
       setScaleHistory(history);
       setStatistics(stats);
+      setShowResults(false);
       setShowHistory(true);
     } catch (error) {
       Alert.alert("Erro", "Não foi possível carregar o histórico");
     }
+  };
+
+  const handleCloseResults = () => {
+    setShowResults(false);
+    setSelectedScale(null);
+    setSelectedPatient(null);
+    setLastResult(null);
   };
 
   return (
@@ -410,13 +425,25 @@ export default function ScalesScreen() {
                   }}
                 >
                   <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>
-                    ✓ Salvar
+                    ✓ Enviar
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
           </ScrollView>
         </ScreenContainer>
+      </Modal>
+
+      {/* Modal - Resultados */}
+      <Modal visible={showResults} transparent animationType="slide">
+        {lastResult && selectedScale && (
+          <ScaleResultScreen
+            result={lastResult}
+            scale={selectedScale}
+            onClose={handleCloseResults}
+            onViewHistory={handleViewHistory}
+          />
+        )}
       </Modal>
 
       {/* Modal - Histórico e Gráficos */}

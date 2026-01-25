@@ -24,6 +24,7 @@ import { AuditHistory } from "@/components/audit-history";
 import { PatientMediaGallery } from "@/components/patient-media-gallery";
 import { TreatmentTimeline } from "@/components/treatment-timeline";
 import { EffectivenessDashboard } from "@/components/effectiveness-dashboard";
+import { PatientScalesSection } from "@/components/patient-scales-section";
 
 
 import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
@@ -779,8 +780,9 @@ export default function PatientDetailScreen() {
 
             {/* Aba de Efetividade */}
             {activeTab === "effectiveness" && (
-              <View style={{ padding: 16 }}>
+              <View style={{ gap: 24 }}>
                 <EffectivenessDashboard sessions={sessions} plans={plans} patients={[patient]} />
+                <PatientScalesSection patientId={id!} patientName={patient.fullName} />
               </View>
             )}
 
