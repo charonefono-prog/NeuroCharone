@@ -25,7 +25,7 @@ export function ScaleResultScreen({
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
 
-      const message = `📊 Resultado da Escala ${result.scaleName}\n\nPaciente: ${result.patientName}\nPontuação: ${result.totalScore}\nInterpretação: ${result.interpretation}\n\nData: ${new Date(result.date).toLocaleDateString("pt-BR")}`;
+      const message = `Resultado da Escala ${result.scaleName}\n\nPaciente: ${result.patientName}\nPontuacao: ${result.totalScore}\nInterpretacao: ${result.interpretation}\n\nData: ${new Date(result.date).toLocaleDateString("pt-BR")}`;
 
       await Share.share({
         message,
@@ -33,6 +33,17 @@ export function ScaleResultScreen({
       });
     } catch (error) {
       console.error("Erro ao compartilhar:", error);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      alert("Exportacao de PDF disponivel em breve!");
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
     }
   };
 
@@ -336,7 +347,24 @@ export function ScaleResultScreen({
             }}
           >
             <Text style={{ fontSize: 16, color: "white", fontWeight: "600" }}>
-              📈 Ver Histórico
+              Ver Historico
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleExportPDF}
+            style={{
+              backgroundColor: colors.success,
+              borderRadius: 12,
+              padding: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            <Text style={{ fontSize: 16, color: "white", fontWeight: "600" }}>
+              Exportar em PDF
             </Text>
           </TouchableOpacity>
 

@@ -262,10 +262,25 @@ export function PatientScalesSection({ patientId, patientName }: PatientScalesSe
                   {/* Gráfico de Linha */}
                   <ScaleLineChart data={scalesByType[selectedScaleType]} />
 
-                  {/* Histórico Detalhado */}
+                  {/* Botao de Exportar */}
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: colors.success,
+                      borderRadius: 12,
+                      padding: 16,
+                      alignItems: "center",
+                    }}
+                    onPress={() => alert("Exportacao de evolucao em PDF disponivel em breve!")}
+                  >
+                    <Text style={{ fontSize: 16, color: "white", fontWeight: "600" }}>
+                      Exportar Evolucao em PDF
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Historico Detalhado */}
                   <View style={{ gap: 12 }}>
                     <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
-                      Histórico Completo
+                      Historico Completo
                     </Text>
                     {scalesByType[selectedScaleType].map((response, index) => (
                       <View

@@ -653,3 +653,11 @@
 - [x] Testar todas as novas escalas
 - [x] Validar cálculos e interpretações
 - [x] Corrigir cálculo de porcentagem nas escalas
+
+
+## Exportacao de Escalas - Novas Funcionalidades
+- [x] Adicionar botao de exportar em PDF no resultado da escala
+- [x] Adicionar botao de exportar evolucao em PDF na aba de efetividade
+- [ ] Implementar gerador de PDF para resultado individual
+- [ ] Implementar gerador de PDF para evolucao completa com graficos
+- [ ] Testar exportacao de PDF para todas as escalas
