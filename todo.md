@@ -689,3 +689,11 @@
 
 ## Novas Escalas - Lote 4
 - [x] Adicionar escala ODDRS (Oppositional Defiant Disorder Rating Scale)
+
+
+## Próximos Passos - Implementação Completa
+- [x] Adicionar escala CONNERS (ADHD Rating Scale)
+- [x] Adicionar escala VANDERBILT (ADHD Rating Scale)
+- [x] Criar relatório comparativo de comportamento (ODDRS + SNAP-IV)
+- [x] Implementar alertas de severidade para escalas críticas
+- [x] Testar todas as novas funcionalidades

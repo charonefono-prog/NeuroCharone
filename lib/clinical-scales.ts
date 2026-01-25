@@ -22,7 +22,9 @@ export type ScaleType =
   | "snapiv"
   | "amisos"
   | "mdsupdrs"
-  | "oddrs";
+  | "oddrs"
+  | "conners"
+  | "vanderbilt";
 
 export interface ScaleResponse {
   id: string;
@@ -900,6 +902,68 @@ export const AMISOS_SCALE = {
 };
 
 // ============================================
+// 20. CONNERS (ADHD Rating Scale - Conners)
+// ============================================
+export const CONNERS_SCALE = {
+  type: "conners" as ScaleType,
+  name: "CONNERS (Escala de Avaliacao de TDAH - Conners)",
+  description: "Avalia sintomas de TDAH em criancas e adolescentes",
+  totalItems: 10,
+  items: [
+    { id: "conners_1", question: "Tem dificuldade em prestar atencao?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_2", question: "E impulsivo?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_3", question: "Nao consegue ficar quieto?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_4", question: "Nao consegue esperar sua vez?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_5", question: "Frequentemente distrai-se facilmente?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_6", question: "Tem dificuldade em seguir instrucoes?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_7", question: "Fala excessivamente?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_8", question: "Tem dificuldade em organizar tarefas?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_9", question: "Frequentemente perde coisas necessarias?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+    { id: "conners_10", question: "Frequentemente interrompe ou invade?", options: [{ value: 0, label: "Nao" }, { value: 1, label: "Um pouco" }, { value: 2, label: "Bastante" }, { value: 3, label: "Muito" }] },
+  ],
+  calculateScore: (answers: Record<string, number | string>) => {
+    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    const total = values.reduce((a, b) => a + b, 0);
+    let interpretation = "";
+    if (total <= 10) interpretation = "Sem sintomas de TDAH";
+    else if (total <= 20) interpretation = "Sintomas leves de TDAH";
+    else if (total <= 30) interpretation = "Sintomas moderados de TDAH";
+    else interpretation = "Sintomas severos de TDAH";
+    return { score: total, interpretation };
+  },
+};
+
+// ============================================
+// 21. VANDERBILT (ADHD Rating Scale - Vanderbilt)
+// ============================================
+export const VANDERBILT_SCALE = {
+  type: "vanderbilt" as ScaleType,
+  name: "VANDERBILT (Escala de Avaliacao de TDAH - Vanderbilt)",
+  description: "Avalia sintomas de TDAH e transtornos comorbidos",
+  totalItems: 8,
+  items: [
+    { id: "vanderbilt_1", question: "Nao consegue prestar atencao aos detalhes?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_2", question: "Tem dificuldade em manter a atencao?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_3", question: "Nao parece ouvir quando falam diretamente?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_4", question: "Tem dificuldade em organizar tarefas?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_5", question: "E relutante em tarefas que requerem esforco mental?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_6", question: "Frequentemente perde coisas necessarias?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_7", question: "E facilmente distraido por estimulos externos?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+    { id: "vanderbilt_8", question: "E esquecido em atividades diarias?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Muito frequentemente" }] },
+  ],
+  calculateScore: (answers: Record<string, number | string>) => {
+    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    const total = values.reduce((a, b) => a + b, 0);
+    let interpretation = "";
+    if (total <= 8) interpretation = "Sem sintomas de TDAH";
+    else if (total <= 16) interpretation = "Sintomas leves de TDAH";
+    else if (total <= 20) interpretation = "Sintomas moderados de TDAH";
+    else interpretation = "Sintomas severos de TDAH";
+    return { score: total, interpretation };
+  },
+};
+
+// ============================================
 // 19. ODDRS (Oppositional Defiant Disorder Rating Scale)
 // ============================================
 export const ODDRS_SCALE = {
@@ -959,7 +1023,7 @@ export const MDSUPDRS_SCALE = {
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, MDSUPDRS_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE
 ];
 
 // Função para obter uma escala específica
