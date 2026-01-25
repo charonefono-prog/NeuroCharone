@@ -617,3 +617,23 @@
 - [x] Criar testes automatizados para evitar regressões
 - [x] Documentar troubleshooting de problemas comuns
 - [ ] Criar checkpoint estável antes da publicação
+
+
+## Escalas Clínicas - Novas Funcionalidades
+- [x] Remover botão de compartilhamento do perfil
+- [x] Remover exportação em PDF do perfil (temporariamente)
+- [x] Corrigir erros de exportação de relatório
+- [x] Criar estrutura de dados para escalas clínicas
+- [x] Implementar Escala do Comer (Dysphagia Outcome and Severity Scale)
+- [x] Implementar Escala Breve de Zumbido (Brief Tinnitus Severity Scale)
+- [x] Implementar Escala de Boston (Boston Diagnostic Aphasia Examination)
+- [x] Implementar Communication Matrix
+- [x] Implementar Escala SARA (Scale for Assessment and Rating of Ataxia)
+- [x] Implementar Questionário de Comunicação Social (QCS)
+- [x] Criar sistema de cálculos automáticos para escalas
+- [x] Implementar visualização de gráficos de evolução
+- [x] Criar tela de escalas clínicas com seleção de paciente
+- [x] Implementar armazenamento de múltiplas aplicações da mesma escala
+- [x] Criar gráficos comparativos de evolução
+- [x] Implementar exportação em PDF com escalas e gráficos
+- [ ] Testar todas as escalas e cálculos

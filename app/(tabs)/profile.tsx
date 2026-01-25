@@ -10,9 +10,7 @@ import { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pickImage, takePhoto, saveProfilePhoto, deleteProfilePhoto } from "@/lib/photo-picker";
-import { exportProfessionalReportHTML } from "@/lib/professional-report-generator";
-import { getPlans, getPatients } from "@/lib/local-storage";
-import { Image, Share } from "react-native";
+import { Image } from "react-native";
 
 interface ProfessionalProfile {
   title: "Dr" | "Dra";
@@ -178,59 +176,7 @@ export default function ProfileScreen() {
     );
   };
 
-  const handleExportReport = async () => {
-    try {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      }
 
-      const plans = await getPlans();
-      const patients = await getPatients();
-
-      const professionalCycles = plans.map((plan) => {
-        const patient = patients.find((p) => p.id === plan.patientId);
-        const status: "Planejado" | "Ativo" | "Concluído" = plan.isActive ? "Ativo" : "Planejado";
-        return {
-          id: plan.id,
-          patientId: plan.patientId,
-          patientName: patient?.fullName || "Desconhecido",
-          objectives: plan.objective,
-          plannedSessions: 0,
-          estimatedDuration: plan.totalDuration,
-          frequency: `${plan.frequency}x/semana`,
-          intensity: "Normal",
-          status: status,
-          startDate: plan.createdAt,
-        };
-      })
-
-      const success = await exportProfessionalReportHTML(profile, professionalCycles);
-      if (success) {
-        Alert.alert("Sucesso", "Relatorio exportado com sucesso!");
-      } else {
-        Alert.alert("Erro", "Nao foi possivel exportar o relatorio");
-      }
-    } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao exportar o relatorio");
-    }
-  };
-
-  const handleShareVersion = async () => {
-    try {
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      
-      const message = `🚀 NeuroLaserMap v1.0.0\n\nSistema profissional para mapeamento de neuromodulação craniana.\n\n📱 Download:\nAndroid: https://files.manuscdn.com/user_upload_by_module/session_file/310419663028848082/MFGdqsOvwAmbTJRf.apk\n\nDesenvolvido por Carlos Charone`;
-      
-      await Share.share({
-        message,
-        title: "Compartilhar NeuroLaserMap",
-      });
-    } catch (error) {
-      console.error("Erro ao compartilhar:", error);
-    }
-  };
 
   return (
     <ScreenContainer className="p-6">
@@ -747,91 +693,7 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          {/* Relatorio */}
-          <View style={{ gap: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Relatorios
-            </Text>
-            
-            <TouchableOpacity
-              onPress={handleExportReport}
-              style={{
-                backgroundColor: colors.surface,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.border,
-                padding: 16,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.primary + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>📊</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                  Exportar Relatorio
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
-                  Gerar PDF com dados profissionais
-                </Text>
-              </View>
-              <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
-            </TouchableOpacity>
-          </View>
 
-          {/* Compartilhar Versão */}
-          <View style={{ gap: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Compartilhar
-            </Text>
-            
-            <TouchableOpacity
-              onPress={handleShareVersion}
-              style={{
-                backgroundColor: colors.surface,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.border,
-                padding: 16,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.primary + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>📤</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                  Compartilhar NeuroLaserMap
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
-                  Enviar link de download para amigos
-                </Text>
-              </View>
-              <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
-            </TouchableOpacity>
-          </View>
 
           {/* Backup */}
           <View style={{ gap: 12 }}>
