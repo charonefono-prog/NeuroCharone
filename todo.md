@@ -671,3 +671,11 @@
 - [x] Investigar e corrigir erro ao exportar PDF
 - [x] Validar funcao exportAndShareScaleResult
 - [x] Testar exportacao com dados reais
+
+
+## Visualizacao de Historico para Pacientes
+- [x] Criar tela de login/autenticacao para pacientes
+- [x] Implementar visualizacao de historico de escalas do paciente
+- [x] Criar graficos de evolucao pessoal
+- [ ] Adicionar filtros por data e tipo de escala
+- [ ] Implementar compartilhamento de relatorio pessoal
