@@ -679,3 +679,9 @@
 - [x] Criar graficos de evolucao pessoal
 - [ ] Adicionar filtros por data e tipo de escala
 - [ ] Implementar compartilhamento de relatorio pessoal
+
+
+## Atualizacao de Escalas - Lote 3
+- [x] Atualizar Escala de House-Brackmann com informacoes detalhadas dos 6 graus
+- [x] Adicionar escala MDS-UPDRS (Movement Disorder Society - Unified Parkinson's Disease Rating Scale)
+- [x] Testar novas escalas

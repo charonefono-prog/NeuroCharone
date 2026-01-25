@@ -20,7 +20,8 @@ export type ScaleType =
   | "phq9"
   | "mdq"
   | "snapiv"
-  | "amisos";
+  | "amisos"
+  | "mdsupdrs";
 
 export interface ScaleResponse {
   id: string;
@@ -729,15 +730,26 @@ export const STOPBANG_SCALE = {
 export const HB_SCALE = {
   type: "hb" as ScaleType,
   name: "Escala de House-Brackmann (Paralisia Facial)",
-  description: "Avalia grau de paralisia facial",
+  description: "Avalia grau de paralisia facial com criterios clinicos detalhados",
   totalItems: 1,
   items: [
-    { id: "hb_1", question: "Grau de paralisia facial", options: [{ value: 1, label: "I - Normal" }, { value: 2, label: "II - Paralisia leve" }, { value: 3, label: "III - Paralisia moderada" }, { value: 4, label: "IV - Paralisia moderadamente severa" }, { value: 5, label: "V - Paralisia severa" }, { value: 6, label: "VI - Paralisia total" }] },
+    { 
+      id: "hb_1", 
+      question: "Grau de paralisia facial", 
+      options: [
+        { value: 1, label: "I - Normal", description: "Funcao facial normal em todas as areas" },
+        { value: 2, label: "II - Disfuncao Leve", description: "Geral: leve fraqueza notavel apenas a inspeccao. Palpebra: sem repouso, simetria e tonus normais. Ao movimento: sem movimento. Teste: funcao boa a moderada. Olho: fechamento completo com minimo esforco. Boca: leve assimetria" },
+        { value: 3, label: "III - Disfuncao Moderada", description: "Geral: diferenca obvia mas nao desfigurante entre os dois lados. Palpebra: notaveis mas nao severos. Ao movimento: sem movimento. Teste: movimento moderado a leve. Olho: fechamento completo com esforco. Boca: levemente flacida com o maximo esforco" },
+        { value: 4, label: "IV - Disfuncao Moderadamente Severa", description: "Geral: fraqueza obvia e/ou assimetria desfigurante. Ao movimento: sem repouso e tonus normais. Teste: nenhum movimento. Olho: fechamento incompleto. Boca: assimetria com o maximo esforco" },
+        { value: 5, label: "V - Disfuncao Severa", description: "Geral: apenas uma movimentacao discretamente perceptivel. Ao movimento: sem repouso: assimetria. Teste: nenhum movimento. Olho: fechamento incompleto. Boca: movimento discreto" },
+        { value: 6, label: "VI - Paralisia Total", description: "Nenhum movimento" }
+      ]
+    },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
     const score = values[0] || 0;
-    const labels = ["Normal", "Paralisia leve", "Paralisia moderada", "Paralisia moderadamente severa", "Paralisia severa", "Paralisia total"];
+    const labels = ["Normal", "Disfuncao Leve", "Disfuncao Moderada", "Disfuncao Moderadamente Severa", "Disfuncao Severa", "Paralisia Total"];
     return { score, interpretation: labels[score - 1] || "Desconhecido" };
   },
 };
@@ -886,11 +898,37 @@ export const AMISOS_SCALE = {
   },
 };
 
+// ============================================
+// 18. MDS-UPDRS (Movement Disorder Society - Unified Parkinson's Disease Rating Scale)
+// ============================================
+export const MDSUPDRS_SCALE = {
+  type: "mdsupdrs" as ScaleType,
+  name: "MDS-UPDRS (Escala Unificada de Avaliacao da Doenca de Parkinson)",
+  description: "Avalia sintomas motores e nao-motores em Parkinson",
+  totalItems: 4,
+  items: [
+    { id: "mdsupdrs_1", question: "Rigidez - Pescoco", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_2", question: "Rigidez - Braco direito", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_3", question: "Rigidez - Braco esquerdo", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_4", question: "Rigidez - Perna direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+  ],
+  calculateScore: (answers: Record<string, number | string>) => {
+    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    const total = values.reduce((a, b) => a + b, 0);
+    let interpretation = "";
+    if (total <= 5) interpretation = "Rigidez minima ou ausente";
+    else if (total <= 10) interpretation = "Rigidez leve";
+    else if (total <= 15) interpretation = "Rigidez moderada";
+    else interpretation = "Rigidez severa";
+    return { score: total, interpretation };
+  },
+};
+
 // Array com todas as escalas
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, MDSUPDRS_SCALE
 ];
 
 // Função para obter uma escala específica
