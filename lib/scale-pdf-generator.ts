@@ -5,6 +5,7 @@
 
 import { ScaleResponse } from "./clinical-scales";
 import { getScale } from "./clinical-scales";
+import { generateQRCodeSVG } from "./qr-code-generator";
 
 /**
  * Gera número de protocolo único
@@ -23,6 +24,18 @@ function getLogoBase64(): string {
     <circle cx="40" cy="30" r="18" fill="#0a7ea4"/>
     <path d="M40 52 C48 52 54 48 54 42 C54 36 48 32 40 32 C32 32 26 36 26 42 C26 48 32 52 40 52" fill="#0a7ea4"/>
   </svg>`;
+  try {
+    return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Retorna QR code em base64
+ */
+function getQRCodeBase64(text: string, size: number = 100): string {
+  const svg = generateQRCodeSVG(text, size);
   try {
     return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
   } catch {
@@ -68,6 +81,7 @@ export function generateScalePDFHTML(
   
   const protocolNumber = generateProtocolNumber();
   const logoBase64 = getLogoBase64();
+  const qrCodeBase64 = getQRCodeBase64(protocolNumber, 100);
 
   const html = `
     <!DOCTYPE html>
@@ -530,11 +544,14 @@ export function generateScalePDFHTML(
             : ""
         }
         
-        <!-- Rodapé -->
+        <!-- Rodapé com QR Code -->
         <div class="footer">
           <div class="footer-section">
             <span class="footer-label">Sistema</span>
             <span>NeuroLaserMaps</span>
+          </div>
+          <div class="footer-section">
+            ${qrCodeBase64 ? `<img src="${qrCodeBase64}" alt="QR Code" style="width: 80px; height: 80px;" />` : ''}
           </div>
           <div class="footer-section">
             <span class="footer-label">Protocolo</span>

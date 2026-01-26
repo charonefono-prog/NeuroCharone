@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Alert, Platform } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Alert, Platform } from "react-native";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -8,6 +8,7 @@ import { getPatientScaleResponses } from "@/lib/scale-storage";
 import { useProfessionalInfo } from "@/hooks/use-professional-info";
 import { exportAndShareEffectivenessReport } from "@/lib/effectiveness-pdf-generator";
 import { ScaleResponse } from "@/lib/clinical-scales";
+import { EvolutionChart } from "@/components/evolution-chart";
 import * as Haptics from "expo-haptics";
 
 export default function EffectivenessScreen() {
@@ -237,6 +238,22 @@ export default function EffectivenessScreen() {
                       </Text>
                     </View>
                   </View>
+                </View>
+              )}
+
+              {/* Gráficos de Evolução */}
+              {scaleResponses.length > 1 && (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
+                    Gráficos de Evolução
+                  </Text>
+                  {Array.from(new Set(scaleResponses.map((r) => r.scaleName))).map((scaleName) => (
+                    <EvolutionChart
+                      key={scaleName}
+                      scaleResponses={scaleResponses}
+                      scaleName={scaleName}
+                    />
+                  ))}
                 </View>
               )}
 

@@ -7,6 +7,7 @@ import { Share } from "react-native";
 import { ScaleResponse } from "./clinical-scales";
 import { Patient } from "./local-storage";
 import { ProfessionalInfo } from "@/hooks/use-professional-info";
+import { generateQRCodeSVG } from "./qr-code-generator";
 
 /**
  * Gera número de protocolo único
@@ -33,6 +34,18 @@ function getLogoBase64(): string {
 }
 
 /**
+ * Retorna QR code em base64
+ */
+function getQRCodeBase64(text: string, size: number = 100): string {
+  const svg = generateQRCodeSVG(text, size);
+  try {
+    return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+  } catch {
+    return '';
+  }
+}
+
+/**
  * Gera HTML para o relatório de efetividade
  */
 export function generateEffectivenessReportHTML(
@@ -49,6 +62,7 @@ export function generateEffectivenessReportHTML(
   
   const protocolNumber = generateProtocolNumber();
   const logoBase64 = getLogoBase64();
+  const qrCodeBase64 = getQRCodeBase64(protocolNumber, 100);
 
   // Agrupar escalas por tipo
   const scalesByType: Record<string, ScaleResponse[]> = {};
@@ -382,11 +396,14 @@ export function generateEffectivenessReportHTML(
         <!-- Escalas Detalhadas -->
         ${scaleTablesHTML}
         
-        <!-- Rodapé -->
+        <!-- Rodapé com QR Code -->
         <div class="footer">
           <div class="footer-section">
             <span class="footer-label">Sistema</span>
             <span>NeuroLaserMaps</span>
+          </div>
+          <div class="footer-section">
+            ${qrCodeBase64 ? `<img src="${qrCodeBase64}" alt="QR Code" style="width: 80px; height: 80px;" />` : ''}
           </div>
           <div class="footer-section">
             <span class="footer-label">Protocolo</span>
