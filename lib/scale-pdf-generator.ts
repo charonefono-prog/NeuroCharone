@@ -6,6 +6,30 @@
 import { ScaleResponse } from "./clinical-scales";
 import { getScale } from "./clinical-scales";
 
+/**
+ * Gera número de protocolo único
+ */
+function generateProtocolNumber(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `NLM-${timestamp}-${random}`;
+}
+
+/**
+ * Retorna logo em base64 (SVG simples)
+ */
+function getLogoBase64(): string {
+  const svg = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="30" r="18" fill="#0a7ea4"/>
+    <path d="M40 52 C48 52 54 48 54 42 C54 36 48 32 40 32 C32 32 26 36 26 42 C26 48 32 52 40 52" fill="#0a7ea4"/>
+  </svg>`;
+  try {
+    return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+  } catch {
+    return '';
+  }
+}
+
 interface ProfessionalInfo {
   title: "Dr" | "Dra";
   firstName: string;
@@ -41,6 +65,9 @@ export function generateScalePDFHTML(
     month: "long",
     day: "numeric",
   });
+  
+  const protocolNumber = generateProtocolNumber();
+  const logoBase64 = getLogoBase64();
 
   const html = `
     <!DOCTYPE html>
@@ -287,7 +314,50 @@ export function generateScalePDFHTML(
           margin-top: 30px;
           font-size: 11px;
           color: #999;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 10px;
+        }
+        
+        .footer-section {
           text-align: center;
+        }
+        
+        .footer-label {
+          font-weight: bold;
+          display: block;
+          margin-bottom: 3px;
+        }
+        
+        .header {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          border-bottom: 3px solid #0a7ea4;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        
+        .logo {
+          width: 80px;
+          height: 80px;
+          flex-shrink: 0;
+        }
+        
+        .logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        
+        .header-content {
+          flex: 1;
+        }
+        
+        .protocol-number {
+          font-size: 12px;
+          color: #999;
+          font-family: monospace;
         }
         
         .page-break {
@@ -311,8 +381,12 @@ export function generateScalePDFHTML(
       <div class="container">
         <!-- Header -->
         <div class="header">
-          <div class="header-title">${scale.name}</div>
-          <div class="header-subtitle">Avaliação Clínica - ${evaluationDate}</div>
+          ${logoBase64 ? `<div class="logo"><img src="${logoBase64}" alt="NeuroLaserMaps" /></div>` : ''}
+          <div class="header-content">
+            <div class="header-title">${scale.name}</div>
+            <div class="header-subtitle">Avaliação Clínica - ${evaluationDate}</div>
+            <div class="protocol-number">Protocolo: ${protocolNumber}</div>
+          </div>
         </div>
         
         <!-- Informações do Sistema -->
@@ -458,8 +532,18 @@ export function generateScalePDFHTML(
         
         <!-- Rodapé -->
         <div class="footer">
-          <p>Relatório gerado automaticamente pelo NeuroLaserMap</p>
-          <p>${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR")}</p>
+          <div class="footer-section">
+            <span class="footer-label">Sistema</span>
+            <span>NeuroLaserMaps</span>
+          </div>
+          <div class="footer-section">
+            <span class="footer-label">Protocolo</span>
+            <span>${protocolNumber}</span>
+          </div>
+          <div class="footer-section">
+            <span class="footer-label">Data</span>
+            <span>${evaluationDate}</span>
+          </div>
         </div>
       </div>
     </body>
