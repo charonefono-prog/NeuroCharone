@@ -36,6 +36,7 @@ const MAPPING = {
   "play.fill": "play-arrow",
   "cube.transparent": "cube",
   "gearshape.fill": "settings",
+  "chart.bar.fill": "bar-chart",
 } as const satisfies Record<string, string>;
 
 /**

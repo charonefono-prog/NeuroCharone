@@ -391,44 +391,165 @@ export default function PatientsScreen() {
 
                   {/* Botões de Ação */}
                   <View style={{ flexDirection: "row", gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        Alert.alert(
-                          patient.status === "active" ? "Desativar Paciente" : "Reativar Paciente",
-                          patient.status === "active" ? "Tem certeza que deseja desativar este paciente?" : "Tem certeza que deseja reativar este paciente?",
-                          [
-                            { text: "Cancelar", style: "cancel" },
-                            {
-                              text: patient.status === "active" ? "Desativar" : "Reativar",
-                              style: "destructive",
-                              onPress: async () => {
-                                try {
-                                  const newStatus = patient.status === "active" ? ("paused" as const) : ("active" as const);
-                                  await updatePatient(patient.id, { status: newStatus });
-                                  loadPatients();
-                                } catch (error) {
-                                  Alert.alert("Erro", "Não foi possível atualizar o paciente.");
-                                  console.error(error);
-                                }
+                    {patient.status !== "completed" && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            "Marcar como Concluído",
+                            "Tem certeza que deseja marcar este paciente como concluído?",
+                            [
+                              { text: "Cancelar", style: "cancel" },
+                              {
+                                text: "Concluir",
+                                style: "default",
+                                onPress: async () => {
+                                  try {
+                                    await updatePatient(patient.id, { status: "completed" });
+                                    loadPatients();
+                                  } catch (error) {
+                                    Alert.alert("Erro", "Não foi possível atualizar o paciente.");
+                                    console.error(error);
+                                  }
+                                },
                               },
-                            },
-                          ]
-                        );
-                      }}
-                      activeOpacity={0.7}
-                      style={{
-                        flex: 1,
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        borderRadius: 8,
-                        backgroundColor: patient.status === "active" ? colors.warning : colors.success,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
-                        {patient.status === "active" ? "Desativar" : "Reativar"}
-                      </Text>
-                    </TouchableOpacity>
+                            ]
+                          );
+                        }}
+                        activeOpacity={0.7}
+                        style={{
+                          flex: 1,
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          backgroundColor: colors.success,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                          Concluir
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    
+                    {patient.status === "completed" && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            "Reabrir Paciente",
+                            "Tem certeza que deseja reabrir este paciente?",
+                            [
+                              { text: "Cancelar", style: "cancel" },
+                              {
+                                text: "Reabrir",
+                                style: "default",
+                                onPress: async () => {
+                                  try {
+                                    await updatePatient(patient.id, { status: "active" });
+                                    loadPatients();
+                                  } catch (error) {
+                                    Alert.alert("Erro", "Não foi possível atualizar o paciente.");
+                                    console.error(error);
+                                  }
+                                },
+                              },
+                            ]
+                          );
+                        }}
+                        activeOpacity={0.7}
+                        style={{
+                          flex: 1,
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          backgroundColor: colors.warning,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                          Reabrir
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    
+                    {patient.status === "active" && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            "Pausar Paciente",
+                            "Tem certeza que deseja pausar este paciente?",
+                            [
+                              { text: "Cancelar", style: "cancel" },
+                              {
+                                text: "Pausar",
+                                style: "destructive",
+                                onPress: async () => {
+                                  try {
+                                    await updatePatient(patient.id, { status: "paused" });
+                                    loadPatients();
+                                  } catch (error) {
+                                    Alert.alert("Erro", "Não foi possível atualizar o paciente.");
+                                    console.error(error);
+                                  }
+                                },
+                              },
+                            ]
+                          );
+                        }}
+                        activeOpacity={0.7}
+                        style={{
+                          flex: 1,
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          backgroundColor: colors.warning,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                          Pausar
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    
+                    {patient.status === "paused" && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            "Reativar Paciente",
+                            "Tem certeza que deseja reativar este paciente?",
+                            [
+                              { text: "Cancelar", style: "cancel" },
+                              {
+                                text: "Reativar",
+                                style: "default",
+                                onPress: async () => {
+                                  try {
+                                    await updatePatient(patient.id, { status: "active" });
+                                    loadPatients();
+                                  } catch (error) {
+                                    Alert.alert("Erro", "Não foi possível atualizar o paciente.");
+                                    console.error(error);
+                                  }
+                                },
+                              },
+                            ]
+                          );
+                        }}
+                        activeOpacity={0.7}
+                        style={{
+                          flex: 1,
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          backgroundColor: colors.success,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ fontSize: 12, fontWeight: "600", color: "#FFFFFF" }}>
+                          Reativar
+                        </Text>
+                      </TouchableOpacity>
+                    )}
 
                     <TouchableOpacity
                       onPress={() => {
