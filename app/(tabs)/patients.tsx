@@ -1,5 +1,5 @@
 import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -7,7 +7,7 @@ import { getPatients, getPlansByPatient, getSessionsByPatient, updatePatient, de
 import { AddPatientModal } from "@/components/add-patient-modal";
 import { AdvancedFiltersModal, type AdvancedFilters } from "@/components/advanced-filters-modal";
 import { filterPatients, countActiveFilters, getDefaultFilters, type PatientWithData } from "@/lib/patient-filters";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { Platform, Alert } from "react-native";
 import { exportPatientsToCSV } from "@/lib/csv-export";
@@ -27,6 +27,12 @@ export default function PatientsScreen() {
   useEffect(() => {
     loadPatients();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadPatients();
+    }, [])
+  );
 
   const handleExportCSV = async () => {
     try {
