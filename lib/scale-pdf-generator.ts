@@ -562,9 +562,7 @@ export function generateScalePDFHTML(
             <span>${evaluationDate}</span>
           </div>
           <div class="footer-section" style="text-align: center; margin-top: 12px; border-top: 1px solid #e0e0e0; padding-top: 12px;">
-            <span style="font-size: 11px; color: #666;">Desenvolvido por: Carlos Charone</span>
-            <br />
-            <span style="font-size: 10px; color: #999;">Desenvolvido por: Carlos Charone - NeuroLaserMaps</span>
+            <span style="font-size: 10px; color: #999;">Desenvolvido por: ${professional.firstName} ${professional.lastName} - NeuroLaserMaps</span>
           </div>
         </div>
       </div>
