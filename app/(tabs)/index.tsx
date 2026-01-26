@@ -307,9 +307,8 @@ export default function HomeScreen() {
                 textTransform: 'uppercase',
                 marginBottom: 4
               }}>
-                Desenvolvido por
+                Desenvolvido por: Carlos Charone
               </Text>
-
             </View>
             <Text style={{
               fontSize: 11,
