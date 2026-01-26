@@ -309,22 +309,7 @@ export default function HomeScreen() {
               }}>
                 Desenvolvido por
               </Text>
-              <Text style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: colors.foreground,
-                letterSpacing: 0.3
-              }}>
-                Carlos Charone
-              </Text>
-              <Text style={{
-                fontSize: 10,
-                color: colors.muted,
-                marginTop: 4,
-                fontWeight: '500'
-              }}>
-                CRFa 9 - 10025-5
-              </Text>
+
             </View>
             <Text style={{
               fontSize: 11,

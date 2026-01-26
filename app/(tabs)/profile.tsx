@@ -571,9 +571,7 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 12, color: colors.muted }}>
                 Versão 1.0.0
               </Text>
-              <Text style={{ fontSize: 12, color: colors.muted }}>
-                Desenvolvido por Carlos Charone
-              </Text>
+
             </View>
           </View>
 

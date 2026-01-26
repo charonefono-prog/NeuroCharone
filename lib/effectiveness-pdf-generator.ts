@@ -354,7 +354,7 @@ export function generateEffectivenessReportHTML(
         <div class="professional-info">
           <div class="professional-info-row">
             <span class="professional-info-label">Sistema:</span>
-            <span class="professional-info-value">NeuroLaserMaps - Desenvolvido por Carlos Charone</span>
+            <span class="professional-info-value">NeuroLaserMaps</span>
           </div>
         </div>
         

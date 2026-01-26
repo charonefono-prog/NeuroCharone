@@ -130,14 +130,7 @@ export function LoginScreen() {
           <LoginButton />
         </View>
 
-        <View style={{ paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.border }}>
-          <Text style={{ fontSize: 12, color: colors.muted, textAlign: "center" }}>
-            Desenvolvido por Carlos Charone
-          </Text>
-          <Text style={{ fontSize: 12, color: colors.muted, textAlign: "center" }}>
-            CRFa 9 - 10025-5
-          </Text>
-        </View>
+
       </View>
     </View>
   );

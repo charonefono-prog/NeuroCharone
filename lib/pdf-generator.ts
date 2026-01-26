@@ -338,7 +338,7 @@ export async function generatePatientReport(data: ReportData): Promise<void> {
 
   <div class="footer">
     <p><strong>NeuroLaserMap</strong> - Aplicativo de Mapeamento de Neuromodulação a Laser</p>
-    <p style="margin-top: 8px;">Desenvolvido por Carlos Charone - CREFONO: 9-10025-5</p>
+
     <p style="margin-top: 8px;">Este relatório é confidencial e destinado exclusivamente ao uso profissional.</p>
   </div>
 </body>

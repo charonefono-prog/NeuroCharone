@@ -1,7 +1,6 @@
-/**
+/*
  * Serviço de geração de relatórios em HTML e PDF
  * Design sofisticado e clean moderno para impressão de alto nível
- * Desenvolvedor: Carlos Charone
  */
 
 export interface ReportData {
@@ -475,7 +474,7 @@ export function shareReportHTML(html: string, filename: string = 'relatorio.html
     navigator.share({
       files: [file],
       title: 'Relatório NeuroLaserMap',
-      text: 'Relatório de Protocolo Terapêutico - Desenvolvido por Carlos Charone'
+      text: 'Relatório de Protocolo Terapêutico - NeuroLaserMap'
     }).catch(err => console.log('Erro ao compartilhar:', err));
   } else {
     downloadReportHTML(html, filename);
