@@ -47,6 +47,8 @@ export default function ScalesScreen() {
   const handleSelectScale = (scale: typeof ALL_SCALES[0]) => {
     setSelectedScale(scale);
     setShowScaleList(false);
+    // Recarregar pacientes antes de abrir seletor
+    loadPatients();
     setShowPatientSelector(true);
   };
 
@@ -56,6 +58,17 @@ export default function ScalesScreen() {
     setShowScaleForm(true);
     setAnswers({});
     setNotes("");
+    // Recarregar histórico do paciente
+    loadPatientHistory(patient.id);
+  };
+
+  const loadPatientHistory = async (patientId: string) => {
+    try {
+      const history = await getPatientScaleResponses(patientId);
+      setScaleHistory(history);
+    } catch (error) {
+      console.error("Erro ao carregar histórico:", error);
+    }
   };
 
   const handleAnswerChange = (itemId: string, value: number | string) => {
