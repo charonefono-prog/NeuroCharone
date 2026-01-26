@@ -536,9 +536,6 @@ export function generateCycleReportHTML(data: CycleReportData): string {
     <!-- Footer -->
     <div class="footer">
       <p>Este documento foi gerado automaticamente pelo NeuroLaserMap</p>
-      <div class="footer-developer">
-        <strong>Desenvolvido por:</strong> Carlos Charone | CRFa 9 - 10025-5
-      </div>
       <p style="margin-top: 12px;">Sistema de Mapeamento de Neuromodulação</p>
     </div>
   </div>
