@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from "react-native";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { getPatients, getSessions, getPlans, initializeSampleData, type Patient, type Session, type TherapeuticPlan } from "@/lib/local-storage";
 import { initializeDefaultTemplates } from "@/lib/plan-templates";
 import { AdvancedStatistics } from "@/components/advanced-statistics";
@@ -22,25 +22,6 @@ export default function HomeScreen() {
   useEffect(() => {
     loadData();
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      // Apenas recarregar dados sem mostrar loading
-      const reloadData = async () => {
-        try {
-          const patientsData = await getPatients();
-          const sessionsData = await getSessions();
-          const plansData = await getPlans();
-          setPatients(patientsData);
-          setSessions(sessionsData);
-          setPlans(plansData);
-        } catch (error) {
-          console.error("Error reloading data:", error);
-        }
-      };
-      reloadData();
-    }, [])
-  );
 
   const loadData = async () => {
     try {
@@ -114,7 +95,7 @@ export default function HomeScreen() {
     }
   };
 
-  if (loading && patients.length === 0) {
+  if (loading) {
     return (
       <ScreenContainer className="items-center justify-center">
         <ActivityIndicator size="large" color={colors.primary} />
