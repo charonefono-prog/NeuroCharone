@@ -411,26 +411,6 @@ export function generateScalePDFHTML(
           </div>
         </div>
         
-        <!-- Informações do Profissional -->
-        <div class="professional-info">
-          <div class="professional-info-row">
-            <span class="professional-info-label">Profissional:</span>
-            <span class="professional-info-value">${professional.title} ${professional.firstName} ${professional.lastName}</span>
-          </div>
-          ${professional.registrationNumber ? `
-          <div class="professional-info-row">
-            <span class="professional-info-label">Número de Registro:</span>
-            <span class="professional-info-value">${professional.registrationNumber}</span>
-          </div>
-          ` : ""}
-          ${professional.specialty ? `
-          <div class="professional-info-row">
-            <span class="professional-info-label">Especialidade:</span>
-            <span class="professional-info-value">${professional.specialty}</span>
-          </div>
-          ` : ""}
-        </div>
-        
         <!-- Informações do Paciente -->
         <div class="patient-info">
           <div class="patient-info-row">
@@ -451,8 +431,8 @@ export function generateScalePDFHTML(
           ` : ""}
           ${patient.phone ? `
           <div class="patient-info-row">
-            <span class="professional-info-label">Telefone:</span>
-            <span class="professional-info-value">${patient.phone}</span>
+            <span class="patient-info-label">Telefone:</span>
+            <span class="patient-info-value">${patient.phone}</span>
           </div>
           ` : ""}
         </div>
