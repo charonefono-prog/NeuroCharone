@@ -369,12 +369,7 @@ function generateReportHTML(
     </div>
   </div>
 
-  <!-- Assinatura -->
-  <div class="signature">
-    <div class="signature-line"></div>
-    <div class="signature-name">Profissional de Saúde</div>
-    <div class="signature-credential">CRFa 9 - 10025-5</div>
-  </div>
+
 
   <!-- Rodapé -->
   <div class="footer">
