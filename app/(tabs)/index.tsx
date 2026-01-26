@@ -1,9 +1,9 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getPatients, getSessions, getPlans, initializeSampleData, type Patient, type Session, type TherapeuticPlan } from "@/lib/local-storage";
 import { initializeDefaultTemplates } from "@/lib/plan-templates";
 import { AdvancedStatistics } from "@/components/advanced-statistics";
@@ -22,6 +22,12 @@ export default function HomeScreen() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
