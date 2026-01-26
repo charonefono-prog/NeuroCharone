@@ -262,19 +262,11 @@ export function generateEffectivenessReportHTML(
           <div class="header-subtitle">Avaliação Clínica - ${evaluationDate}</div>
         </div>
         
-        <!-- Informações do Profissional -->
+        <!-- Informações do Sistema -->
         <div class="professional-info">
           <div class="professional-info-row">
-            <span class="professional-info-label">Profissional:</span>
-            <span class="professional-info-value">${professional.title}. ${professional.firstName} ${professional.lastName}</span>
-          </div>
-          <div class="professional-info-row">
-            <span class="professional-info-label">Registro:</span>
-            <span class="professional-info-value">${professional.registrationNumber || "N/A"}</span>
-          </div>
-          <div class="professional-info-row">
-            <span class="professional-info-label">Especialidade:</span>
-            <span class="professional-info-value">${professional.specialty || "N/A"}</span>
+            <span class="professional-info-label">Sistema:</span>
+            <span class="professional-info-value">NeuroLaserMaps - Desenvolvido por Carlos Charone</span>
           </div>
         </div>
         
