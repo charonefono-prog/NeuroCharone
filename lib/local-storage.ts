@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addAuditLog } from "./audit-log";
+import { storageQueue } from "./storage-queue";
 
 // Tipos de dados
 export interface MediaItem {
@@ -69,115 +70,128 @@ const KEYS = {
 
 // Funções de pacientes
 export async function getPatients(): Promise<Patient[]> {
-  try {
-    const data = await AsyncStorage.getItem(KEYS.PATIENTS);
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    console.error("Error getting patients:", error);
-    return [];
-  }
+  return storageQueue.enqueue(async () => {
+    try {
+      const data = await AsyncStorage.getItem(KEYS.PATIENTS);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error("Error getting patients:", error);
+      return [];
+    }
+  });
 }
 
 export async function savePatient(patient: Omit<Patient, "id" | "createdAt" | "updatedAt">): Promise<Patient> {
-  try {
-    const patients = await getPatients();
-    const newPatient: Patient = {
-      ...patient,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    patients.push(newPatient);
-    await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
-    
-    // Log de auditoria
-    await addAuditLog({
-      entityType: "patient",
-      entityId: newPatient.id,
-      action: "patient_created",
-      metadata: { patientName: newPatient.fullName },
-    });
-    
-    return newPatient;
-  } catch (error) {
-    console.error("Error saving patient:", error);
-    throw error;
-  }
+  return storageQueue.enqueue(async () => {
+    try {
+      const patients = await AsyncStorage.getItem(KEYS.PATIENTS);
+      const patientsList = patients ? JSON.parse(patients) : [];
+      const newPatient: Patient = {
+        ...patient,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      patientsList.push(newPatient);
+      await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patientsList));
+      
+      // Log de auditoria
+      await addAuditLog({
+        entityType: "patient",
+        entityId: newPatient.id,
+        action: "patient_created",
+        metadata: { patientName: newPatient.fullName },
+      });
+      
+      return newPatient;
+    } catch (error) {
+      console.error("Error saving patient:", error);
+      throw error;
+    }
+  });
 }
 
 export async function updatePatient(id: string, updates: Partial<Patient>): Promise<Patient | null> {
-  try {
-    const patients = await getPatients();
-    const index = patients.findIndex((p) => p.id === id);
-    if (index === -1) return null;
+  return storageQueue.enqueue(async () => {
+    try {
+      const patientsData = await AsyncStorage.getItem(KEYS.PATIENTS);
+      const patients = patientsData ? JSON.parse(patientsData) : [];
+      const index = patients.findIndex((p: Patient) => p.id === id);
+      if (index === -1) return null;
 
-    const oldPatient = patients[index];
-    patients[index] = {
-      ...patients[index],
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    };
-    await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
-    
-    // Log de auditoria com mudanças
-    const changes = Object.keys(updates)
-      .filter((key) => key !== "updatedAt")
-      .map((key) => ({
-        field: key,
-        oldValue: oldPatient[key as keyof Patient],
-        newValue: updates[key as keyof Patient],
-      }));
-    
-    if (changes.length > 0) {
-      await addAuditLog({
-        entityType: "patient",
-        entityId: id,
-        action: "patient_updated",
-        changes,
-        metadata: { patientName: patients[index].fullName },
-      });
+      const oldPatient = patients[index];
+      patients[index] = {
+        ...patients[index],
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+      await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(patients));
+      
+      // Log de auditoria com mudanças
+      const changes = Object.keys(updates)
+        .filter((key) => key !== "updatedAt")
+        .map((key) => ({
+          field: key,
+          oldValue: oldPatient[key as keyof Patient],
+          newValue: updates[key as keyof Patient],
+        }));
+      
+      if (changes.length > 0) {
+        await addAuditLog({
+          entityType: "patient",
+          entityId: id,
+          action: "patient_updated",
+          changes,
+          metadata: { patientName: patients[index].fullName },
+        });
+      }
+      
+      return patients[index];
+    } catch (error) {
+      console.error("Error updating patient:", error);
+      throw error;
     }
-    
-    return patients[index];
-  } catch (error) {
-    console.error("Error updating patient:", error);
-    throw error;
-  }
+  });
 }
 
 export async function deletePatient(id: string): Promise<boolean> {
-  try {
-    const patients = await getPatients();
-    const patient = patients.find((p) => p.id === id);
-    const filtered = patients.filter((p) => p.id !== id);
-    await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(filtered));
-    
-    // Log de auditoria
-    if (patient) {
-      await addAuditLog({
-        entityType: "patient",
-        entityId: id,
-        action: "patient_deleted",
-        metadata: { patientName: patient.fullName },
-      });
+  return storageQueue.enqueue(async () => {
+    try {
+      const patientsData = await AsyncStorage.getItem(KEYS.PATIENTS);
+      const patients = patientsData ? JSON.parse(patientsData) : [];
+      const patient = patients.find((p: Patient) => p.id === id);
+      const filtered = patients.filter((p: Patient) => p.id !== id);
+      await AsyncStorage.setItem(KEYS.PATIENTS, JSON.stringify(filtered));
+      
+      // Log de auditoria
+      if (patient) {
+        await addAuditLog({
+          entityType: "patient",
+          entityId: id,
+          action: "patient_deleted",
+          metadata: { patientName: patient.fullName },
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+      return false;
     }
-    
-    return true;
-  } catch (error) {
-    console.error("Error deleting patient:", error);
-    return false;
-  }
+  });
 }
 
 // Funções de planos terapêuticos
 export async function getPlans(): Promise<TherapeuticPlan[]> {
-  try {
-    const data = await AsyncStorage.getItem(KEYS.PLANS);
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    console.error("Error getting plans:", error);
-    return [];
-  }
+  return storageQueue.enqueue(async () => {
+    try {
+      const data = await AsyncStorage.getItem(KEYS.PLANS);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error("Error getting plans:", error);
+      return [];
+    }
+  });
 }
 
 export async function getPlansByPatient(patientId: string): Promise<TherapeuticPlan[]> {
@@ -186,44 +200,49 @@ export async function getPlansByPatient(patientId: string): Promise<TherapeuticP
 }
 
 export async function savePlan(plan: Omit<TherapeuticPlan, "id" | "createdAt" | "updatedAt">): Promise<TherapeuticPlan> {
-  try {
-    const plans = await getPlans();
-    const newPlan: TherapeuticPlan = {
-      ...plan,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    plans.push(newPlan);
-    await AsyncStorage.setItem(KEYS.PLANS, JSON.stringify(plans));
-    
-    // Log de auditoria
-    await addAuditLog({
-      entityType: "plan",
-      entityId: newPlan.id,
-      action: "plan_created",
-      metadata: { 
-        patientId: newPlan.patientId,
-        objective: newPlan.objective,
-      },
-    });
-    
-    return newPlan;
-  } catch (error) {
-    console.error("Error saving plan:", error);
-    throw error;
-  }
+  return storageQueue.enqueue(async () => {
+    try {
+      const plansData = await AsyncStorage.getItem(KEYS.PLANS);
+      const plans = plansData ? JSON.parse(plansData) : [];
+      const newPlan: TherapeuticPlan = {
+        ...plan,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      plans.push(newPlan);
+      await AsyncStorage.setItem(KEYS.PLANS, JSON.stringify(plans));
+      
+      // Log de auditoria
+      await addAuditLog({
+        entityType: "plan",
+        entityId: newPlan.id,
+        action: "plan_created",
+        metadata: { 
+          patientId: newPlan.patientId,
+          objective: newPlan.objective,
+        },
+      });
+      
+      return newPlan;
+    } catch (error) {
+      console.error("Error saving plan:", error);
+      throw error;
+    }
+  });
 }
 
 // Funções de sessões
 export async function getSessions(): Promise<Session[]> {
-  try {
-    const data = await AsyncStorage.getItem(KEYS.SESSIONS);
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    console.error("Error getting sessions:", error);
-    return [];
-  }
+  return storageQueue.enqueue(async () => {
+    try {
+      const data = await AsyncStorage.getItem(KEYS.SESSIONS);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error("Error getting sessions:", error);
+      return [];
+    }
+  });
 }
 
 export async function getSessionsByPatient(patientId: string): Promise<Session[]> {
@@ -232,34 +251,37 @@ export async function getSessionsByPatient(patientId: string): Promise<Session[]
 }
 
 export async function saveSession(session: Omit<Session, "id" | "createdAt" | "updatedAt">): Promise<Session> {
-  try {
-    const sessions = await getSessions();
-    const newSession: Session = {
-      ...session,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    sessions.push(newSession);
-    await AsyncStorage.setItem(KEYS.SESSIONS, JSON.stringify(sessions));
-    
-    // Log de auditoria
-    await addAuditLog({
-      entityType: "session",
-      entityId: newSession.id,
-      action: "session_created",
-      metadata: { 
-        patientId: newSession.patientId,
-        sessionDate: newSession.sessionDate,
-        stimulatedPoints: newSession.stimulatedPoints,
-      },
-    });
-    
-    return newSession;
-  } catch (error) {
-    console.error("Error saving session:", error);
-    throw error;
-  }
+  return storageQueue.enqueue(async () => {
+    try {
+      const sessionsData = await AsyncStorage.getItem(KEYS.SESSIONS);
+      const sessions = sessionsData ? JSON.parse(sessionsData) : [];
+      const newSession: Session = {
+        ...session,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      sessions.push(newSession);
+      await AsyncStorage.setItem(KEYS.SESSIONS, JSON.stringify(sessions));
+      
+      // Log de auditoria
+      await addAuditLog({
+        entityType: "session",
+        entityId: newSession.id,
+        action: "session_created",
+        metadata: { 
+          patientId: newSession.patientId,
+          sessionDate: newSession.sessionDate,
+          stimulatedPoints: newSession.stimulatedPoints,
+        },
+      });
+      
+      return newSession;
+    } catch (error) {
+      console.error("Error saving session:", error);
+      throw error;
+    }
+  });
 }
 
 // Função para inicializar dados de exemplo
