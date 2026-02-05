@@ -72,7 +72,7 @@ export default function SessionsScreen() {
           {/* Header */}
           <View style={{ gap: 8 }}>
             <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
-              Sessões
+              Nova Sessão
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
               {sessions.length} sessão(ões) registrada(s)
