@@ -544,6 +544,56 @@ export function generateScalePDFHTML(
             : ""
         }
         
+        <!-- Seção de Assinatura do Profissional -->
+        <div class="section" style="margin-top: 40px; border-top: 2px solid #0a7ea4; padding-top: 20px;">
+          <div class="section-title">Responsável Técnico</div>
+          
+          <div class="professional-signature-section">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+              <div>
+                <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Profissional:</div>
+                <div style="font-size: 14px; color: #333;">${professional.title}. ${professional.firstName} ${professional.lastName}</div>
+              </div>
+              <div>
+                <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Registro Profissional:</div>
+                <div style="font-size: 14px; color: #333;">${professional.registrationNumber}</div>
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+              <div>
+                <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Especialidade:</div>
+                <div style="font-size: 14px; color: #333;">${professional.specialty}</div>
+              </div>
+              <div>
+                <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Email:</div>
+                <div style="font-size: 14px; color: #333;">${professional.email || 'Não informado'}</div>
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 50px;">
+              <div style="text-align: center;">
+                <div style="border-top: 2px solid #333; padding-top: 10px; margin-bottom: 5px;">
+                  <div style="font-weight: 600; font-size: 12px;">Assinatura do Profissional</div>
+                  <div style="font-size: 11px; color: #666; margin-top: 3px;">${evaluationDate}</div>
+                </div>
+              </div>
+              <div style="text-align: center;">
+                <div style="border-top: 2px solid #333; padding-top: 10px; margin-bottom: 5px;">
+                  <div style="font-weight: 600; font-size: 12px;">Carimbo/Assinatura Digital</div>
+                  <div style="font-size: 11px; color: #666; margin-top: 3px;">Documento Eletrônico</div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 15px; background-color: #f0f8ff; border-radius: 4px; border-left: 4px solid #0a7ea4;">
+              <div style="font-size: 11px; color: #666; line-height: 1.6;">
+                <strong>Certificação:</strong> Este documento foi gerado pelo sistema NeuroLaserMaps e é válido como registro eletrônico de avaliação clínica. A assinatura do profissional responsável certifica a autenticidade e a precisão dos dados registrados.
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <!-- Rodapé com QR Code -->
         <div class="footer">
           <div class="footer-section">
@@ -562,7 +612,7 @@ export function generateScalePDFHTML(
             <span>${evaluationDate}</span>
           </div>
           <div class="footer-section" style="text-align: center; margin-top: 12px; border-top: 1px solid #e0e0e0; padding-top: 12px;">
-            <span style="font-size: 10px; color: #999;">NeuroLaserMaps</span>
+            <span style="font-size: 10px; color: #999;">NeuroLaserMaps - Documento Eletrônico Certificado</span>
           </div>
         </div>
       </div>
