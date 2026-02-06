@@ -1,9 +1,8 @@
 /**
  * Gerador de Assinatura Eletrônica para Profissionais
- * Cria assinatura única baseada nos dados do profissional
+ * Compatível com React Native, Expo Web e navegadores
+ * Não usa módulos do Node.js que não funcionam em ambiente web
  */
-
-import * as crypto from 'crypto';
 
 export interface ProfessionalSignature {
   signatureHash: string;
@@ -15,33 +14,29 @@ export interface ProfessionalSignature {
 }
 
 /**
- * Gera hash SHA-256 para assinatura eletrônica
+ * Gera hash para assinatura eletrônica (compatível com web e React Native)
+ * Usa algoritmo simples que funciona em todos os ambientes
  */
 function generateSignatureHash(data: string): string {
-  try {
-    return crypto
-      .createHash('sha256')
-      .update(data)
-      .digest('hex')
-      .substring(0, 16)
-      .toUpperCase();
-  } catch {
-    // Fallback para navegador
-    return generateSimpleHash(data);
-  }
-}
-
-/**
- * Fallback para geração de hash em ambiente web
- */
-function generateSimpleHash(data: string): string {
+  // Algoritmo de hash simples que funciona em todos os ambientes
   let hash = 0;
-  for (let i = 0; i < data.length; i++) {
+  let i = 0;
+
+  while (i < data.length) {
     const char = data.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+    i++;
   }
-  return Math.abs(hash).toString(16).substring(0, 16).toUpperCase();
+
+  // Converter para string hexadecimal
+  const hashStr = Math.abs(hash).toString(16);
+
+  // Adicionar timestamp para garantir unicidade
+  const timestamp = new Date().getTime().toString(16);
+
+  // Combinar e retornar primeiros 16 caracteres
+  return (hashStr + timestamp).substring(0, 16).toUpperCase();
 }
 
 /**

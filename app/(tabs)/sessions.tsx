@@ -1,9 +1,10 @@
-import { ScrollView, Text, View, ActivityIndicator } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator, Pressable, Alert } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { useEffect, useState } from "react";
 import { getSessions, getPatients, type Session, type Patient } from "@/lib/local-storage";
+import { generateSessionPDF } from "@/lib/session-pdf-generator";
 
 export default function SessionsScreen() {
   const colors = useColors();
@@ -51,6 +52,16 @@ export default function SessionsScreen() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const exportSessionPDF = async (session: Session, patientName: string) => {
+    try {
+      await generateSessionPDF(session, patientName);
+      Alert.alert("Sucesso", "PDF exportado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
+      Alert.alert("Erro", "Falha ao exportar PDF. Tente novamente.");
+    }
   };
 
   if (loading) {
@@ -187,6 +198,29 @@ export default function SessionsScreen() {
                       </Text>
                     </View>
                   )}
+
+                  {/* Botão Exportar PDF */}
+                  <Pressable
+                    onPress={() => exportSessionPDF(session, getPatientName(session.patientId))}
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: colors.primary,
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        borderRadius: 8,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                        opacity: pressed ? 0.8 : 1,
+                      },
+                    ]}
+                  >
+                    <IconSymbol name="paperplane.fill" size={16} color="white" />
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: "white" }}>
+                      Exportar PDF
+                    </Text>
+                  </Pressable>
                 </View>
               ))
             )}
