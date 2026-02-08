@@ -4,6 +4,9 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { getPatients, getSessions, type Patient, type Session } from '@/lib/local-storage';
 
+// Re-export types for TypeScript
+export type { Patient, Session };
+
 interface TherapyComparison {
   patientId: string;
   patientName: string;
