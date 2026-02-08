@@ -49,7 +49,7 @@ const config: ExpoConfig = {
   newArchEnabled: true,
   extra: {
     eas: {
-      projectId: "519c8503-478c-48b6-902e-301dc7b36313"
+      projectId: "519c0503-478c-4806-902e-3616c7b36313"
     }
   },
 
