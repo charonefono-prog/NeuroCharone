@@ -41,12 +41,17 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.1",
+  version: "1.0.2",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+  extra: {
+    eas: {
+      projectId: "519c8503-478c-48b6-902e-3o1dc7b36313"
+    }
+  },
 
   ios: {
     supportsTablet: true,
