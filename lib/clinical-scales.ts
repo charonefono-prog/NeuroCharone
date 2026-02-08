@@ -798,33 +798,29 @@ export const HB_SCALE = {
 };
 
 // ============================================
-// 14. PHQ-9 (Patient Health Questionnaire-9)
+// 20. SALIVA (Escala de Salivação de Parkinson - Versão Simplificada)
 // ============================================
-export const PHQ9_SCALE = {
-  type: "phq9" as ScaleType,
-  name: "PHQ-9 (Questionário de Saúde do Paciente-9)",
-  description: "Avalia sintomas de depressão",
-  totalItems: 9,
+export const SALIVA_SCALE = {
+  type: "saliva" as ScaleType,
+  name: "Escala de Salivação (Sialorreia em Parkinson)",
+  description: "Avalia o grau de salivação excessiva (sialorreia) em pacientes com Parkinson - 4 itens",
+  totalItems: 4,
   items: [
-    { id: "phq9_1", question: "Pouco interesse ou prazer em fazer coisas?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_2", question: "Se sentir deprimido, depressivo ou sem esperança?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_3", question: "Dificuldade em adormecer, manter o sono ou dormir demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_4", question: "Cansaço ou falta de energia?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_5", question: "Falta de apetite ou comer demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_6", question: "Sentir-se mal consigo mesmo ou fracasso?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_7", question: "Dificuldade em se concentrar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_8", question: "Falar ou agir tão lentamente que outros notam ou o oposto?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq9_9", question: "Pensamentos de que seria melhor estar morto ou se machucar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "saliva_1", question: "Frequência de salivação excessiva", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Ocasional" }, { value: 2, label: "Frequente" }, { value: 3, label: "Constante" }] },
+    { id: "saliva_2", question: "Salivação durante o dia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
+    { id: "saliva_3", question: "Salivação durante a noite", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
+    { id: "saliva_4", question: "Impacto na qualidade de vida", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }] },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    if (values.length === 0) return { score: 0, interpretation: "Sem dados" };
     const total = values.reduce((a, b) => a + b, 0);
     let interpretation = "";
-    if (total <= 4) interpretation = "Sem depressão";
-    else if (total <= 9) interpretation = "Depressão leve";
-    else if (total <= 14) interpretation = "Depressão moderada";
-    else if (total <= 19) interpretation = "Depressão moderadamente severa";
-    else interpretation = "Depressão severa";
+    if (total <= 2) interpretation = "Salivação ausente ou mínima";
+    else if (total <= 5) interpretation = "Salivação leve";
+    else if (total <= 8) interpretation = "Salivação moderada";
+    else if (total <= 11) interpretation = "Salivação moderadamente severa";
+    else interpretation = "Salivação severa";
     return { score: total, interpretation };
   },
 };
@@ -1197,37 +1193,11 @@ export const PHQ44_SCALE = {
   },
 };
 
-// ============================================
-// 20. SALIVA (Escala de Salivação de Parkinson)
-// ============================================
-export const SALIVA_SCALE = {
-  type: "saliva" as ScaleType,
-  name: "Escala de SALIVA de Parkinson",
-  description: "Avaliação de Salivação em pacientes com Parkinson",
-  totalItems: 4,
-  items: [
-    { id: "saliva_1", question: "Boca seca ou úmida?", options: [{ value: 0, label: "Seca" }, { value: 1, label: "Levemente úmida" }, { value: 2, label: "Moderadamente úmida" }, { value: 3, label: "Muito úmida" }, { value: 4, label: "Babando" }] },
-    { id: "saliva_2", question: "Frequência de salivação excessiva", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Ocasionalmente" }, { value: 3, label: "Frequentemente" }, { value: 4, label: "Constantemente" }] },
-    { id: "saliva_3", question: "Impacto na fala e deglutição", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "saliva_4", question: "Necessidade de lenços ou toalhas", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Raramente" }, { value: 2, label: "Ocasionalmente" }, { value: 3, label: "Frequentemente" }, { value: 4, label: "Constantemente" }] },
-  ],
-  calculateScore: (answers: Record<string, number | string>) => {
-    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
-    const total = values.reduce((a, b) => a + b, 0);
-    let interpretation = "";
-    if (total <= 4) interpretation = "Salivação normal ou mínima";
-    else if (total <= 8) interpretation = "Salivação leve";
-    else if (total <= 12) interpretation = "Salivação moderada";
-    else interpretation = "Salivação severa";
-    return { score: total, interpretation };
-  },
-};
-
 // Array com todas as escalas
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, PHQ44_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, SALIVA_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ44_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, SALIVA_SCALE
 ];
 
 // Função para obter uma escala específica

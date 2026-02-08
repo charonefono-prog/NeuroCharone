@@ -357,6 +357,74 @@
 - [x] Integrar relatório nas estatísticas avançadas
 - [x] Adicionar filtro por período de tempo
 
+## NeuroLaserMap v1.0.2 - NOVAS TAREFAS
+
+### 🧠 Escalas Clínicas Expandidas
+- [ ] PDQ-39: Adicionar 29 itens faltantes (10 → 39 itens completos)
+- [ ] MDS-UPDRS: Adicionar 9 itens faltantes (56 → 65 itens completos)
+- [ ] SALIVA: Simplificar para 4 itens com lógica de cálculo clara
+- [ ] DOSS: Implementar 7 itens (Disfagia) - pesquisar e traduzir
+- [ ] BDAE: Implementar 6 itens (Afasia) - pesquisar e traduzir
+- [ ] BTSS: Implementar 3 itens (Zumbido) - pesquisar e traduzir
+- [ ] Revisar e corrigir TODAS as escalas existentes
+- [ ] Garantir sem valores negativos em cálculos
+
+### 🔬 Templates de Neuromodulação LASER
+- [ ] Criar 28 templates LASER (sem dosagem, apenas áreas e sessões/semana)
+- [ ] Manter mesma arquitetura de plano terapêutico
+- [ ] Incluir regiões alvo, frequência, duração
+- [ ] Incluir contraindicações e resultados esperados
+
+### 🧬 tDCS - Nova Aba Independente
+- [ ] Criar aba tDCS totalmente independente
+- [ ] Usar mesma arquitetura de plano terapêutico
+- [ ] Incluir regiões alvo, frequência, duração
+- [ ] Incluir contraindicações e resultados esperados
+- [ ] Manter compatibilidade com "Nova Sessão"
+
+### 📊 Aba Comparativa
+- [ ] Criar aba de comparativos entre LASER e tDCS
+- [ ] Gráficos comparativos de resultados
+- [ ] Análise de efetividade entre os dois recursos
+
+### 🖊️ Assinatura Eletrônica
+- [ ] Integrar dados do cadastro do profissional
+- [ ] Validar e armazenar assinatura eletrônica
+- [ ] Incluir em todos os PDFs exportados
+- [ ] Garantir conformidade regulatória
+
+### 📋 Relatórios e Exportação
+- [ ] Exportação completa de TODAS as escalas em PDF
+- [ ] Validação end-to-end de todas as escalas
+- [ ] Garantir sem valores negativos em cálculos
+- [ ] Incluir assinatura eletrônica em PDFs
+- [ ] Revisar relatórios incompletos
+- [ ] Fazer revisão end-to-end completa
+
+### 🎨 Interface e UX
+- [ ] Manter ícone da versão original (pequeno, visual nas plataformas)
+- [ ] Revisar e corrigir TODA a interface
+- [ ] Garantir responsividade em mobile, tablet, desktop
+- [ ] Validar modo escuro
+
+### ✅ Qualidade de Código
+- [ ] Criar 30 testes E2E
+- [ ] Validar com 6 pacientes simulados (todos dados preenchidos)
+- [ ] Validar cálculos de evolução
+- [ ] Garantir sem valores negativos
+- [ ] Passar em todos os testes
+
+### 📚 Documentação
+- [ ] Criar 4 PDFs detalhados
+- [ ] Guias passo a passo
+- [ ] Troubleshooting completo
+- [ ] Instruções de publicação
+
+### 🚀 Versão Final
+- [ ] Atualizar versão para 1.0.2 em app.config.ts
+- [ ] Salvar checkpoint final
+- [ ] Pronto para publicação
+
 ## Backup Automático em Nuvem
 - [ ] Criar endpoints no servidor para sincronização
 - [ ] Implementar upload de dados para servidor
