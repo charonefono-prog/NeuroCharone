@@ -83,21 +83,27 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         </View>
       </View>
 
-      {/* Seleção de Pontos */}
+      {/* Imagem do Capacete */}
       <View
         style={{
           backgroundColor: colors.surface,
+          borderRadius: 16,
           padding: 16,
           alignItems: "center",
           borderWidth: 1,
           borderColor: colors.border,
         }}
       >
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground, marginBottom: 8 }}>
-          Sistema 10-20
-        </Text>
-        <Text style={{ fontSize: 12, color: colors.muted, textAlign: "center" }}>
-          Selecione uma região ou pontos específicos para aplicação de estimulação
+          <Image
+            source={require("@/assets/images/helmet-diagram.png")}
+            style={{
+              width: "100%",
+              height: 320,
+              resizeMode: "contain",
+            }}
+          />
+        <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
+          Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
         </Text>
       </View>
 
