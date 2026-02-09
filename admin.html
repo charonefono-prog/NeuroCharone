@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLaserMap - Painel de Administração</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9f9f9;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .search-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🧠 NeuroLaserMap - Painel de Administração</h1>
+                <p>Gerencie registros de usuários e aprove downloads</p>
+            </div>
+            <div>
+                <button class="btn btn-secondary" onclick="exportData()">📥 Exportar CSV</button>
+            </div>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total de Registros</h3>
+                <div class="value" id="totalCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pendentes</h3>
+                <div class="value" id="pendingCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Aprovados</h3>
+                <div class="value" id="approvedCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Rejeitados</h3>
+                <div class="value" id="rejectedCount">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="refreshData()">🔄 Atualizar</button>
+            <button class="btn btn-secondary" onclick="filterByStatus('all')">Todos</button>
+            <button class="btn btn-secondary" onclick="filterByStatus('pending')">Pendentes</button>
+            <button class="btn btn-secondary" onclick="filterByStatus('approved')">Aprovados</button>
+            <button class="btn btn-secondary" onclick="filterByStatus('rejected')">Rejeitados</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Procurar por nome, e-mail ou telefone..." onkeyup="searchRegistrations()">
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>Profissão</th>
+                        <th>Versão</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="registrationsTable">
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: #999;">Carregando registros...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Detalhes do Registro</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allRegistrations = [];
+        let currentFilter = 'all';
+
+        // Carregar registros ao iniciar
+        window.addEventListener('load', loadRegistrations);
+
+        function loadRegistrations() {
+            allRegistrations = JSON.parse(localStorage.getItem('neurolasermap_registrations') || '[]');
+            updateStats();
+            displayRegistrations(allRegistrations);
+            console.log('✅ Registros carregados:', allRegistrations.length);
+        }
+
+        function updateStats() {
+            const total = allRegistrations.length;
+            const pending = allRegistrations.filter(r => r.status === 'pending').length;
+            const approved = allRegistrations.filter(r => r.status === 'approved').length;
+            const rejected = allRegistrations.filter(r => r.status === 'rejected').length;
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+        }
+
+        function displayRegistrations(registrations) {
+            const table = document.getElementById('registrationsTable');
+
+            if (registrations.length === 0) {
+                table.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">Nenhum registro encontrado</td></tr>';
+                return;
+            }
+
+            table.innerHTML = registrations.map((reg, index) => `
+                <tr>
+                    <td>${reg.name}</td>
+                    <td>${reg.email}</td>
+                    <td>${reg.phone}</td>
+                    <td>${reg.profession}</td>
+                    <td>${reg.platform}</td>
+                    <td><span class="status ${reg.status}">${getStatusLabel(reg.status)}</span></td>
+                    <td>${formatDate(reg.timestamp)}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-small btn-secondary" onclick="viewDetails(${index})">👁️ Ver</button>
+                            ${reg.status === 'pending' ? `
+                                <button class="btn btn-small btn-success" onclick="approveRegistration(${index})">✓ Aprovar</button>
+                                <button class="btn btn-small btn-danger" onclick="rejectRegistration(${index})">✕ Rejeitar</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'pending': 'Pendente',
+                'approved': 'Aprovado',
+                'rejected': 'Rejeitado'
+            };
+            return labels[status] || status;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function viewDetails(index) {
+            const reg = allRegistrations[index];
+            const modalBody = document.getElementById('modalBody');
+
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <div class="detail-label">Nome</div>
+                    <div class="detail-value">${reg.name}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">E-mail</div>
+                    <div class="detail-value">${reg.email}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Telefone</div>
+                    <div class="detail-value">${reg.phone}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Profissão</div>
+                    <div class="detail-value">${reg.profession}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Instituição</div>
+                    <div class="detail-value">${reg.institution || 'Não informada'}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Versão Desejada</div>
+                    <div class="detail-value">${reg.platform}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Mensagem</div>
+                    <div class="detail-value">${reg.message || 'Nenhuma mensagem'}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value"><span class="status ${reg.status}">${getStatusLabel(reg.status)}</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Data de Registro</div>
+                    <div class="detail-value">${formatDate(reg.timestamp)}</div>
+                </div>
+                ${reg.approvedAt ? `
+                    <div class="detail-row">
+                        <div class="detail-label">Data de Aprovação</div>
+                        <div class="detail-value">${formatDate(reg.approvedAt)}</div>
+                    </div>
+                ` : ''}
+            `;
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        function approveRegistration(index) {
+            if (confirm('Tem certeza que deseja aprovar este registro?')) {
+                allRegistrations[index].status = 'approved';
+                allRegistrations[index].approvedAt = new Date().toISOString();
+                saveRegistrations();
+                sendApprovalEmail(allRegistrations[index]);
+                loadRegistrations();
+                alert('✅ Registro aprovado! E-mail de confirmação enviado.');
+            }
+        }
+
+        function rejectRegistration(index) {
+            const reason = prompt('Motivo da rejeição (opcional):');
+            if (reason !== null) {
+                allRegistrations[index].status = 'rejected';
+                allRegistrations[index].rejectionReason = reason;
+                saveRegistrations();
+                loadRegistrations();
+                alert('❌ Registro rejeitado.');
+            }
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            const filtered = status === 'all' 
+                ? allRegistrations 
+                : allRegistrations.filter(r => r.status === status);
+            displayRegistrations(filtered);
+        }
+
+        function searchRegistrations() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allRegistrations.filter(r =>
+                r.name.toLowerCase().includes(query) ||
+                r.email.toLowerCase().includes(query) ||
+                r.phone.includes(query)
+            );
+            displayRegistrations(filtered);
+        }
+
+        function refreshData() {
+            loadRegistrations();
+            alert('✅ Dados atualizados!');
+        }
+
+        function saveRegistrations() {
+            localStorage.setItem('neurolasermap_registrations', JSON.stringify(allRegistrations));
+        }
+
+        function sendApprovalEmail(registration) {
+            console.log('📧 E-MAIL DE APROVAÇÃO ENVIADO PARA:', registration.email);
+            console.log('---');
+            console.log(`Olá ${registration.name},`);
+            console.log('');
+            console.log('Sua solicitação de download do NeuroLaserMap foi APROVADA!');
+            console.log('');
+            console.log('Links de download:');
+            console.log('- Windows: https://seu-site.com/downloads/NeuroLaserMap-Setup.exe');
+            console.log('- macOS: https://seu-site.com/downloads/NeuroLaserMap.dmg');
+            console.log('');
+            console.log('Ou use o Expo Go: exps://seu-link');
+            console.log('---');
+        }
+
+        function exportData() {
+            let csv = 'Nome,E-mail,Telefone,Profissão,Instituição,Versão,Status,Data\n';
+            allRegistrations.forEach(reg => {
+                csv += `"${reg.name}","${reg.email}","${reg.phone}","${reg.profession}","${reg.institution || ''}","${reg.platform}","${reg.status}","${formatDate(reg.timestamp)}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `neurolasermap_registros_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        console.log('%c🧠 NeuroLaserMap - Painel de Administração', 'color: #667eea; font-size: 16px; font-weight: bold;');
+        console.log('%cOs registros são armazenados em localStorage (apenas para demonstração)', 'color: #666;');
+        console.log('%cEm produção, use um banco de dados real e um servidor backend', 'color: #666;');
+    </script>
+</body>
+</html>

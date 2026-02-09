@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Appearance, View, useColorScheme as useSystemColorScheme } from "react-native";
 import { colorScheme as nativewindColorScheme, vars } from "nativewind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
 
@@ -14,6 +15,17 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useSystemColorScheme() ?? "light";
   const [colorScheme, setColorSchemeState] = useState<ColorScheme>(systemScheme);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Carregar tema salvo
+  useEffect(() => {
+    AsyncStorage.getItem("theme").then((savedTheme) => {
+      if (savedTheme && (savedTheme === "light" || savedTheme === "dark")) {
+        setColorSchemeState(savedTheme as ColorScheme);
+      }
+      setIsLoaded(true);
+    });
+  }, []);
 
   const applyScheme = useCallback((scheme: ColorScheme) => {
     nativewindColorScheme.set(scheme);
@@ -32,6 +44,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setColorScheme = useCallback((scheme: ColorScheme) => {
     setColorSchemeState(scheme);
     applyScheme(scheme);
+    // Salvar tema
+    AsyncStorage.setItem("theme", scheme);
   }, [applyScheme]);
 
   useEffect(() => {

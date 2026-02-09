@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLaserMap - Downloads</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .download-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .download-section p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .platforms {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .platform {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .platform-icon {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+
+        .platform-info h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .platform-info p {
+            color: #999;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .registration-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .registration-section h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .registration-section > p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f9f9ff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .terms input[type="checkbox"] {
+            width: auto;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        .terms label {
+            margin: 0;
+            font-weight: 400;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .feature-list {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .feature-list h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .feature-list ul {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .expo-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .expo-section h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .expo-section p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .expo-btn {
+            display: inline-block;
+            background: white;
+            color: #f5576c;
+            padding: 10px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .expo-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            header h1 {
+                font-size: 32px;
+            }
+
+            .download-section,
+            .registration-section {
+                padding: 30px;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 NeuroLaserMap</h1>
+            <p>Mapeamento de Neuromodulação com Laser</p>
+        </header>
+
+        <div class="content">
+            <!-- Seção de Downloads -->
+            <div class="download-section">
+                <h2>Baixe Agora</h2>
+                <p>Escolha a versão ideal para seu sistema operacional ou use o Expo Go para testar primeiro.</p>
+
+                <div class="feature-list">
+                    <h3>Funcionalidades</h3>
+                    <ul>
+                        <li>Gerenciamento de pacientes</li>
+                        <li>Visualização 3D interativa</li>
+                        <li>Planos terapêuticos personalizados</li>
+                        <li>Relatórios automáticos em PDF</li>
+                        <li>Sincronização de dados</li>
+                        <li>Suporte multiplataforma</li>
+                    </ul>
+                </div>
+
+                <div class="platforms">
+                    <div class="platform">
+                        <div class="platform-icon">🪟</div>
+                        <div class="platform-info">
+                            <h3>Windows</h3>
+                            <p>Windows 10 ou superior (64-bit)</p>
+                        </div>
+                    </div>
+                    <div class="platform">
+                        <div class="platform-icon">🍎</div>
+                        <div class="platform-info">
+                            <h3>macOS</h3>
+                            <p>macOS 10.13 ou superior</p>
+                        </div>
+                    </div>
+                    <div class="platform">
+                        <div class="platform-icon">📱</div>
+                        <div class="platform-info">
+                            <h3>Expo Go</h3>
+                            <p>iOS e Android (teste rápido)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expo-section">
+                    <h3>Teste Rápido</h3>
+                    <p>Não quer baixar? Teste no Expo Go</p>
+                    <a href="exps://8081-i3v7yhbffj72azhuw7927-8ea2636f.us2.manus.computer" class="expo-btn">Abrir no Expo Go</a>
+                </div>
+            </div>
+
+            <!-- Seção de Registro -->
+            <div class="registration-section">
+                <h2>Registre-se</h2>
+                <p>Preencha o formulário para receber o link de download. Você receberá um e-mail de confirmação.</p>
+
+                <div id="message" class="message"></div>
+
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="name">Nome Completo *</label>
+                        <input type="text" id="name" name="name" required placeholder="Seu nome">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Telefone *</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="(11) 99999-9999">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profession">Profissão *</label>
+                        <select id="profession" name="profession" required>
+                            <option value="">Selecione sua profissão</option>
+                            <option value="Fisioterapeuta">Fisioterapeuta</option>
+                            <option value="Médico">Médico</option>
+                            <option value="Neurologist">Neurologista</option>
+                            <option value="Fonoaudiólogo">Fonoaudiólogo</option>
+                            <option value="Psicólogo">Psicólogo</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="institution">Instituição</label>
+                        <input type="text" id="institution" name="institution" placeholder="Clínica, Hospital, etc">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Mensagem (opcional)</label>
+                        <textarea id="message-text" name="message" placeholder="Conte-nos mais sobre você..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="platform">Qual versão deseja? *</label>
+                        <select id="platform" name="platform" required>
+                            <option value="">Selecione a versão</option>
+                            <option value="Windows">Windows (.exe)</option>
+                            <option value="macOS">macOS (.dmg)</option>
+                            <option value="Expo Go">Expo Go (teste rápido)</option>
+                        </select>
+                    </div>
+
+                    <div class="terms">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">Concordo em receber atualizações sobre o NeuroLaserMap por e-mail</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="spinner" id="spinner"></span>
+                        Registrar e Receber Download
+                    </button>
+
+                    <div class="loading" id="loading">
+                        <span class="spinner"></span>
+                        Processando seu registro...
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registrationForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const spinner = document.getElementById('spinner');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validar formulário
+            if (!form.checkValidity()) {
+                showMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
+                return;
+            }
+
+            // Mostrar loading
+            submitBtn.disabled = true;
+            loading.classList.add('active');
+            spinner.style.display = 'inline-block';
+
+            try {
+                // Coletar dados do formulário
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    profession: document.getElementById('profession').value,
+                    institution: document.getElementById('institution').value,
+                    message: document.getElementById('message-text').value,
+                    platform: document.getElementById('platform').value,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                };
+
+                // Simular envio (em produção, seria um servidor real)
+                console.log('Dados do registro:', formData);
+
+                // Salvar no localStorage (para demonstração)
+                let registrations = JSON.parse(localStorage.getItem('neurolasermap_registrations') || '[]');
+                registrations.push(formData);
+                localStorage.setItem('neurolasermap_registrations', JSON.stringify(registrations));
+
+                // Simular envio de e-mail
+                sendEmailNotification(formData);
+
+                // Mostrar mensagem de sucesso
+                showMessage(
+                    'Registro recebido com sucesso! Você receberá um e-mail com o link de download assim que sua solicitação for aprovada.',
+                    'success'
+                );
+
+                // Limpar formulário
+                form.reset();
+
+                // Esconder loading
+                loading.classList.remove('active');
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
+
+            } catch (error) {
+                console.error('Erro ao registrar:', error);
+                showMessage('Erro ao processar seu registro. Tente novamente.', 'error');
+                loading.classList.remove('active');
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function sendEmailNotification(formData) {
+            // Em produção, isso seria uma chamada para um servidor backend
+            // que enviaria um e-mail para o administrador e para o usuário
+
+            // Simular notificação para o administrador
+            console.log('📧 NOTIFICAÇÃO PARA ADMINISTRADOR:');
+            console.log('Novo registro de usuário:');
+            console.log(`Nome: ${formData.name}`);
+            console.log(`E-mail: ${formData.email}`);
+            console.log(`Telefone: ${formData.phone}`);
+            console.log(`Profissão: ${formData.profession}`);
+            console.log(`Instituição: ${formData.institution}`);
+            console.log(`Versão desejada: ${formData.platform}`);
+            console.log(`Timestamp: ${formData.timestamp}`);
+            console.log('---');
+
+            // Simular e-mail para o usuário
+            console.log('📧 E-MAIL PARA O USUÁRIO:');
+            console.log(`Olá ${formData.name},`);
+            console.log('Obrigado por se registrar no NeuroLaserMap!');
+            console.log('Sua solicitação foi recebida e está pendente de aprovação.');
+            console.log('Você receberá um e-mail com o link de download assim que for aprovado.');
+        }
+
+        // Função para o administrador visualizar registros (apenas para demonstração)
+        window.viewRegistrations = function() {
+            const registrations = JSON.parse(localStorage.getItem('neurolasermap_registrations') || '[]');
+            console.table(registrations);
+            return registrations;
+        };
+
+        // Função para o administrador aprovar um registro
+        window.approveRegistration = function(email) {
+            const registrations = JSON.parse(localStorage.getItem('neurolasermap_registrations') || '[]');
+            const registration = registrations.find(r => r.email === email);
+            if (registration) {
+                registration.status = 'approved';
+                registration.approvedAt = new Date().toISOString();
+                localStorage.setItem('neurolasermap_registrations', JSON.stringify(registrations));
+                console.log(`✅ Registro aprovado para ${email}`);
+                // Aqui você enviaria um e-mail com o link de download
+            }
+        };
+
+        // Mensagem de boas-vindas
+        console.log('%c🧠 NeuroLaserMap - Sistema de Registro', 'color: #667eea; font-size: 16px; font-weight: bold;');
+        console.log('%cPara visualizar registros: viewRegistrations()', 'color: #666;');
+        console.log('%cPara aprovar um registro: approveRegistration("email@exemplo.com")', 'color: #666;');
+    </script>
+</body>
+</html>
