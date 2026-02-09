@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pickImage, takePhoto, saveProfilePhoto, deleteProfilePhoto } from "@/lib/photo-picker";
+import { generateProfessionalSignature } from "@/lib/electronic-signature-generator";
 import { Image } from "react-native";
 
 interface ProfessionalProfile {
@@ -17,10 +18,13 @@ interface ProfessionalProfile {
   firstName: string;
   lastName: string;
   registrationNumber: string;
+  councilNumber: string;
   specialty: string;
   email: string;
   phone: string;
   photoUri?: string;
+  electronicSignature?: string;
+  signatureDate?: string;
 }
 
 const DEFAULT_PROFILE: ProfessionalProfile = {
@@ -28,6 +32,7 @@ const DEFAULT_PROFILE: ProfessionalProfile = {
   firstName: "",
   lastName: "",
   registrationNumber: "",
+  councilNumber: "",
   specialty: "",
   email: "",
   phone: "",
@@ -66,19 +71,37 @@ export default function ProfileScreen() {
 
   const saveProfile = async () => {
     try {
-      // Validação básica
       if (!editingProfile.firstName.trim() || !editingProfile.lastName.trim()) {
         Alert.alert("Erro", "Nome completo é obrigatório");
         return;
       }
+      if (!editingProfile.councilNumber.trim()) {
+        Alert.alert("Erro", "Número do conselho é obrigatório");
+        return;
+      }
 
-      await AsyncStorage.setItem("professionalProfile", JSON.stringify(editingProfile));
-      setProfile(editingProfile);
+      let profileToSave = { ...editingProfile };
+      if (!profileToSave.electronicSignature) {
+        const signature = generateProfessionalSignature(
+          editingProfile.title,
+          editingProfile.firstName,
+          editingProfile.lastName,
+          editingProfile.registrationNumber,
+          editingProfile.councilNumber,
+          editingProfile.email
+        );
+        profileToSave.electronicSignature = signature.signatureHash;
+        profileToSave.signatureDate = signature.signatureDate;
+      }
+
+      await AsyncStorage.setItem("professionalProfile", JSON.stringify(profileToSave));
+      setProfile(profileToSave);
+      setEditingProfile(profileToSave);
       setIsEditing(false);
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      Alert.alert("Sucesso", "Perfil salvo com sucesso!");
+      Alert.alert("Sucesso", "Perfil e assinatura eletrônica gerados com sucesso!");
     } catch (error) {
       Alert.alert("Erro", "Não foi possível salvar o perfil");
     }
@@ -388,6 +411,32 @@ export default function ProfileScreen() {
                       }}
                       placeholderTextColor={colors.muted}
                     />
+                  </View>
+
+                  {/* Número do Conselho */}
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                      Número do Conselho *
+                    </Text>
+                    <TextInput
+                      placeholder="Ex: CRFa 9-10025-5"
+                      value={editingProfile.councilNumber}
+                      onChangeText={(text) => setEditingProfile({ ...editingProfile, councilNumber: text })}
+                      style={{
+                        backgroundColor: colors.background,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        borderRadius: 8,
+                        paddingHorizontal: 12,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: colors.foreground,
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                    <Text style={{ fontSize: 12, color: colors.muted, fontStyle: "italic" }}>
+                      Este número será incluído na assinatura eletrônica dos documentos
+                    </Text>
                   </View>
 
                   {/* Especialidade */}

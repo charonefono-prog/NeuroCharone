@@ -9,6 +9,7 @@ import { useProfessionalInfo } from "@/hooks/use-professional-info";
 import { exportAndShareEffectivenessReport } from "@/lib/effectiveness-pdf-generator";
 import { ScaleResponse } from "@/lib/clinical-scales";
 import { EvolutionChart } from "@/components/evolution-chart";
+import { ComparativeCharts } from "@/components/comparative-charts";
 import * as Haptics from "expo-haptics";
 
 export default function EffectivenessScreen() {
@@ -248,7 +249,7 @@ export default function EffectivenessScreen() {
                     Gráficos de Evolução
                   </Text>
                   {Array.from(new Set(scaleResponses.map((r) => r.scaleName))).map((scaleName) => (
-                    <EvolutionChart
+                    <ComparativeCharts
                       key={scaleName}
                       scaleResponses={scaleResponses}
                       scaleName={scaleName}
