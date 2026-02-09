@@ -587,35 +587,6 @@ export const PDQ39_SCALE = {
     { id: "pdq39_8", question: "Teve tremor?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
     { id: "pdq39_9", question: "Teve rigidez muscular?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
     { id: "pdq39_10", question: "Teve lentidão de movimento?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_11", question: "Teve problemas de fala?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_12", question: "Teve problemas de escrita?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_13", question: "Teve dificuldade para se vestir?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_14", question: "Teve dificuldade para comer?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_15", question: "Teve dificuldade para tomar banho?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_16", question: "Teve dificuldade para ir ao banheiro?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_17", question: "Teve dificuldade para se locomover dentro de casa?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_18", question: "Teve dificuldade para sair de casa?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_19", question: "Teve dificuldade para usar transporte público?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_20", question: "Teve dificuldade para fazer compras?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_21", question: "Teve dificuldade para cozinhar?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_22", question: "Teve dificuldade para limpar a casa?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_23", question: "Teve dificuldade para cuidar das finanças?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_24", question: "Teve dificuldade para usar o telefone?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_25", question: "Teve dificuldade para usar o computador?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_26", question: "Teve dificuldade para se comunicar com outras pessoas?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_27", question: "Teve dificuldade para participar de atividades sociais?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_28", question: "Teve dificuldade para manter relacionamentos?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_29", question: "Teve dificuldade para expressar emoções?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_30", question: "Teve dificuldade para sentir prazer?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_31", question: "Teve dificuldade para se sentir esperançoso?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_32", question: "Teve dificuldade para se sentir motivado?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_33", question: "Teve dificuldade para se sentir com energia?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_34", question: "Teve dificuldade para se sentir calmo?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_35", question: "Teve dificuldade para se sentir feliz?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_36", question: "Teve dificuldade para se sentir confiante?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_37", question: "Teve dificuldade para se sentir seguro?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_38", question: "Teve dificuldade para se sentir independente?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
-    { id: "pdq39_39", question: "Teve dificuldade para se sentir com controle sobre sua vida?", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Sempre" }] },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
@@ -798,29 +769,33 @@ export const HB_SCALE = {
 };
 
 // ============================================
-// 20. SALIVA (Escala de Salivação de Parkinson - Versão Simplificada)
+// 14. PHQ-9 (Patient Health Questionnaire-9)
 // ============================================
-export const SALIVA_SCALE = {
-  type: "saliva" as ScaleType,
-  name: "Escala de Salivação (Sialorreia em Parkinson)",
-  description: "Avalia o grau de salivação excessiva (sialorreia) em pacientes com Parkinson - 4 itens",
-  totalItems: 4,
+export const PHQ9_SCALE = {
+  type: "phq9" as ScaleType,
+  name: "PHQ-9 (Questionário de Saúde do Paciente-9)",
+  description: "Avalia sintomas de depressão",
+  totalItems: 9,
   items: [
-    { id: "saliva_1", question: "Frequência de salivação excessiva", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Ocasional" }, { value: 2, label: "Frequente" }, { value: 3, label: "Constante" }] },
-    { id: "saliva_2", question: "Salivação durante o dia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "saliva_3", question: "Salivação durante a noite", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "saliva_4", question: "Impacto na qualidade de vida", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }] },
+    { id: "phq9_1", question: "Pouco interesse ou prazer em fazer coisas?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_2", question: "Se sentir deprimido, depressivo ou sem esperança?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_3", question: "Dificuldade em adormecer, manter o sono ou dormir demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_4", question: "Cansaço ou falta de energia?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_5", question: "Falta de apetite ou comer demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_6", question: "Sentir-se mal consigo mesmo ou fracasso?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_7", question: "Dificuldade em se concentrar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_8", question: "Falar ou agir tão lentamente que outros notam ou o oposto?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
+    { id: "phq9_9", question: "Pensamentos de que seria melhor estar morto ou se machucar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
-    if (values.length === 0) return { score: 0, interpretation: "Sem dados" };
     const total = values.reduce((a, b) => a + b, 0);
     let interpretation = "";
-    if (total <= 2) interpretation = "Salivação ausente ou mínima";
-    else if (total <= 5) interpretation = "Salivação leve";
-    else if (total <= 8) interpretation = "Salivação moderada";
-    else if (total <= 11) interpretation = "Salivação moderadamente severa";
-    else interpretation = "Salivação severa";
+    if (total <= 4) interpretation = "Sem depressão";
+    else if (total <= 9) interpretation = "Depressão leve";
+    else if (total <= 14) interpretation = "Depressão moderada";
+    else if (total <= 19) interpretation = "Depressão moderadamente severa";
+    else interpretation = "Depressão severa";
     return { score: total, interpretation };
   },
 };
@@ -1099,15 +1074,17 @@ export const MDSUPDRS_SCALE = {
     { id: "mdsupdrs_54", question: "Marcha", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
     { id: "mdsupdrs_55", question: "Congelamento da marcha", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
     { id: "mdsupdrs_56", question: "Estabilidade postural", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_57", question: "Disartria", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_58", question: "Distonia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_59", question: "Discinesia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_60", question: "Acinesia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_61", question: "Sialorreia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_62", question: "Dificuldade para se levantar da cadeira", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_63", question: "Dificuldade para virar na cama", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_64", question: "Dificuldade para caminhar", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_65", question: "Dificuldade para subir escadas", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_57", question: "Bradicinesia geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_58", question: "Hipocinesia geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_59", question: "Rigidez geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    
+    // PARTE IV: Complicações motoras (6 itens)
+    { id: "mdsupdrs_60", question: "Flutuações motoras previsíveis", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
+    { id: "mdsupdrs_61", question: "Flutuações motoras imprevisíveis", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
+    { id: "mdsupdrs_62", question: "Discinesia no pico de dose", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
+    { id: "mdsupdrs_63", question: "Discinesia bifásica", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
+    { id: "mdsupdrs_64", question: "Discinesia no final de dose", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
+    { id: "mdsupdrs_65", question: "Crises off", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
@@ -1193,11 +1170,43 @@ export const PHQ44_SCALE = {
   },
 };
 
+// ============================================
+// 20. SALIVA (Escala de Salivação de Parkinson)
+// ============================================
+export const SALIVA_SCALE = {
+  type: "saliva" as ScaleType,
+  name: "Escala de Salivação (Sialorreia em Parkinson)",
+  description: "Avalia o grau de salivação excessiva (sialorreia) em pacientes com Parkinson",
+  totalItems: 9,
+  items: [
+    { id: "saliva_1", question: "Frequência de salivação excessiva", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Ocasional" }, { value: 2, label: "Frequente" }, { value: 3, label: "Constante" }] },
+    { id: "saliva_2", question: "Quantidade de saliva na boca", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve aumento" }, { value: 2, label: "Moderado aumento" }, { value: 3, label: "Severo aumento" }] },
+    { id: "saliva_3", question: "Salivação durante o dia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
+    { id: "saliva_4", question: "Salivação durante a noite", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
+    { id: "saliva_5", question: "Dificuldade em engolir saliva", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
+    { id: "saliva_6", question: "Impacto na qualidade de vida", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }] },
+    { id: "saliva_7", question: "Necessidade de lenço ou pano", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Constantemente" }] },
+    { id: "saliva_8", question: "Constrangimento social", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }] },
+    { id: "saliva_9", question: "Afeta a fala ou comunicação", options: [{ value: 0, label: "Não" }, { value: 1, label: "Levemente" }, { value: 2, label: "Moderadamente" }, { value: 3, label: "Severamente" }] },
+  ],
+  calculateScore: (answers: Record<string, number | string>) => {
+    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
+    const total = values.reduce((a, b) => a + b, 0);
+    let interpretation = "";
+    if (total <= 4) interpretation = "Salivação ausente ou mínima";
+    else if (total <= 9) interpretation = "Salivação leve";
+    else if (total <= 14) interpretation = "Salivação moderada";
+    else if (total <= 19) interpretation = "Salivação moderadamente severa";
+    else interpretation = "Salivação severa";
+    return { score: total, interpretation };
+  },
+};
+
 // Array com todas as escalas
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ44_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, SALIVA_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, PHQ44_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, SALIVA_SCALE
 ];
 
 // Função para obter uma escala específica
