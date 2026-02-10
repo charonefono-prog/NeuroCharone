@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useState } from "react";
 import { helmetPoints, helmetRegions, getRegionById } from "@/shared/helmet-data";
 import { useColors } from "@/hooks/use-colors";
@@ -34,6 +34,18 @@ export function HelmetView({
         <Text className="text-lg font-semibold text-foreground mb-4 text-center">
           Mapeamento do Capacete (Sistema 10-20)
         </Text>
+
+        {/* Imagem do Sistema 10-20 */}
+        <View className="mb-4 rounded-xl overflow-hidden bg-background">
+          <Image
+            source={require("@/assets/images/helmet-system-10-20.jpg")}
+            style={{
+              width: "100%",
+              height: 300,
+              resizeMode: "contain",
+            }}
+          />
+        </View>
 
         {/* Grid de Pontos */}
         <View className="relative aspect-square w-full">
