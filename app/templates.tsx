@@ -11,7 +11,7 @@ import {
   deletePlanTemplate,
   type PlanTemplate,
 } from "@/lib/plan-templates";
-import { Helmet3DSelector } from "@/components/helmet-3d-selector";
+import { HelmetPointsSelector } from "@/components/helmet-points-selector";
 import { helmetRegions } from "@/shared/helmet-data";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
@@ -270,13 +270,11 @@ export default function TemplatesScreen() {
             />
           </View>
 
-          {/* Seleção de Pontos */}
-          <Helmet3DSelector
+          {/* Seleção de Pontos 10-20 EEG */}
+          <HelmetPointsSelector
             selectedPoints={selectedPoints}
             onPointsChange={setSelectedPoints}
-            title="Pontos de Estimulação *"
-            selectedPointId={selectedPointId}
-            onPointIdChange={setSelectedPointId}
+            title="Pontos de Estimulação (10-20 EEG) *"
           />
 
           {/* Frequência e Duração */}
