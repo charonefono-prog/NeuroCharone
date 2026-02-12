@@ -6,18 +6,13 @@
     "preview": {
       "android": {
         "buildType": "apk"
-      },
-      "ios": {
-        "buildType": "simulator"
       }
     },
     "production": {
       "android": {
         "buildType": "apk"
       },
-      "ios": {
-        "buildType": "archive"
-      },
+      "ios": {},
       "env": {
         "npm_config_legacy_peer_deps": "true"
       }
