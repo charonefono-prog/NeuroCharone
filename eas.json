@@ -8,15 +8,7 @@
         "buildType": "apk"
       }
     },
-    "production": {
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {},
-      "env": {
-        "npm_config_legacy_peer_deps": "true"
-      }
-    }
+    "production": {}
   },
   "submit": {
     "production": {}
