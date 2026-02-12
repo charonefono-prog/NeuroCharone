@@ -221,29 +221,10 @@ export default function HomeScreen() {
               Ações Rápidas
             </Text>
             <TouchableOpacity
-              onPress={() => router.push("/(tabs)/patients?action=new")}
-              activeOpacity={0.7}
-              style={{
-                backgroundColor: colors.primary,
-                padding: 16,
-                borderRadius: 12,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <Text style={{ fontSize: 24 }}>➕</Text>
-              <Text style={{ fontSize: 16, fontWeight: "600", color: "#FFFFFF", flex: 1 }}>
-                Novo Paciente
-              </Text>
-              <IconSymbol name="chevron.right" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
               onPress={() => router.push("/(tabs)/patients")}
               activeOpacity={0.7}
               style={{
-                backgroundColor: colors.primary + "80",
+                backgroundColor: colors.primary,
                 padding: 16,
                 borderRadius: 12,
                 flexDirection: "row",
