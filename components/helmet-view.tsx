@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { helmetPoints, helmetRegions, getRegionById } from "@/shared/helmet-data";
 import { useColors } from "@/hooks/use-colors";
 
