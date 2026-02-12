@@ -51,6 +51,7 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
+    icon: "./assets/images/icon.png",
     "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
