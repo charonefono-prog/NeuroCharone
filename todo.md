@@ -701,3 +701,7 @@
 ## Correccao de Bugs - Porcentagem
 - [x] Corrigir cálculo de porcentagem para CONNERS e VANDERBILT (mostrando 0%)
 - [x] Adicionar imagem do sistema 10-20 EEG em 2D nas telas de Plano Terapêutico e Nova Sessão
+
+## Correção de Build
+- [x] Corrigir erro de build timeout (exceeded 24 hours) no EAS
+- [x] Otimizar projeto para build mais rápido
