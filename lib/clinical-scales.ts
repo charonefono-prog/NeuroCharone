@@ -1113,18 +1113,6 @@ export const MDSUPDRS_SCALE = {
     { id: "mdsupdrs_64", question: "Dificuldade para caminhar", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
     { id: "mdsupdrs_65", question: "Dificuldade para subir escadas", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
   ],
-  calculateScore: (answers: Record<string, number | string>) => {alue: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_58", question: "Hipocinesia geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_59", question: "Rigidez geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    
-    // PARTE IV: Complicações motoras (6 itens)
-    { id: "mdsupdrs_60", question: "Flutuações motoras previsíveis", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
-    { id: "mdsupdrs_61", question: "Flutuações motoras imprevisíveis", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
-    { id: "mdsupdrs_62", question: "Discinesia no pico de dose", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
-    { id: "mdsupdrs_63", question: "Discinesia bifásica", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
-    { id: "mdsupdrs_64", question: "Discinesia no final de dose", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
-    { id: "mdsupdrs_65", question: "Crises off", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
-  ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
     const total = values.reduce((a, b) => a + b, 0);
