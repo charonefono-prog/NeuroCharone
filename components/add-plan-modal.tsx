@@ -268,11 +268,10 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
               </View>
             </View>
 
-            {/* Seleção de Pontos 10-20 EEG */}
+            {/* Seleção de Pontos */}
             <HelmetPointsSelector
               selectedPoints={selectedPoints}
               onPointsChange={setSelectedPoints}
-              title="Pontos de Estimulação (10-20 EEG) *"
             />
 
             {/* Observações */}

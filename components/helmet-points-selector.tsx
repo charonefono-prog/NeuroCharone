@@ -1,620 +1,189 @@
-import { View, Text, TouchableOpacity, ScrollView, Modal } from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
+import { View, Text, ScrollView, Pressable, Modal } from "react-native";
 import { useColors } from "@/hooks/use-colors";
-import { helmetRegions } from "@/shared/helmet-data";
+import { cn } from "@/lib/utils";
 
-interface HelmetPointsSelectorProps {
+export interface HelmetPointsSelectorProps {
   selectedPoints: string[];
   onPointsChange: (points: string[]) => void;
-  title?: string;
 }
+
+interface EEGPoint {
+  id: string;
+  name: string;
+  region: string;
+  color: string;
+  functions: string[];
+  clinicalApplications: string[];
+}
+
+const EEG_POINTS: EEGPoint[] = [
+  { id: "Fp1", name: "Fp1", region: "Frontal Polar", color: "#EF4444", functions: ["Pré-frontal dorsolateral esquerdo"], clinicalApplications: ["Depressão", "Ansiedade", "TDAH"] },
+  { id: "Fp2", name: "Fp2", region: "Frontal Polar", color: "#EF4444", functions: ["Pré-frontal dorsolateral direito"], clinicalApplications: ["Depressão", "Ansiedade", "TDAH"] },
+  { id: "F7", name: "F7", region: "Frontal", color: "#FBBF24", functions: ["Córtex pré-frontal esquerdo"], clinicalApplications: ["Linguagem", "Memória", "Atenção"] },
+  { id: "F3", name: "F3", region: "Frontal", color: "#FBBF24", functions: ["Córtex motor esquerdo"], clinicalApplications: ["Movimento", "Controle motor"] },
+  { id: "Fz", name: "Fz", region: "Frontal Central", color: "#FBBF24", functions: ["Córtex motor central"], clinicalApplications: ["Movimento bilateral", "Equilíbrio"] },
+  { id: "F4", name: "F4", region: "Frontal", color: "#FBBF24", functions: ["Córtex motor direito"], clinicalApplications: ["Movimento", "Controle motor"] },
+  { id: "F8", name: "F8", region: "Frontal", color: "#FBBF24", functions: ["Córtex pré-frontal direito"], clinicalApplications: ["Linguagem", "Memória", "Atenção"] },
+  { id: "C3", name: "C3", region: "Central", color: "#06B6D4", functions: ["Córtex sensório-motor esquerdo"], clinicalApplications: ["Dor", "Movimento", "Sensibilidade"] },
+  { id: "Cz", name: "Cz", region: "Central", color: "#06B6D4", functions: ["Córtex sensório-motor central"], clinicalApplications: ["Movimento bilateral", "Dor central"] },
+  { id: "C4", name: "C4", region: "Central", color: "#06B6D4", functions: ["Córtex sensório-motor direito"], clinicalApplications: ["Dor", "Movimento", "Sensibilidade"] },
+  { id: "P3", name: "P3", region: "Parietal", color: "#A78BFA", functions: ["Córtex parietal esquerdo"], clinicalApplications: ["Dor", "Propriocepção", "Integração sensorial"] },
+  { id: "Pz", name: "Pz", region: "Parietal", color: "#A78BFA", functions: ["Córtex parietal central"], clinicalApplications: ["Dor central", "Equilíbrio"] },
+  { id: "P4", name: "P4", region: "Parietal", color: "#A78BFA", functions: ["Córtex parietal direito"], clinicalApplications: ["Dor", "Propriocepção", "Integração sensorial"] },
+  { id: "O1", name: "O1", region: "Occipital", color: "#F87171", functions: ["Córtex visual esquerdo"], clinicalApplications: ["Visão", "Migrânea", "Processamento visual"] },
+  { id: "Oz", name: "Oz", region: "Occipital", color: "#F87171", functions: ["Córtex visual central"], clinicalApplications: ["Visão central", "Migrânea"] },
+  { id: "O2", name: "O2", region: "Occipital", color: "#F87171", functions: ["Córtex visual direito"], clinicalApplications: ["Visão", "Migrânea", "Processamento visual"] },
+  { id: "T3", name: "T3", region: "Temporal", color: "#10B981", functions: ["Córtex temporal esquerdo"], clinicalApplications: ["Linguagem", "Memória", "Audição"] },
+  { id: "T4", name: "T4", region: "Temporal", color: "#10B981", functions: ["Córtex temporal direito"], clinicalApplications: ["Linguagem", "Memória", "Audição"] },
+  { id: "T5", name: "T5", region: "Temporal Posterior", color: "#10B981", functions: ["Junção têmporo-parietal esquerda"], clinicalApplications: ["Linguagem", "Memória", "Integração sensorial"] },
+  { id: "T6", name: "T6", region: "Temporal Posterior", color: "#10B981", functions: ["Junção têmporo-parietal direita"], clinicalApplications: ["Linguagem", "Memória", "Integração sensorial"] },
+  { id: "Nz", name: "Nz", region: "Nasion", color: "#9CA3AF", functions: ["Ponto de referência anterior"], clinicalApplications: ["Referência anatômica"] },
+];
 
 export function HelmetPointsSelector({
   selectedPoints,
   onPointsChange,
-  title = "Pontos de Estimulação (10-20 EEG)",
 }: HelmetPointsSelectorProps) {
   const colors = useColors();
-  const [selectedPointInfo, setSelectedPointInfo] = useState<{
-    pointId: string;
-    regionName: string;
-    functions: string[];
-    clinicalApplications: string[];
-  } | null>(null);
-
-  // Extrair todos os pontos únicos
-  const allPoints = Array.from(
-    new Set(helmetRegions.flatMap((region) => region.points))
-  ).sort();
-
-  const getPointInfo = (pointId: string) => {
-    const region = helmetRegions.find((r) => r.points.includes(pointId));
-    if (!region) return null;
-    return {
-      pointId,
-      regionName: region.name,
-      functions: region.functions,
-      clinicalApplications: region.clinicalApplications,
-    };
-  };
-
-  const getPointColor = (pointId: string) => {
-    const region = helmetRegions.find((r) => r.points.includes(pointId));
-    return region?.colorHex || colors.border;
-  };
+  const [selectedPointInfo, setSelectedPointInfo] = useState<EEGPoint | null>(null);
 
   const togglePoint = (pointId: string) => {
-    const newPoints = selectedPoints.includes(pointId)
-      ? selectedPoints.filter((p) => p !== pointId)
-      : [...selectedPoints, pointId];
-    onPointsChange(newPoints);
+    if (selectedPoints.includes(pointId)) {
+      onPointsChange(selectedPoints.filter(p => p !== pointId));
+    } else {
+      onPointsChange([...selectedPoints, pointId]);
+    }
+  };
+
+  const getRegionColor = (region: string): string => {
+    const regionColors: Record<string, string> = {
+      "Frontal Polar": "#EF4444",
+      "Frontal": "#FBBF24",
+      "Frontal Central": "#FBBF24",
+      "Central": "#06B6D4",
+      "Parietal": "#A78BFA",
+      "Occipital": "#F87171",
+      "Temporal": "#10B981",
+      "Temporal Posterior": "#10B981",
+      "Nasion": "#9CA3AF",
+    };
+    return regionColors[region] || "#9CA3AF";
   };
 
   return (
-    <View style={{ gap: 12 }}>
-      {/* Título */}
-      <View>
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-          {title}
+    <View className="flex-1 gap-4">
+      <View className="bg-surface rounded-lg p-4">
+        <Text className="text-sm font-semibold text-foreground mb-2">
+          Seleção de Pontos 10-20 EEG
         </Text>
-        <Text style={{ fontSize: 12, color: colors.muted, marginTop: 4 }}>
-          {selectedPoints.length} ponto(s) selecionado(s)
+        <Text className="text-xs text-muted">
+          Clique nos pontos para selecionar/desselecionar. {selectedPoints.length} ponto(s) selecionado(s)
         </Text>
       </View>
 
-      {/* Grid de Pontos */}
-      <View
-        style={{
-          backgroundColor: colors.surface,
-          borderWidth: 1,
-          borderColor: colors.border,
-          borderRadius: 12,
-          padding: 16,
-          gap: 12,
-        }}
-      >
-        {/* Linha 1: Referência Anterior */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="Nz"
-            label="Nz"
-            isSelected={selectedPoints.includes("Nz")}
-            onPress={() => {
-              togglePoint("Nz");
-              setSelectedPointInfo(getPointInfo("Nz"));
-            }}
-            color={getPointColor("Nz")}
-          />
+      <ScrollView className="flex-1">
+        <View className="flex-wrap flex-row gap-2 p-2">
+          {EEG_POINTS.map((point) => (
+            <Pressable
+              key={point.id}
+              onPress={() => {
+                togglePoint(point.id);
+                setSelectedPointInfo(point);
+              }}
+              className={cn(
+                "w-16 h-16 rounded-full items-center justify-center border-2",
+                selectedPoints.includes(point.id)
+                  ? "border-primary bg-opacity-80"
+                  : "border-border bg-opacity-50"
+              )}
+              style={{
+                backgroundColor: selectedPoints.includes(point.id)
+                  ? getRegionColor(point.region)
+                  : `${getRegionColor(point.region)}40`,
+              }}
+            >
+              <Text
+                className={cn(
+                  "font-bold text-xs",
+                  selectedPoints.includes(point.id)
+                    ? "text-white"
+                    : "text-foreground"
+                )}
+              >
+                {point.name}
+              </Text>
+            </Pressable>
+          ))}
         </View>
+      </ScrollView>
 
-        {/* Linha 2: Frontal Anterior */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="Fp1"
-            label="Fp1"
-            isSelected={selectedPoints.includes("Fp1")}
-            onPress={() => {
-              togglePoint("Fp1");
-              setSelectedPointInfo(getPointInfo("Fp1"));
-            }}
-            color={getPointColor("Fp1")}
-          />
-          <PointButton
-            pointId="Fpz"
-            label="Fpz"
-            isSelected={selectedPoints.includes("Fpz")}
-            onPress={() => {
-              togglePoint("Fpz");
-              setSelectedPointInfo(getPointInfo("Fpz"));
-            }}
-            color={getPointColor("Fpz")}
-          />
-          <PointButton
-            pointId="Fp2"
-            label="Fp2"
-            isSelected={selectedPoints.includes("Fp2")}
-            onPress={() => {
-              togglePoint("Fp2");
-              setSelectedPointInfo(getPointInfo("Fp2"));
-            }}
-            color={getPointColor("Fp2")}
-          />
-        </View>
-
-        {/* Linha 3: Frontal Anterior-Média */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="AF3"
-            label="AF3"
-            isSelected={selectedPoints.includes("AF3")}
-            onPress={() => {
-              togglePoint("AF3");
-              setSelectedPointInfo(getPointInfo("AF3"));
-            }}
-            color={getPointColor("AF3")}
-          />
-          <PointButton
-            pointId="AFz"
-            label="AFz"
-            isSelected={selectedPoints.includes("AFz")}
-            onPress={() => {
-              togglePoint("AFz");
-              setSelectedPointInfo(getPointInfo("AFz"));
-            }}
-            color={getPointColor("AFz")}
-          />
-          <PointButton
-            pointId="AF4"
-            label="AF4"
-            isSelected={selectedPoints.includes("AF4")}
-            onPress={() => {
-              togglePoint("AF4");
-              setSelectedPointInfo(getPointInfo("AF4"));
-            }}
-            color={getPointColor("AF4")}
-          />
-        </View>
-
-        {/* Linha 4: Frontal Média e Temporal */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="F7"
-            label="F7"
-            isSelected={selectedPoints.includes("F7")}
-            onPress={() => {
-              togglePoint("F7");
-              setSelectedPointInfo(getPointInfo("F7"));
-            }}
-            color={getPointColor("F7")}
-          />
-          <PointButton
-            pointId="F3"
-            label="F3"
-            isSelected={selectedPoints.includes("F3")}
-            onPress={() => {
-              togglePoint("F3");
-              setSelectedPointInfo(getPointInfo("F3"));
-            }}
-            color={getPointColor("F3")}
-          />
-          <PointButton
-            pointId="Fz"
-            label="Fz"
-            isSelected={selectedPoints.includes("Fz")}
-            onPress={() => {
-              togglePoint("Fz");
-              setSelectedPointInfo(getPointInfo("Fz"));
-            }}
-            color={getPointColor("Fz")}
-          />
-          <PointButton
-            pointId="F4"
-            label="F4"
-            isSelected={selectedPoints.includes("F4")}
-            onPress={() => {
-              togglePoint("F4");
-              setSelectedPointInfo(getPointInfo("F4"));
-            }}
-            color={getPointColor("F4")}
-          />
-          <PointButton
-            pointId="F8"
-            label="F8"
-            isSelected={selectedPoints.includes("F8")}
-            onPress={() => {
-              togglePoint("F8");
-              setSelectedPointInfo(getPointInfo("F8"));
-            }}
-            color={getPointColor("F8")}
-          />
-        </View>
-
-        {/* Linha 5: Frontal-Central */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="FC5"
-            label="FC5"
-            isSelected={selectedPoints.includes("FC5")}
-            onPress={() => {
-              togglePoint("FC5");
-              setSelectedPointInfo(getPointInfo("FC5"));
-            }}
-            color={getPointColor("FC5")}
-          />
-          <PointButton
-            pointId="FC1"
-            label="FC1"
-            isSelected={selectedPoints.includes("FC1")}
-            onPress={() => {
-              togglePoint("FC1");
-              setSelectedPointInfo(getPointInfo("FC1"));
-            }}
-            color={getPointColor("FC1")}
-          />
-          <PointButton
-            pointId="FC2"
-            label="FC2"
-            isSelected={selectedPoints.includes("FC2")}
-            onPress={() => {
-              togglePoint("FC2");
-              setSelectedPointInfo(getPointInfo("FC2"));
-            }}
-            color={getPointColor("FC2")}
-          />
-          <PointButton
-            pointId="FC6"
-            label="FC6"
-            isSelected={selectedPoints.includes("FC6")}
-            onPress={() => {
-              togglePoint("FC6");
-              setSelectedPointInfo(getPointInfo("FC6"));
-            }}
-            color={getPointColor("FC6")}
-          />
-        </View>
-
-        {/* Linha 6: Central */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="T3"
-            label="T3"
-            isSelected={selectedPoints.includes("T3")}
-            onPress={() => {
-              togglePoint("T3");
-              setSelectedPointInfo(getPointInfo("T3"));
-            }}
-            color={getPointColor("T3")}
-          />
-          <PointButton
-            pointId="C3"
-            label="C3"
-            isSelected={selectedPoints.includes("C3")}
-            onPress={() => {
-              togglePoint("C3");
-              setSelectedPointInfo(getPointInfo("C3"));
-            }}
-            color={getPointColor("C3")}
-          />
-          <PointButton
-            pointId="Cz"
-            label="Cz"
-            isSelected={selectedPoints.includes("Cz")}
-            onPress={() => {
-              togglePoint("Cz");
-              setSelectedPointInfo(getPointInfo("Cz"));
-            }}
-            color={getPointColor("Cz")}
-          />
-          <PointButton
-            pointId="C4"
-            label="C4"
-            isSelected={selectedPoints.includes("C4")}
-            onPress={() => {
-              togglePoint("C4");
-              setSelectedPointInfo(getPointInfo("C4"));
-            }}
-            color={getPointColor("C4")}
-          />
-          <PointButton
-            pointId="T4"
-            label="T4"
-            isSelected={selectedPoints.includes("T4")}
-            onPress={() => {
-              togglePoint("T4");
-              setSelectedPointInfo(getPointInfo("T4"));
-            }}
-            color={getPointColor("T4")}
-          />
-        </View>
-
-        {/* Linha 7: Central-Parietal */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="CP5"
-            label="CP5"
-            isSelected={selectedPoints.includes("CP5")}
-            onPress={() => {
-              togglePoint("CP5");
-              setSelectedPointInfo(getPointInfo("CP5"));
-            }}
-            color={getPointColor("CP5")}
-          />
-          <PointButton
-            pointId="CP1"
-            label="CP1"
-            isSelected={selectedPoints.includes("CP1")}
-            onPress={() => {
-              togglePoint("CP1");
-              setSelectedPointInfo(getPointInfo("CP1"));
-            }}
-            color={getPointColor("CP1")}
-          />
-          <PointButton
-            pointId="CP2"
-            label="CP2"
-            isSelected={selectedPoints.includes("CP2")}
-            onPress={() => {
-              togglePoint("CP2");
-              setSelectedPointInfo(getPointInfo("CP2"));
-            }}
-            color={getPointColor("CP2")}
-          />
-          <PointButton
-            pointId="CP6"
-            label="CP6"
-            isSelected={selectedPoints.includes("CP6")}
-            onPress={() => {
-              togglePoint("CP6");
-              setSelectedPointInfo(getPointInfo("CP6"));
-            }}
-            color={getPointColor("CP6")}
-          />
-        </View>
-
-        {/* Linha 8: Parietal */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="T5"
-            label="T5"
-            isSelected={selectedPoints.includes("T5")}
-            onPress={() => {
-              togglePoint("T5");
-              setSelectedPointInfo(getPointInfo("T5"));
-            }}
-            color={getPointColor("T5")}
-          />
-          <PointButton
-            pointId="P3"
-            label="P3"
-            isSelected={selectedPoints.includes("P3")}
-            onPress={() => {
-              togglePoint("P3");
-              setSelectedPointInfo(getPointInfo("P3"));
-            }}
-            color={getPointColor("P3")}
-          />
-          <PointButton
-            pointId="Pz"
-            label="Pz"
-            isSelected={selectedPoints.includes("Pz")}
-            onPress={() => {
-              togglePoint("Pz");
-              setSelectedPointInfo(getPointInfo("Pz"));
-            }}
-            color={getPointColor("Pz")}
-          />
-          <PointButton
-            pointId="P4"
-            label="P4"
-            isSelected={selectedPoints.includes("P4")}
-            onPress={() => {
-              togglePoint("P4");
-              setSelectedPointInfo(getPointInfo("P4"));
-            }}
-            color={getPointColor("P4")}
-          />
-          <PointButton
-            pointId="T6"
-            label="T6"
-            isSelected={selectedPoints.includes("T6")}
-            onPress={() => {
-              togglePoint("T6");
-              setSelectedPointInfo(getPointInfo("T6"));
-            }}
-            color={getPointColor("T6")}
-          />
-        </View>
-
-        {/* Linha 9: Occipital */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="O1"
-            label="O1"
-            isSelected={selectedPoints.includes("O1")}
-            onPress={() => {
-              togglePoint("O1");
-              setSelectedPointInfo(getPointInfo("O1"));
-            }}
-            color={getPointColor("O1")}
-          />
-          <PointButton
-            pointId="Oz"
-            label="Oz"
-            isSelected={selectedPoints.includes("Oz")}
-            onPress={() => {
-              togglePoint("Oz");
-              setSelectedPointInfo(getPointInfo("Oz"));
-            }}
-            color={getPointColor("Oz")}
-          />
-          <PointButton
-            pointId="O2"
-            label="O2"
-            isSelected={selectedPoints.includes("O2")}
-            onPress={() => {
-              togglePoint("O2");
-              setSelectedPointInfo(getPointInfo("O2"));
-            }}
-            color={getPointColor("O2")}
-          />
-        </View>
-
-        {/* Linha 10: Referência Posterior */}
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-          <PointButton
-            pointId="Iz"
-            label="Iz"
-            isSelected={selectedPoints.includes("Iz")}
-            onPress={() => {
-              togglePoint("Iz");
-              setSelectedPointInfo(getPointInfo("Iz"));
-            }}
-            color={getPointColor("Iz")}
-          />
-        </View>
-      </View>
-
-      {/* Modal com Informações do Ponto */}
       <Modal
         visible={!!selectedPointInfo}
         transparent
         animationType="fade"
         onRequestClose={() => setSelectedPointInfo(null)}
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 16,
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: colors.surface,
-              borderRadius: 16,
-              padding: 20,
-              maxHeight: "80%",
-              width: "100%",
-            }}
-          >
-            <ScrollView>
-              {selectedPointInfo && (
-                <View style={{ gap: 16 }}>
-                  {/* Header */}
-                  <View style={{ gap: 8 }}>
-                    <View
-                      style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: 30,
-                        backgroundColor: selectedPointInfo.regionName ? getPointColor(selectedPointInfo.pointId) : colors.border,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.background }}>
-                        {selectedPointInfo.pointId}
-                      </Text>
-                    </View>
-                    <Text style={{ fontSize: 18, fontWeight: "bold", color: colors.foreground }}>
-                      {selectedPointInfo.pointId}
-                    </Text>
-                    <Text style={{ fontSize: 14, color: colors.muted }}>
-                      Região: {selectedPointInfo.regionName}
+        <View className="flex-1 bg-black/50 justify-center items-center p-4">
+          <View className="bg-surface rounded-lg p-6 w-full max-w-sm">
+            {selectedPointInfo && (
+              <>
+                <View className="flex-row items-center gap-3 mb-4">
+                  <View
+                    className="w-12 h-12 rounded-full items-center justify-center"
+                    style={{ backgroundColor: getRegionColor(selectedPointInfo.region) }}
+                  >
+                    <Text className="font-bold text-white text-lg">
+                      {selectedPointInfo.name}
                     </Text>
                   </View>
-
-                  {/* Funções */}
-                  {selectedPointInfo.functions.length > 0 && (
-                    <View style={{ gap: 8 }}>
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                        Funções:
-                      </Text>
-                      {selectedPointInfo.functions.map((func, idx) => (
-                        <Text
-                          key={idx}
-                          style={{
-                            fontSize: 12,
-                            color: colors.muted,
-                            marginLeft: 12,
-                            lineHeight: 18,
-                          }}
-                        >
-                          • {func}
-                        </Text>
-                      ))}
-                    </View>
-                  )}
-
-                  {/* Aplicações Clínicas */}
-                  {selectedPointInfo.clinicalApplications.length > 0 && (
-                    <View style={{ gap: 8 }}>
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-                        Aplicações Clínicas:
-                      </Text>
-                      {selectedPointInfo.clinicalApplications.map((app, idx) => (
-                        <Text
-                          key={idx}
-                          style={{
-                            fontSize: 12,
-                            color: colors.muted,
-                            marginLeft: 12,
-                            lineHeight: 18,
-                          }}
-                        >
-                          • {app}
-                        </Text>
-                      ))}
-                    </View>
-                  )}
-
-                  {/* Botão Fechar */}
-                  <TouchableOpacity
-                    onPress={() => setSelectedPointInfo(null)}
-                    style={{
-                      backgroundColor: colors.primary,
-                      borderRadius: 12,
-                      padding: 12,
-                      marginTop: 8,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: colors.background,
-                        fontWeight: "600",
-                        textAlign: "center",
-                      }}
-                    >
-                      Fechar
+                  <View className="flex-1">
+                    <Text className="text-lg font-bold text-foreground">
+                      {selectedPointInfo.name}
                     </Text>
-                  </TouchableOpacity>
+                    <Text className="text-sm text-muted">
+                      {selectedPointInfo.region}
+                    </Text>
+                  </View>
                 </View>
-              )}
-            </ScrollView>
+
+                <View className="gap-3">
+                  <View>
+                    <Text className="text-sm font-semibold text-foreground mb-1">
+                      Funções:
+                    </Text>
+                    {selectedPointInfo.functions.map((func, idx) => (
+                      <Text key={idx} className="text-xs text-muted ml-2">
+                        • {func}
+                      </Text>
+                    ))}
+                  </View>
+
+                  <View>
+                    <Text className="text-sm font-semibold text-foreground mb-1">
+                      Aplicações Clínicas:
+                    </Text>
+                    {selectedPointInfo.clinicalApplications.map((app, idx) => (
+                      <Text key={idx} className="text-xs text-muted ml-2">
+                        • {app}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
+
+                <Pressable
+                  onPress={() => setSelectedPointInfo(null)}
+                  className="mt-4 bg-primary rounded-lg p-3"
+                >
+                  <Text className="text-center font-semibold text-background">
+                    Fechar
+                  </Text>
+                </Pressable>
+              </>
+            )}
           </View>
         </View>
       </Modal>
     </View>
-  );
-}
-
-interface PointButtonProps {
-  pointId: string;
-  label: string;
-  isSelected: boolean;
-  onPress: () => void;
-  color: string;
-}
-
-function PointButton({ pointId, label, isSelected, onPress, color }: PointButtonProps) {
-  const colors = useColors();
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={{
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: isSelected ? color : colors.background,
-        borderWidth: 2,
-        borderColor: color,
-        justifyContent: "center",
-        alignItems: "center",
-        opacity: isSelected ? 1 : 0.6,
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 12,
-          fontWeight: "bold",
-          color: isSelected ? colors.background : color,
-        }}
-      >
-        {label}
-      </Text>
-    </TouchableOpacity>
   );
 }

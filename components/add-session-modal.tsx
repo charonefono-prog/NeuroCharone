@@ -171,11 +171,10 @@ export function AddSessionModal({ visible, patientId, planId, plans = [], onClos
               </View>
             ) : null}
 
-            {/* Seleção de Pontos 10-20 EEG */}
+            {/* Seleção de Pontos */}
             <HelmetPointsSelector
               selectedPoints={selectedPoints}
               onPointsChange={setSelectedPoints}
-              title="Pontos de Estimulação (10-20 EEG) *"
             />
 
             {/* Campos */}
