@@ -49,7 +49,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
       onPointsChange(selectedPoints.filter((p) => !regionPoints.includes(p)));
     } else {
       // Selecionar todos da região
-      const newPoints = [...new Set([...selectedPoints, ...regionPoints])];
+      const newPoints = Array.from(new Set([...selectedPoints, ...regionPoints]));
       onPointsChange(newPoints);
     }
   };
@@ -94,14 +94,6 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
           borderColor: colors.border,
         }}
       >
-          <Image
-            source={require("@/assets/images/helmet-diagram.png")}
-            style={{
-              width: "100%",
-              height: 320,
-              resizeMode: "contain",
-            }}
-          />
         <Text style={{ fontSize: 12, color: colors.muted, marginTop: 8, textAlign: "center" }}>
           Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
         </Text>
