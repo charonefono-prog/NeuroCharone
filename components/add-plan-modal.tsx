@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
 import { savePlan } from "@/lib/local-storage";
-import { HelmetPointsSelector } from "./helmet-points-selector";
+import { Helmet3DSelector } from "./helmet-3d-selector";
 import { helmetRegions } from "@/shared/helmet-data";
 import { TemplateSelectorModal } from "./template-selector-modal";
 import { type PlanTemplate } from "@/lib/plan-templates";
@@ -268,10 +268,13 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
               </View>
             </View>
 
-            {/* Seleção de Pontos */}
-            <HelmetPointsSelector
+            {/* Visualização 3D do Capacete */}
+            <Helmet3DSelector
               selectedPoints={selectedPoints}
               onPointsChange={setSelectedPoints}
+              title="Pontos de Estimulação *"
+              selectedPointId={selectedPointId}
+              onPointIdChange={setSelectedPointId}
             />
 
             {/* Observações */}

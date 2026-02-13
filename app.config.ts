@@ -41,12 +41,17 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.0",
+  version: "1.0.2",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
   newArchEnabled: false,
+  extra: {
+    eas: {
+      projectId: "519c0503-478c-4806-902e-3616c7b36313"
+    }
+  },
 
   ios: {
     supportsTablet: true,
@@ -117,12 +122,6 @@ const config: ExpoConfig = {
   ],
   experiments: {
     typedRoutes: true,
-    reactCompiler: false,
-  },
-  extra: {
-    eas: {
-      projectId: "519c0503-478c-4806-902e-3616c7b36313",
-    },
   },
 };
 
