@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, ScrollView, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Platform, Image } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
@@ -83,7 +83,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         </View>
       </View>
 
-      {/* Seleção de Pontos */}
+      {/* Imagem do Sistema 10-20 EEG */}
       <View
         style={{
           backgroundColor: colors.surface,
@@ -91,13 +91,19 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
           alignItems: "center",
           borderWidth: 1,
           borderColor: colors.border,
+          borderRadius: 16,
         }}
       >
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground, marginBottom: 8 }}>
-          Sistema 10-20
-        </Text>
-        <Text style={{ fontSize: 12, color: colors.muted, textAlign: "center" }}>
-          Selecione uma região ou pontos específicos para aplicação de estimulação
+        <Image
+          source={require("@/assets/images/eeg-10-20-system.png")}
+          style={{
+            width: 320,
+            height: 320,
+            resizeMode: "contain",
+          }}
+        />
+        <Text style={{ fontSize: 14, fontWeight: "500", color: colors.muted, textAlign: "center", marginTop: 8 }}>
+          Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
         </Text>
       </View>
 
