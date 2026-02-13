@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "./ui/icon-symbol";
 import { saveSession, getPatients } from "@/lib/local-storage";
-import { HelmetPointsSelector } from "./helmet-points-selector";
+import { Helmet3DSelector } from "./helmet-3d-selector";
 import { scheduleSessionReminder } from "@/lib/notifications";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
@@ -171,10 +171,13 @@ export function AddSessionModal({ visible, patientId, planId, plans = [], onClos
               </View>
             ) : null}
 
-            {/* Seleção de Pontos */}
-            <HelmetPointsSelector
+            {/* Visualização 3D do Capacete */}
+            <Helmet3DSelector
               selectedPoints={selectedPoints}
               onPointsChange={setSelectedPoints}
+              title="Pontos de Estimulação *"
+              selectedPointId={selectedPointId}
+              onPointIdChange={setSelectedPointId}
             />
 
             {/* Campos */}

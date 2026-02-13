@@ -46,7 +46,7 @@ const config: ExpoConfig = {
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
-  newArchEnabled: false,
+  newArchEnabled: true,
 
   ios: {
     supportsTablet: true,
@@ -117,12 +117,7 @@ const config: ExpoConfig = {
   ],
   experiments: {
     typedRoutes: true,
-    reactCompiler: false,
-  },
-  extra: {
-    eas: {
-      projectId: "519c0503-478c-4806-902e-3616c7b36313",
-    },
+    reactCompiler: true,
   },
 };
 

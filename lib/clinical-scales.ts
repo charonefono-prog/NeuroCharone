@@ -18,24 +18,13 @@ export type ScaleType =
   | "stopbang"
   | "hb"
   | "phq9"
-  | "phq44"
   | "mdq"
   | "snapiv"
   | "amisos"
   | "mdsupdrs"
   | "oddrs"
   | "conners"
-  | "vanderbilt"
-  | "saliva";
-
-// Escala de SALIVA de Parkinson - Avaliação de Salivação
-export interface FacialParalysisAnalysis {
-  grade: number;
-  symmetry: string;
-  eyeFunction: string;
-  mouthFunction: string;
-  recommendations: string[];
-}
+  | "vanderbilt";
 
 export interface ScaleResponse {
   id: string;
@@ -1010,194 +999,22 @@ export const ODDRS_SCALE = {
 export const MDSUPDRS_SCALE = {
   type: "mdsupdrs" as ScaleType,
   name: "MDS-UPDRS (Escala Unificada de Avaliacao da Doenca de Parkinson)",
-  description: "Avalia sintomas motores e nao-motores em Parkinson - 65 itens",
-  totalItems: 65,
+  description: "Avalia sintomas motores e nao-motores em Parkinson",
+  totalItems: 4,
   items: [
-    // PARTE I: Experiências não-motoras da vida diária (13 itens)
-    { id: "mdsupdrs_1", question: "Complexidade cognitiva", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_2", question: "Depressão", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_3", question: "Ansiedade", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_4", question: "Apatia", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_5", question: "Problemas de sono noturno", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_6", question: "Sonolência diurna", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_7", question: "Dor e parestesias", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_8", question: "Urgência urinária", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_9", question: "Constipação", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_10", question: "Luz brilhante", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_11", question: "Dificuldade em saborear ou cheirar", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_12", question: "Tontura ao ficar de pé", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_13", question: "Fadiga", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    
-    // PARTE II: Experiências motoras da vida diária (13 itens)
-    { id: "mdsupdrs_14", question: "Fala", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_15", question: "Salivação", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_16", question: "Deglutição", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_17", question: "Escrita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_18", question: "Tremor de repouso", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_19", question: "Tremor de ação", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_20", question: "Rigidez", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_21", question: "Bradicinesia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_22", question: "Postura", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_23", question: "Marcha", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_24", question: "Estabilidade postural", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_25", question: "Expressão facial", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_26", question: "Movimento ocular", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    
-    // PARTE III: Exame motor (33 itens)
-    { id: "mdsupdrs_27", question: "Fala - Volume", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_28", question: "Fala - Clareza", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_29", question: "Tremor de repouso - Mão direita", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_30", question: "Tremor de repouso - Mão esquerda", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_31", question: "Tremor de repouso - Perna direita", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_32", question: "Tremor de repouso - Perna esquerda", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_33", question: "Tremor de ação - Mão direita", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_34", question: "Tremor de ação - Mão esquerda", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_35", question: "Rigidez - Pescoço", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_36", question: "Rigidez - Braço direito", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_37", question: "Rigidez - Braço esquerdo", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_38", question: "Rigidez - Perna direita", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_39", question: "Rigidez - Perna esquerda", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_40", question: "Batida de dedo - Direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_41", question: "Batida de dedo - Esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_42", question: "Movimento de mão - Direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_43", question: "Movimento de mão - Esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_44", question: "Pronação/Supinação - Direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_45", question: "Pronação/Supinação - Esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_46", question: "Toque de dedo com polegar - Direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_47", question: "Toque de dedo com polegar - Esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_48", question: "Abertura de mão - Direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_49", question: "Abertura de mão - Esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_50", question: "Levantamento de perna - Direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_51", question: "Levantamento de perna - Esquerda", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_52", question: "Levantamento de assento", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_53", question: "Postura", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_54", question: "Marcha", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_55", question: "Congelamento da marcha", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }, { value: 4, label: "Muito severo" }] },
-    { id: "mdsupdrs_56", question: "Estabilidade postural", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_57", question: "Bradicinesia geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_58", question: "Hipocinesia geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    { id: "mdsupdrs_59", question: "Rigidez geral", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
-    
-    // PARTE IV: Complicações motoras (6 itens)
-    { id: "mdsupdrs_60", question: "Flutuações motoras previsíveis", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
-    { id: "mdsupdrs_61", question: "Flutuações motoras imprevisíveis", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
-    { id: "mdsupdrs_62", question: "Discinesia no pico de dose", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
-    { id: "mdsupdrs_63", question: "Discinesia bifásica", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
-    { id: "mdsupdrs_64", question: "Discinesia no final de dose", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Presente" }] },
-    { id: "mdsupdrs_65", question: "Crises off", options: [{ value: 0, label: "Ausentes" }, { value: 1, label: "Presentes" }] },
+    { id: "mdsupdrs_1", question: "Rigidez - Pescoco", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_2", question: "Rigidez - Braco direito", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_3", question: "Rigidez - Braco esquerdo", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
+    { id: "mdsupdrs_4", question: "Rigidez - Perna direita", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }, { value: 4, label: "Muito severa" }] },
   ],
   calculateScore: (answers: Record<string, number | string>) => {
     const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
     const total = values.reduce((a, b) => a + b, 0);
     let interpretation = "";
-    if (total <= 20) interpretation = "Parkinson muito leve";
-    else if (total <= 40) interpretation = "Parkinson leve";
-    else if (total <= 60) interpretation = "Parkinson moderada";
-    else if (total <= 80) interpretation = "Parkinson moderadamente severa";
-    else if (total <= 120) interpretation = "Parkinson severa";
-    else interpretation = "Parkinson muito severa";
-    return { score: total, interpretation };
-  },
-};
-
-// ============================================
-// 19. PHQ-44 (Patient Health Questionnaire-44 - Versão Expandida de Depressão)
-// ============================================
-export const PHQ44_SCALE = {
-  type: "phq44" as ScaleType,
-  name: "PHQ-44 (Questionário de Saúde do Paciente-44 - Depressão Expandida)",
-  description: "Avalia sintomas de depressão com 44 perguntas detalhadas",
-  totalItems: 44,
-  items: [
-    // Sintomas principais (9 itens do PHQ-9)
-    { id: "phq44_1", question: "Pouco interesse ou prazer em fazer coisas?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_2", question: "Se sentir deprimido, depressivo ou sem esperança?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_3", question: "Dificuldade em adormecer, manter o sono ou dormir demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_4", question: "Cansaço ou falta de energia?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_5", question: "Falta de apetite ou comer demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_6", question: "Sentir-se mal consigo mesmo ou fracaço?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_7", question: "Dificuldade em se concentrar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_8", question: "Falar ou agir tão lentamente que outros notam ou o oposto?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    { id: "phq44_9", question: "Pensamentos de que seria melhor estar morto ou se machucar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Vários dias" }, { value: 2, label: "Mais da metade dos dias" }, { value: 3, label: "Quase todos os dias" }] },
-    
-    // Sintomas adicionais de depressão (35 itens)
-    { id: "phq44_10", question: "Sentir-se infeliz ou triste?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_11", question: "Perda de interesse em atividades que antes gostava?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_12", question: "Sentimentos de culpa ou remorso?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_13", question: "Dificuldade em tomar decisões?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_14", question: "Sentir-se sem valor ou inadequado?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_15", question: "Dificuldade em se concentrar em tarefas?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_16", question: "Perda de memória ou esquecimento?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_17", question: "Dificuldade em dormir no início da noite?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_18", question: "Acordar no meio da noite?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_19", question: "Acordar cedo demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_20", question: "Dormir demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_21", question: "Falta de apetite?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_22", question: "Comer demais?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_23", question: "Ganho de peso?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_24", question: "Perda de peso?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_25", question: "Falta de motivação?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_26", question: "Sensação de desesperço?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_27", question: "Sensação de vazio?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_28", question: "Dificuldade em expressar emoções?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_29", question: "Isolamento social?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_30", question: "Dificuldade em manter relacionamentos?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_31", question: "Irritabilidade ou raiva fácil?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_32", question: "Choro fácil?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_33", question: "Pensamentos negativos recorrentes?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_34", question: "Preocupação excessiva?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_35", question: "Ansiedade ou pânico?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_36", question: "Tensão muscular ou dores?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_37", question: "Dores de cabeça?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_38", question: "Problemas digestivos?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_39", question: "Tontura ou vertigem?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_40", question: "Falta de ar ou dificuldade em respirar?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_41", question: "Sensação de aperto no peito?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_42", question: "Palpitações ou batida cardíaca acelerada?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_43", question: "Suores noturnos?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "phq44_44", question: "Pensamentos de morte ou suicídio?", options: [{ value: 0, label: "Não" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-  ],
-  calculateScore: (answers: Record<string, number | string>) => {
-    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
-    const total = values.reduce((a, b) => a + b, 0);
-    let interpretation = "";
-    if (total <= 10) interpretation = "Sem depressão";
-    else if (total <= 25) interpretation = "Depressão leve";
-    else if (total <= 50) interpretation = "Depressão moderada";
-    else if (total <= 75) interpretation = "Depressão moderadamente severa";
-    else interpretation = "Depressão severa";
-    return { score: total, interpretation };
-  },
-};
-
-// ============================================
-// 20. SALIVA (Escala de Salivação de Parkinson)
-// ============================================
-export const SALIVA_SCALE = {
-  type: "saliva" as ScaleType,
-  name: "Escala de Salivação (Sialorreia em Parkinson)",
-  description: "Avalia o grau de salivação excessiva (sialorreia) em pacientes com Parkinson",
-  totalItems: 9,
-  items: [
-    { id: "saliva_1", question: "Frequência de salivação excessiva", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Ocasional" }, { value: 2, label: "Frequente" }, { value: 3, label: "Constante" }] },
-    { id: "saliva_2", question: "Quantidade de saliva na boca", options: [{ value: 0, label: "Normal" }, { value: 1, label: "Leve aumento" }, { value: 2, label: "Moderado aumento" }, { value: 3, label: "Severo aumento" }] },
-    { id: "saliva_3", question: "Salivação durante o dia", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "saliva_4", question: "Salivação durante a noite", options: [{ value: 0, label: "Ausente" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "saliva_5", question: "Dificuldade em engolir saliva", options: [{ value: 0, label: "Nenhuma" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderada" }, { value: 3, label: "Severa" }] },
-    { id: "saliva_6", question: "Impacto na qualidade de vida", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }] },
-    { id: "saliva_7", question: "Necessidade de lenço ou pano", options: [{ value: 0, label: "Nunca" }, { value: 1, label: "Ocasionalmente" }, { value: 2, label: "Frequentemente" }, { value: 3, label: "Constantemente" }] },
-    { id: "saliva_8", question: "Constrangimento social", options: [{ value: 0, label: "Nenhum" }, { value: 1, label: "Leve" }, { value: 2, label: "Moderado" }, { value: 3, label: "Severo" }] },
-    { id: "saliva_9", question: "Afeta a fala ou comunicação", options: [{ value: 0, label: "Não" }, { value: 1, label: "Levemente" }, { value: 2, label: "Moderadamente" }, { value: 3, label: "Severamente" }] },
-  ],
-  calculateScore: (answers: Record<string, number | string>) => {
-    const values = Object.values(answers).filter(v => typeof v === 'number') as number[];
-    const total = values.reduce((a, b) => a + b, 0);
-    let interpretation = "";
-    if (total <= 4) interpretation = "Salivação ausente ou mínima";
-    else if (total <= 9) interpretation = "Salivação leve";
-    else if (total <= 14) interpretation = "Salivação moderada";
-    else if (total <= 19) interpretation = "Salivação moderadamente severa";
-    else interpretation = "Salivação severa";
+    if (total <= 5) interpretation = "Rigidez minima ou ausente";
+    else if (total <= 10) interpretation = "Rigidez leve";
+    else if (total <= 15) interpretation = "Rigidez moderada";
+    else interpretation = "Rigidez severa";
     return { score: total, interpretation };
   },
 };
@@ -1206,7 +1023,7 @@ export const SALIVA_SCALE = {
 export const ALL_SCALES = [
   DOSS_SCALE, BTSS_SCALE, BDAE_SCALE, CM_SCALE, SARA_SCALE, QCS_SCALE,
   PDQ39_SCALE, FOIS_SCALE, DSFS_SCALE, GRBASI_SCALE, EAT10_SCALE,
-  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, PHQ44_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE, SALIVA_SCALE
+  STOPBANG_SCALE, HB_SCALE, PHQ9_SCALE, MDQ_SCALE, SNAPIV_SCALE, AMISOS_SCALE, ODDRS_SCALE, CONNERS_SCALE, VANDERBILT_SCALE, MDSUPDRS_SCALE
 ];
 
 // Função para obter uma escala específica
