@@ -1,6 +1,6 @@
 {
   "name": "app-template",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "main": "expo-router/entry",
   "homepage": "./",
@@ -16,8 +16,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "qr": "node scripts/generate_qr.mjs",
     "electron-dev": "cross-env NODE_ENV=development electron .",
     "electron-build": "electron-builder",
@@ -29,11 +29,10 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "@react-native-community/datetimepicker": "^8.6.0",
+    "@react-native-community/datetimepicker": "8.4.4",
     "@react-navigation/bottom-tabs": "^7.8.12",
     "@react-navigation/elements": "^2.9.2",
     "@react-navigation/native": "^7.1.25",
-
     "@tanstack/react-query": "^5.90.12",
     "@trpc/client": "11.7.2",
     "@trpc/react-query": "11.7.2",
@@ -44,7 +43,7 @@
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.44.7",
     "electron-updater": "^6.7.3",
-    "expo": "~54.0.29",
+    "expo": "54.0.33",
     "expo-audio": "~1.1.0",
     "expo-build-properties": "^1.0.10",
     "expo-constants": "~18.0.12",
@@ -93,7 +92,6 @@
     "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.31.8",
-
     "esbuild": "^0.25.12",
     "eslint": "^9.39.2",
     "eslint-config-expo": "~10.0.0",
