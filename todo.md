@@ -701,3 +701,50 @@
 ## Correccao de Bugs - Porcentagem
 - [x] Corrigir cálculo de porcentagem para CONNERS e VANDERBILT (mostrando 0%)
 - [x] Adicionar imagem do sistema 10-20 EEG em 2D nas telas de Plano Terapêutico e Nova Sessão
+
+
+## Painel Visual de Admin (Próxima Fase)
+- [ ] Criar página web de admin dashboard
+- [ ] Implementar interface visual para gerenciar whitelist
+- [ ] Adicionar funcionalidade de adicionar usuário
+- [ ] Adicionar funcionalidade de aprovar/rejeitar usuário
+- [ ] Adicionar funcionalidade de bloquear/desbloquear usuário
+- [ ] Adicionar funcionalidade de remover usuário
+- [ ] Implementar visualização de log de acessos
+- [ ] Implementar estatísticas de acesso
+- [ ] Adicionar busca e filtros de usuários
+- [ ] Implementar autenticação para admin panel
+
+## Email de Notificação (Próxima Fase)
+- [ ] Configurar serviço de email (SendGrid, Nodemailer, etc)
+- [ ] Implementar função de envio de email
+- [ ] Adicionar email de notificação quando cliente tenta fazer login
+- [ ] Adicionar email de confirmação quando usuário é aprovado
+- [ ] Adicionar email de rejeição quando usuário é negado
+- [ ] Implementar template de email profissional
+- [ ] Adicionar configuração de email do admin
+- [ ] Testar envio de emails
+
+
+## Conversão para PWA (Progressive Web App)
+- [x] Instalar dependências PWA (workbox, etc)
+- [x] Criar service worker para suporte offline
+- [x] Configurar manifest.json
+- [x] Adicionar ícones PWA
+- [x] Implementar cache de dados
+- [x] Testar instalação em celular
+- [x] Configurar HTTPS
+- [x] Testar funcionalidade offline
+- [x] Implementar sincronização de dados quando online
+- [ ] Adicionar notificações push (opcional)
+
+## Sistema de Autenticação com Email/Senha
+- [x] Criar AuthContext para gerenciar estado de login
+- [x] Implementar tela de Login (email + senha)
+- [x] Implementar tela de Registro (cadastro novo usuário)
+- [x] Integrar proteção de rotas (só acessa se logado)
+- [x] Implementar validação de email
+- [x] Implementar validação de senha (mínimo 6 caracteres)
+- [x] Integrar com backend (API de login/registro)
+- [x] Testar fluxo completo de autenticação
+- [x] Criar testes unitários para autenticação
