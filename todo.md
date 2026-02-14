@@ -748,3 +748,11 @@
 - [x] Integrar com backend (API de login/registro)
 - [x] Testar fluxo completo de autenticação
 - [x] Criar testes unitários para autenticação
+
+## Fix Build Travado
+- [x] Cancelar builds antigos travados no Expo
+- [x] Identificar causa do erro: package-lock.json desatualizado
+- [x] Regenerar package-lock.json com versões corretas
+- [ ] Salvar checkpoint com alterações pendentes
+- [ ] Rebuild Android APK
+- [ ] Rebuild iOS
