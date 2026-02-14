@@ -125,6 +125,7 @@ export const accessControl = mysqlTable("access_control", {
   id: int("id").autoincrement().primaryKey(),
   email: varchar("email", { length: 320 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
+  passwordHash: varchar("passwordHash", { length: 255 }),
   isApproved: boolean("isApproved").notNull().default(false),
   helmetSerialNumber: varchar("helmetSerialNumber", { length: 100 }),
   helmetModel: varchar("helmetModel", { length: 100 }),
