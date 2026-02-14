@@ -28,11 +28,11 @@ const schemeFromBundleId = `manus${timestamp}`;
 
 const env = {
   // App branding - update these values directly (do not use env vars)
-  appName: "NeuroLaserMap",
-  appSlug: "neuromodulation-mapper",
+  appName: "Neuromodulation Mapper",
+  appSlug: "neuromodulation_mapper",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663028848082/TaxCSXbECvsiEyVo.png",
+  logoUrl: "",
   scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,
@@ -41,18 +41,12 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.2",
+  version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
-  newArchEnabled: false,
-  extra: {
-    eas: {
-      projectId: "519c0503-478c-4806-902e-3616c7b36313"
-    }
-  },
-
+  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
@@ -99,6 +93,13 @@ const config: ExpoConfig = {
       },
     ],
     [
+      "expo-video",
+      {
+        supportsBackgroundPlayback: true,
+        supportsPictureInPicture: true,
+      },
+    ],
+    [
       "expo-splash-screen",
       {
         image: "./assets/images/splash-icon.png",
@@ -122,6 +123,7 @@ const config: ExpoConfig = {
   ],
   experiments: {
     typedRoutes: true,
+    reactCompiler: true,
   },
 };
 
