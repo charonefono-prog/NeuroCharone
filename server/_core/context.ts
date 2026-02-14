@@ -1,11 +1,13 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
 import { sdk } from "./sdk";
+import { getDb } from "../db";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
   res: CreateExpressContextOptions["res"];
   user: User | null;
+  db: Awaited<ReturnType<typeof getDb>>;
 };
 
 export async function createContext(opts: CreateExpressContextOptions): Promise<TrpcContext> {
@@ -18,9 +20,12 @@ export async function createContext(opts: CreateExpressContextOptions): Promise<
     user = null;
   }
 
+  const db = await getDb();
+
   return {
     req: opts.req,
     res: opts.res,
     user,
+    db,
   };
 }
