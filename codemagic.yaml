@@ -1,0 +1,67 @@
+workflows:
+  android-build:
+    name: Android Build
+    instance_type: linux_x2
+    max_build_duration: 120
+    environment:
+      node: 22.13.0
+      java: 11
+    triggering:
+      events:
+        - push
+      branch:
+        patterns:
+          - pattern: main
+            include: true
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+      - name: Build APK
+        script: |
+          npx expo prebuild --clean --platform android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+    artifacts:
+      - android/app/build/outputs/apk/release/app-release.apk
+    publishing:
+      email:
+        recipients:
+          - charonejr@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  ios-build:
+    name: iOS Build
+    instance_type: mac_mini_m1
+    max_build_duration: 120
+    environment:
+      node: 22.13.0
+      xcode: latest
+    triggering:
+      events:
+        - push
+      branch:
+        patterns:
+          - pattern: main
+            include: true
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install
+      - name: Build IPA
+        script: |
+          npx expo prebuild --clean --platform ios
+          cd ios
+          xcodebuild -workspace NeuromodulationMapper.xcworkspace -scheme NeuromodulationMapper -configuration Release -derivedDataPath build
+    artifacts:
+      - ios/build/Release-iphoneos/NeuromodulationMapper.ipa
+    publishing:
+      email:
+        recipients:
+          - charonejr@gmail.com
+        notify:
+          success: true
+          failure: true
