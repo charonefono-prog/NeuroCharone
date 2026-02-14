@@ -116,3 +116,47 @@ export type InsertTherapeuticPlan = typeof therapeuticPlans.$inferInsert;
 
 export type Session = typeof sessions.$inferSelect;
 export type InsertSession = typeof sessions.$inferInsert;
+
+/**
+ * Access Control Table
+ * Whitelist de usuários autorizados a usar o sistema
+ */
+export const accessControl = mysqlTable("access_control", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  name: varchar("name", { length: 255 }),
+  isApproved: boolean("isApproved").notNull().default(false),
+  helmetSerialNumber: varchar("helmetSerialNumber", { length: 100 }),
+  helmetModel: varchar("helmetModel", { length: 100 }),
+  accessLevel: varchar("accessLevel", { length: 50 }).notNull().default("user"),
+  approvedAt: timestamp("approvedAt"),
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  notes: text("notes"),
+  approvedBy: varchar("approvedBy", { length: 255 }),
+  denialReason: text("denialReason"),
+});
+
+/**
+ * Access Request Log
+ * Registro de tentativas de acesso
+ */
+export const accessLog = mysqlTable("access_log", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  name: varchar("name", { length: 255 }),
+  status: varchar("status", { length: 50 }).notNull(),
+  reason: text("reason"),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  attemptedAt: timestamp("attemptedAt").defaultNow().notNull(),
+  processedAt: timestamp("processedAt"),
+});
+
+// Tipos
+export type AccessControl = typeof accessControl.$inferSelect;
+export type InsertAccessControl = typeof accessControl.$inferInsert;
+
+export type AccessLog = typeof accessLog.$inferSelect;
+export type InsertAccessLog = typeof accessLog.$inferInsert;

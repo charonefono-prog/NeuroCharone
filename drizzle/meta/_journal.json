@@ -43,6 +43,13 @@
       "when": 1771069411188,
       "tag": "0005_chief_grim_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1771070529708,
+      "tag": "0006_dashing_captain_stacy",
+      "breakpoints": true
     }
   ]
 }
