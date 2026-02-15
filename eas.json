@@ -10,7 +10,10 @@
         "credentialsSource": "local"
       },
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "env": {
+          "INSTALL_LIGHTNINGCSS_DARWIN": "true"
+        }
       }
     },
     "production": {
@@ -19,7 +22,10 @@
         "credentialsSource": "local"
       },
       "ios": {
-        "credentialsSource": "remote"
+        "credentialsSource": "remote",
+        "env": {
+          "INSTALL_LIGHTNINGCSS_DARWIN": "true"
+        }
       }
     }
   },

@@ -758,6 +758,11 @@
 - [ ] Rebuild iOS
 
 ## Correção Build iOS e Checkpoint
-- [ ] Corrigir erro do iOS build - módulo lightningcss não encontrado no Metro config
-- [ ] Salvar checkpoint para resolver aviso de "alterações não empacotadas"
-- [ ] Iniciar novo build iOS após correção
+- [x] Corrigir erro do iOS build - módulo lightningcss não encontrado no Metro config
+- [x] Salvar checkpoint para resolver aviso de "alterações não empacotadas"
+- [x] Iniciar novo build iOS após correção
+
+## Correção Manus Publish Docker Build
+- [x] Remover lightningcss-darwin-arm64/x64 do optionalDependencies (causa erro no Docker Linux)
+- [x] Usar eas.json para instalar lightningcss darwin binaries apenas no EAS Build (via postinstall script)
+- [ ] Salvar checkpoint para resolver "alterações não empacotadas"
