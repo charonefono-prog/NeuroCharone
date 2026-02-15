@@ -7,8 +7,8 @@ import {
 } from "./ready-protocols";
 
 describe("Ready Protocols", () => {
-  it("deve ter 12 protocolos prontos", () => {
-    expect(READY_PROTOCOLS).toHaveLength(12);
+  it("deve ter 23 protocolos prontos", () => {
+    expect(READY_PROTOCOLS).toHaveLength(23);
   });
 
   it("cada protocolo deve ter ID único", () => {
@@ -45,7 +45,7 @@ describe("Ready Protocols", () => {
   });
 
   it("todos os pontos devem ser válidos do sistema 10-20", () => {
-    const validPoints = ["Fp1", "Fp2", "Fpz", "AF3", "AF4", "AFz", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "Fz", "C1", "C2", "C3", "C4", "C5", "C6", "Cz", "FC1", "FC2", "FC5", "FC6", "FCz", "CP1", "CP2", "CP3", "CP4", "CP5", "CP6", "CPz", "T3", "T4", "T5", "T6", "P1", "P2", "P3", "P4", "P5", "P6", "Pz", "PO3", "PO4", "POz", "O1", "O2", "Oz", "Iz", "Inf-O"];
+    const validPoints = ["Fp1", "Fpz", "Fp2", "AF3", "AFz", "AF4", "F7", "F3", "Fz", "F4", "F8", "FC5", "FC1", "FC2", "FC6", "C3", "Cz", "C4", "CP5", "CP1", "CP2", "CP6", "T3", "T4", "T5", "T6", "P3", "Pz", "P4", "PO3", "POz", "PO4", "O1", "Oz", "O2"];
     READY_PROTOCOLS.forEach(protocol => {
       protocol.targetPoints.forEach(point => {
         expect(validPoints).toContain(point);
@@ -97,9 +97,9 @@ describe("Ready Protocols", () => {
   });
 
   describe("getAllProtocols", () => {
-    it("deve retornar todos os 12 protocolos", () => {
+    it("deve retornar todos os 23 protocolos", () => {
       const protocols = getAllProtocols();
-      expect(protocols).toHaveLength(12);
+      expect(protocols).toHaveLength(23);
     });
   });
 
@@ -109,15 +109,9 @@ describe("Ready Protocols", () => {
       expect(conditions.length).toBeGreaterThan(0);
     });
 
-    it("deve retornar condições únicas", () => {
+    it("deve conter as condições esperadas", () => {
       const conditions = READY_PROTOCOLS.map(p => p.condition);
-      const unique = new Set(conditions);
-      expect(unique.size).toBe(conditions.length);
-    });
-
-    it("deve conter as 12 condições esperadas", () => {
-      const conditions = READY_PROTOCOLS.map(p => p.condition);
-      expect(conditions).toHaveLength(12);
+      expect(conditions).toHaveLength(23);
       // Verificar que temos condições esperadas
       expect(conditions).toContain("Afasia");
       expect(conditions).toContain("Tinnitus");

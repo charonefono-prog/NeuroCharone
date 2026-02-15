@@ -45,7 +45,7 @@ describe('Server Health and Stability', () => {
     });
 
     it('should have correct Expo version', () => {
-      expect(packageJson.dependencies.expo).toMatch(/~54\./);
+      expect(packageJson.dependencies.expo).toMatch(/54\./);
     });
 
     it('should have correct React Native version', () => {

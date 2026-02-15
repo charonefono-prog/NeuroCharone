@@ -22,12 +22,13 @@ export interface ColoredRegion {
 
 /**
  * 35 PONTOS COLORIDOS EXATOS DA IMAGEM:
- * Rosa (3): Fp1, Fp2, Fpz
- * Laranja (5): AF3, AF4, AFz, AF7, AF8
- * Amarelo (5): F3, F4, F1, F2, Fz
- * Ciano (13): FC3, FC1, FCz, FC2, FC4, C5, C3, C1, Cz, C2, C4, C6, CP3, CP1, CPz, CP2, CP4
- * Verde (4): T9, T3, T4, T10
- * Roxo (5): P3, P1, Pz, P2, P4
+ * Rosa (3): Fp1, Fpz, Fp2
+ * Laranja (3): AF3, AFz, AF4
+ * Amarelo (5): F7, F3, Fz, F4, F8
+ * Ciano (11): FC5, FC1, FC2, FC6, C3, Cz, C4, CP5, CP1, CP2, CP6
+ * Verde (4): T3, T4, T5, T6
+ * Roxo claro (3): P3, Pz, P4
+ * Roxo escuro (3): PO3, POz, PO4
  * Rosa claro (3): O1, Oz, O2
  */
 
@@ -41,34 +42,27 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto frontal anterior esquerdo - Processamento emocional e regulação do humor"
   },
   {
-    name: "Fp2",
-    color: "#FF69B4",
-    region: "Frontal Anterior",
-    applications: ["Depressão", "Ansiedade", "Transtorno do humor"],
-    description: "Ponto frontal anterior direito - Processamento emocional e regulação do humor"
-  },
-  {
     name: "Fpz",
     color: "#FF69B4",
     region: "Frontal Anterior",
     applications: ["Depressão", "Ansiedade", "Regulação emocional"],
     description: "Ponto frontal anterior central - Integração emocional bilateral"
   },
+  {
+    name: "Fp2",
+    color: "#FF69B4",
+    region: "Frontal Anterior",
+    applications: ["Depressão", "Ansiedade", "Transtorno do humor"],
+    description: "Ponto frontal anterior direito - Processamento emocional e regulação do humor"
+  },
 
-  // LARANJA - Frontal Média (5 pontos)
+  // LARANJA - Frontal Média (3 pontos)
   {
     name: "AF3",
     color: "#FFA500",
     region: "Frontal Média",
     applications: ["Atenção", "Foco", "Concentração"],
     description: "Ponto frontal médio esquerdo - Atenção e foco"
-  },
-  {
-    name: "AF4",
-    color: "#FFA500",
-    region: "Frontal Média",
-    applications: ["Atenção", "Foco", "Concentração"],
-    description: "Ponto frontal médio direito - Atenção e foco"
   },
   {
     name: "AFz",
@@ -78,27 +72,34 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto frontal médio central - Integração atencional bilateral"
   },
   {
-    name: "AF7",
+    name: "AF4",
     color: "#FFA500",
     region: "Frontal Média",
-    applications: ["Atenção", "Foco"],
-    description: "Ponto frontal médio esquerdo anterior - Atenção"
-  },
-  {
-    name: "AF8",
-    color: "#FFA500",
-    region: "Frontal Média",
-    applications: ["Atenção", "Foco"],
-    description: "Ponto frontal médio direito anterior - Atenção"
+    applications: ["Atenção", "Foco", "Concentração"],
+    description: "Ponto frontal médio direito - Atenção e foco"
   },
 
   // AMARELO - Frontal Central (5 pontos)
+  {
+    name: "F7",
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Linguagem expressiva", "Broca", "Afasia"],
+    description: "Ponto frontal lateral esquerdo - Área de Broca (produção de fala)"
+  },
   {
     name: "F3",
     color: "#FFFF00",
     region: "Frontal Central",
     applications: ["Afasia", "Linguagem expressiva", "Broca"],
     description: "Ponto frontal central esquerdo - Área de Broca (produção de fala)"
+  },
+  {
+    name: "Fz",
+    color: "#FFFF00",
+    region: "Frontal Central",
+    applications: ["Linguagem bilateral", "Coordenação"],
+    description: "Ponto frontal central mediano - Integração bilateral"
   },
   {
     name: "F4",
@@ -108,34 +109,20 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto frontal central direito - Linguagem expressiva"
   },
   {
-    name: "F1",
+    name: "F8",
     color: "#FFFF00",
     region: "Frontal Central",
-    applications: ["Linguagem", "Coordenação motora"],
-    description: "Ponto frontal central esquerdo mediano - Linguagem"
-  },
-  {
-    name: "F2",
-    color: "#FFFF00",
-    region: "Frontal Central",
-    applications: ["Linguagem", "Coordenação motora"],
-    description: "Ponto frontal central direito mediano - Linguagem"
-  },
-  {
-    name: "Fz",
-    color: "#FFFF00",
-    region: "Frontal Central",
-    applications: ["Linguagem bilateral", "Coordenação"],
-    description: "Ponto frontal central mediano - Integração bilateral"
+    applications: ["Linguagem expressiva", "Prosódia"],
+    description: "Ponto frontal lateral direito - Prosódia e linguagem"
   },
 
-  // CIANO - Central / Sensório-Motora (13 pontos)
+  // CIANO - Central / Sensório-Motora (11 pontos)
   {
-    name: "FC3",
+    name: "FC5",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Sensação"],
-    description: "Ponto frontocentral esquerdo - Integração sensório-motora"
+    applications: ["Controle motor", "Sensação", "Coordenação"],
+    description: "Ponto frontocentral esquerdo lateral - Integração sensório-motora"
   },
   {
     name: "FC1",
@@ -145,13 +132,6 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto frontocentral esquerdo mediano - Integração sensório-motora"
   },
   {
-    name: "FCz",
-    color: "#00CED1",
-    region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Coordenação bilateral"],
-    description: "Ponto frontocentral central - Integração motora bilateral"
-  },
-  {
     name: "FC2",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
@@ -159,18 +139,11 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto frontocentral direito mediano - Integração sensório-motora"
   },
   {
-    name: "FC4",
+    name: "FC6",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
     applications: ["Controle motor", "Sensação", "Coordenação"],
-    description: "Ponto frontocentral direito - Integração sensório-motora"
-  },
-  {
-    name: "C5",
-    color: "#00CED1",
-    region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Sensação"],
-    description: "Ponto central esquerdo anterior - Controle motor e sensação"
+    description: "Ponto frontocentral direito lateral - Integração sensório-motora"
   },
   {
     name: "C3",
@@ -180,25 +153,11 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto central esquerdo - Controle motor e sensação"
   },
   {
-    name: "C1",
-    color: "#00CED1",
-    region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Sensação"],
-    description: "Ponto central esquerdo mediano - Integração sensório-motora"
-  },
-  {
     name: "Cz",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
     applications: ["Controle motor", "Coordenação bilateral"],
     description: "Ponto central mediano - Integração motora bilateral"
-  },
-  {
-    name: "C2",
-    color: "#00CED1",
-    region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Sensação"],
-    description: "Ponto central direito mediano - Integração sensório-motora"
   },
   {
     name: "C4",
@@ -208,18 +167,11 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto central direito - Controle motor e sensação"
   },
   {
-    name: "C6",
-    color: "#00CED1",
-    region: "Central / Sensório-Motora",
-    applications: ["Controle motor", "Sensação"],
-    description: "Ponto central direito anterior - Controle motor e sensação"
-  },
-  {
-    name: "CP3",
+    name: "CP5",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
     applications: ["Integração sensório-motora", "Propriocepção"],
-    description: "Ponto centroparietal esquerdo - Integração sensório-motora"
+    description: "Ponto centroparietal esquerdo lateral - Integração sensório-motora"
   },
   {
     name: "CP1",
@@ -229,13 +181,6 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto centroparietal esquerdo mediano - Integração sensório-motora"
   },
   {
-    name: "CPz",
-    color: "#00CED1",
-    region: "Central / Sensório-Motora",
-    applications: ["Integração sensório-motora bilateral"],
-    description: "Ponto centroparietal central - Integração bilateral"
-  },
-  {
     name: "CP2",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
@@ -243,21 +188,14 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto centroparietal direito mediano - Integração sensório-motora"
   },
   {
-    name: "CP4",
+    name: "CP6",
     color: "#00CED1",
     region: "Central / Sensório-Motora",
     applications: ["Integração sensório-motora", "Propriocepção"],
-    description: "Ponto centroparietal direito - Integração sensório-motora"
+    description: "Ponto centroparietal direito lateral - Integração sensório-motora"
   },
 
   // VERDE - Temporal (4 pontos)
-  {
-    name: "T9",
-    color: "#00FF00",
-    region: "Temporal",
-    applications: ["Processamento auditivo", "Memória"],
-    description: "Ponto temporal esquerdo anterior - Processamento auditivo"
-  },
   {
     name: "T3",
     color: "#00FF00",
@@ -273,27 +211,27 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto temporal direito - Área de Wernicke (compreensão de linguagem)"
   },
   {
-    name: "T10",
+    name: "T5",
     color: "#00FF00",
     region: "Temporal",
-    applications: ["Processamento auditivo", "Memória"],
-    description: "Ponto temporal direito anterior - Processamento auditivo"
+    applications: ["Processamento auditivo", "Memória", "Linguagem"],
+    description: "Ponto temporal posterior esquerdo - Processamento auditivo e memória"
+  },
+  {
+    name: "T6",
+    color: "#00FF00",
+    region: "Temporal",
+    applications: ["Processamento auditivo", "Memória", "Linguagem"],
+    description: "Ponto temporal posterior direito - Processamento auditivo e memória"
   },
 
-  // ROXO - Parietal (5 pontos)
+  // ROXO CLARO - Parietal (3 pontos)
   {
     name: "P3",
     color: "#9370DB",
     region: "Parietal",
     applications: ["Integração sensorial", "Discalculia"],
     description: "Ponto parietal esquerdo - Integração sensorial e espacial"
-  },
-  {
-    name: "P1",
-    color: "#9370DB",
-    region: "Parietal",
-    applications: ["Integração sensorial"],
-    description: "Ponto parietal esquerdo mediano - Integração sensorial"
   },
   {
     name: "Pz",
@@ -303,13 +241,6 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto parietal central - Integração sensorial bilateral"
   },
   {
-    name: "P2",
-    color: "#9370DB",
-    region: "Parietal",
-    applications: ["Integração sensorial"],
-    description: "Ponto parietal direito mediano - Integração sensorial"
-  },
-  {
     name: "P4",
     color: "#9370DB",
     region: "Parietal",
@@ -317,7 +248,30 @@ export const COLORED_POINTS: ColoredPoint[] = [
     description: "Ponto parietal direito - Integração sensorial e espacial"
   },
 
-  // ROSA CLARO - Occipital (3 pontos)
+  // ROXO ESCURO - Parieto-Occipital (3 pontos)
+  {
+    name: "PO3",
+    color: "#800080",
+    region: "Parieto-Occipital",
+    applications: ["Integração visuoespacial", "Processamento visual"],
+    description: "Ponto parieto-occipital esquerdo - Integração visuoespacial"
+  },
+  {
+    name: "POz",
+    color: "#800080",
+    region: "Parieto-Occipital",
+    applications: ["Integração visuoespacial bilateral"],
+    description: "Ponto parieto-occipital central - Integração visuoespacial bilateral"
+  },
+  {
+    name: "PO4",
+    color: "#800080",
+    region: "Parieto-Occipital",
+    applications: ["Integração visuoespacial", "Processamento visual"],
+    description: "Ponto parieto-occipital direito - Integração visuoespacial"
+  },
+
+  // ROSA CLARO / VERMELHO - Occipital (3 pontos)
   {
     name: "O1",
     color: "#FFB6C1",
@@ -346,43 +300,50 @@ export const COLORED_REGIONS: ColoredRegion[] = [
     id: "region-frontal-anterior",
     name: "Frontal Anterior",
     colorHex: "#FF69B4",
-    points: ["Fp1", "Fp2", "Fpz"],
+    points: ["Fp1", "Fpz", "Fp2"],
     applications: ["Depressão", "Ansiedade", "Regulação emocional"]
   },
   {
     id: "region-frontal-media",
     name: "Frontal Média",
     colorHex: "#FFA500",
-    points: ["AF3", "AF4", "AFz", "AF7", "AF8"],
+    points: ["AF3", "AFz", "AF4"],
     applications: ["Atenção", "Foco", "Concentração"]
   },
   {
     id: "region-frontal-central",
     name: "Frontal Central",
     colorHex: "#FFFF00",
-    points: ["F3", "F4", "F1", "F2", "Fz"],
-    applications: ["Afasia", "Linguagem expressiva", "Broca"]
+    points: ["F7", "F3", "Fz", "F4", "F8"],
+    applications: ["Afasia", "Linguagem expressiva", "Broca", "Prosódia"]
   },
   {
     id: "region-central-sensoriomotora",
     name: "Central / Sensório-Motora",
     colorHex: "#00CED1",
-    points: ["FC3", "FC1", "FCz", "FC2", "FC4", "C5", "C3", "C1", "Cz", "C2", "C4", "C6", "CP3", "CP1", "CPz", "CP2", "CP4"],
+    points: ["FC5", "FC1", "FC2", "FC6", "C3", "Cz", "C4", "CP5", "CP1", "CP2", "CP6"],
     applications: ["Controle motor", "Sensação", "Parkinson", "Coordenação"]
   },
   {
     id: "region-temporal",
     name: "Temporal",
     colorHex: "#00FF00",
-    points: ["T9", "T3", "T4", "T10"],
+    points: ["T3", "T4", "T5", "T6"],
     applications: ["Zumbido", "Memória", "Wernicke", "Processamento auditivo"]
   },
   {
     id: "region-parietal",
     name: "Parietal",
     colorHex: "#9370DB",
-    points: ["P3", "P1", "Pz", "P2", "P4"],
+    points: ["P3", "Pz", "P4"],
     applications: ["Integração sensorial", "Discalculia", "Espacialidade"]
+  },
+  {
+    id: "region-parieto-occipital",
+    name: "Parieto-Occipital",
+    colorHex: "#800080",
+    points: ["PO3", "POz", "PO4"],
+    applications: ["Integração visuoespacial", "Processamento visual"]
   },
   {
     id: "region-occipital",

@@ -182,14 +182,16 @@ describe('Server API and Endpoints', () => {
   });
 
   describe('Error Handling', () => {
-    const routersContent = fs.readFileSync(routersPath, 'utf-8');
+    const patientsRouterPath = path.join(projectRoot, 'server', 'routers', 'patients.ts');
+    const patientsContent = fs.readFileSync(patientsRouterPath, 'utf-8');
 
     it('should handle UNAUTHORIZED errors', () => {
-      expect(routersContent).toMatch(/UNAUTHORIZED|protectedProcedure/s);
+      // protectedProcedure automatically handles UNAUTHORIZED in sub-routers
+      expect(patientsContent).toMatch(/UNAUTHORIZED|protectedProcedure/s);
     });
 
     it('should validate input data', () => {
-      expect(routersContent).toContain('z.');
+      expect(patientsContent).toContain('z.');
     });
   });
 

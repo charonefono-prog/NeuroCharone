@@ -157,7 +157,7 @@ export const helmetRegions: HelmetRegion[] = [
     name: "Occipital Anterior",
     color: "Roxo Escuro",
     colorHex: "#8B008B",
-    points: ["PO2", "PO3", "PO4"],
+    points: ["PO3", "POz", "PO4"],
     functions: [
       "Processamento visual anterior",
       "Integração visual-espacial",
@@ -237,9 +237,9 @@ export const helmetPoints: HelmetPoint[] = [
   { id: "Pz", name: "Pz", region: "parietal", description: "Parietal Central", applications: ["Integração da atenção visual-espacial"], position: { x: 50, y: 68 } },
   
   // Occipital Anterior (Roxo Escuro) - 3 pontos
-  { id: "PO2", name: "PO2", region: "occipital-anterior", description: "Parieto-Occipital 2", applications: ["Processamento visual anterior"], position: { x: 58, y: 78 } },
-  { id: "PO3", name: "PO3", region: "occipital-anterior", description: "Parieto-Occipital 3", applications: ["Processamento visual anterior"], position: { x: 42, y: 78 } },
-  { id: "PO4", name: "PO4", region: "occipital-anterior", description: "Parieto-Occipital 4", applications: ["Processamento visual anterior"], position: { x: 58, y: 78 } },
+  { id: "PO3", name: "PO3", region: "occipital-anterior", description: "Parieto-Occipital 3", applications: ["Integração visuoespacial"], position: { x: 38, y: 78 } },
+  { id: "POz", name: "POz", region: "occipital-anterior", description: "Parieto-Occipital Central", applications: ["Integração visuoespacial bilateral"], position: { x: 50, y: 78 } },
+  { id: "PO4", name: "PO4", region: "occipital-anterior", description: "Parieto-Occipital 4", applications: ["Integração visuoespacial"], position: { x: 62, y: 78 } },
   
   // Occipital (Salmão) - 3 pontos
   { id: "O1", name: "O1", region: "occipital", description: "Occipital 1", applications: ["Estimulação da acuidade visual"], position: { x: 38, y: 88 } },

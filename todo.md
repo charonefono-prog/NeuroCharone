@@ -765,4 +765,19 @@
 ## Correção Manus Publish Docker Build
 - [x] Remover lightningcss-darwin-arm64/x64 do optionalDependencies (causa erro no Docker Linux)
 - [x] Usar eas.json para instalar lightningcss darwin binaries apenas no EAS Build (via postinstall script)
-- [ ] Salvar checkpoint para resolver "alterações não empacotadas"
+- [x] Salvar checkpoint para resolver "alterações não empacotadas"
+
+## Bug: Timeline/Histórico não responde ao toque no Android
+- [x] Implementar swipe lateral entre abas na tela do paciente (Android)
+- [x] Corrigir ScrollView aninhado no EffectivenessDashboard
+- [x] Escrever teste end-to-end completo de todas as funções
+- [x] Salvar checkpoint
+
+## Atualização Imagem Capacete e Correção Testes
+- [x] Atualizar imagem do capacete para nova versão (com cores mais claras)
+- [x] Corrigir COLORED_POINTS para bater com 35 pontos da imagem
+- [x] Corrigir testes ready-protocols (23 protocolos)
+- [x] Corrigir testes manual-validation (35 pontos)
+- [x] Corrigir testes helmet-point-functions
+- [x] Corrigir testes eeg-image
+- [x] Salvar checkpoint

@@ -1,5 +1,7 @@
-import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
+import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -31,6 +33,10 @@ import { generatePatientPDFReport } from "@/lib/pdf-generator-native";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
+const TABS: Tab[] = ["info", "plan", "timeline", "effectiveness", "history"];
+const SWIPE_THRESHOLD = 50;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
 type Tab = "info" | "plan" | "history" | "audit" | "timeline" | "effectiveness";
 
 export default function PatientDetailScreen() {
@@ -47,6 +53,41 @@ export default function PatientDetailScreen() {
   const [showEditPatientModal, setShowEditPatientModal] = useState(false);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const translateX = useSharedValue(0);
+
+  const goToTab = useCallback((direction: 'left' | 'right') => {
+    const currentIndex = TABS.indexOf(activeTab);
+    if (direction === 'left' && currentIndex < TABS.length - 1) {
+      setActiveTab(TABS[currentIndex + 1]);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    } else if (direction === 'right' && currentIndex > 0) {
+      setActiveTab(TABS[currentIndex - 1]);
+      if (Platform.OS !== 'web') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    }
+  }, [activeTab]);
+
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-20, 20])
+    .failOffsetY([-10, 10])
+    .onUpdate((event) => {
+      translateX.value = event.translationX * 0.3;
+    })
+    .onEnd((event) => {
+      if (event.translationX < -SWIPE_THRESHOLD) {
+        runOnJS(goToTab)('left');
+      } else if (event.translationX > SWIPE_THRESHOLD) {
+        runOnJS(goToTab)('right');
+      }
+      translateX.value = withTiming(0, { duration: 200 });
+    });
+
+  const animatedContentStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
 
   useEffect(() => {
     loadData();
@@ -318,8 +359,24 @@ export default function PatientDetailScreen() {
             </ScrollView>
           </View>
 
-          {/* Content */}
-          <View style={{ padding: 24, gap: 20 }}>
+          {/* Swipe indicator */}
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 6, gap: 4 }}>
+            {TABS.map((tab, index) => (
+              <View
+                key={tab}
+                style={{
+                  width: activeTab === tab ? 16 : 6,
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: activeTab === tab ? colors.primary : colors.border,
+                }}
+              />
+            ))}
+          </View>
+
+          {/* Content with Swipe */}
+          <GestureDetector gesture={panGesture}>
+          <Animated.View style={[{ padding: 24, gap: 20 }, animatedContentStyle]}>
             {activeTab === "info" && (
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -792,7 +849,8 @@ export default function PatientDetailScreen() {
                 <AuditHistory entityType="patient" entityId={id} />
               </View>
             )}
-          </View>
+          </Animated.View>
+          </GestureDetector>
         </View>
       </ScrollView>
 

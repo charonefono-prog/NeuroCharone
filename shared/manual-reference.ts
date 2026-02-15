@@ -57,7 +57,7 @@ export const BRAIN_REGIONS: RegionInfo[] = [
       "Suporte em transtornos do espectro autista"
     ],
     keywords: ["Afasia", "Broca", "Linguagem expressiva", "Coordenação motora", "Autismo"],
-    points: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "Fz"]
+    points: ["F7", "F3", "Fz", "F4", "F8"]
   },
   {
     id: "c",
@@ -71,7 +71,7 @@ export const BRAIN_REGIONS: RegionInfo[] = [
       "Epilepsias focais"
     ],
     keywords: ["Dor crônica", "AVC", "Hemiparesia", "Tremor", "Parkinson", "Epilepsia", "Neuropática"],
-    points: ["C1", "C2", "C3", "C4", "C5", "C6", "Cz", "FC1", "FC2", "FC5", "FC6", "FCz", "CP1", "CP2", "CP5", "CP6", "CPz"]
+    points: ["FC5", "FC1", "FC2", "FC6", "C3", "Cz", "C4", "CP5", "CP1", "CP2", "CP6"]
   },
   {
     id: "t",
@@ -97,7 +97,7 @@ export const BRAIN_REGIONS: RegionInfo[] = [
       "Suporte em distúrbios de integração sensorial"
     ],
     keywords: ["Discalculia", "Negligência espacial", "Integração sensorial", "Espacial"],
-    points: ["P1", "P2", "P3", "P4", "P5", "P6", "Pz"]
+    points: ["P3", "Pz", "P4"]
   },
   {
     id: "po",
@@ -145,26 +145,24 @@ export const BRAIN_REGIONS: RegionInfo[] = [
  * Estes são os pontos principais com aplicações clínicas específicas
  */
 export const HIGHLIGHTED_POINTS = [
-  // Frontal Anterior (Pink)
-  "Fp1", "Fp2", "Fpz",
-  // Frontal Média (Orange)
-  "AF3", "AF4", "AFz",
-  // Frontal Central (Yellow)
-  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "Fz",
-  // Central/Sensório-Motora (Cyan)
-  "C1", "C2", "C3", "C4", "C5", "C6", "Cz",
-  "FC1", "FC2", "FC5", "FC6", "FCz",
-  "CP1", "CP2", "CP5", "CP6", "CPz",
-  // Temporal (Green)
+  // Frontal Anterior (Rosa) - 3
+  "Fp1", "Fpz", "Fp2",
+  // Frontal Média (Laranja) - 3
+  "AF3", "AFz", "AF4",
+  // Frontal Central (Amarelo) - 5
+  "F7", "F3", "Fz", "F4", "F8",
+  // Central/Sensório-Motora (Ciano) - 11
+  "FC5", "FC1", "FC2", "FC6",
+  "C3", "Cz", "C4",
+  "CP5", "CP1", "CP2", "CP6",
+  // Temporal (Verde) - 4
   "T3", "T4", "T5", "T6",
-  // Parietal (Purple)
-  "P1", "P2", "P3", "P4", "P5", "P6", "Pz",
-  // Parieto-Occipital (Dark Purple)
-  "PO3", "PO4", "POz",
-  // Occipital (Red/Pink)
-  "O1", "O2", "Oz",
-  // Cerebelar (Gray)
-  "Iz", "Inf-O"
+  // Parietal (Roxo Claro) - 3
+  "P3", "Pz", "P4",
+  // Parieto-Occipital (Roxo Escuro) - 3
+  "PO3", "POz", "PO4",
+  // Occipital (Rosa Claro) - 3
+  "O1", "Oz", "O2",
 ];
 
 /**

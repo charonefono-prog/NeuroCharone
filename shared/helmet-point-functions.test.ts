@@ -3,11 +3,15 @@ import { getPointFunction, getPointsFunctions, helmetPointFunctions } from "./he
 import { helmetPoints } from "./helmet-data";
 
 describe("Helmet Point Functions", () => {
-  it("should have all helmet points defined in helmet-point-functions", () => {
-    const allPointNames = helmetPoints.map(p => p.name);
+  it("should have all colored helmet points defined in helmet-point-functions", () => {
+    // Nz and Iz are reference points (gray), not colored stimulation points
+    const referencePoints = ["Nz", "Iz"];
+    const coloredPointNames = helmetPoints
+      .map(p => p.name)
+      .filter(name => !referencePoints.includes(name));
     const definedPointNames = helmetPointFunctions.map(p => p.point);
 
-    const missingPoints = allPointNames.filter(name => !definedPointNames.includes(name));
+    const missingPoints = coloredPointNames.filter(name => !definedPointNames.includes(name));
     
     expect(missingPoints, `Missing point functions for: ${missingPoints.join(", ")}`).toHaveLength(0);
   });
@@ -55,8 +59,8 @@ describe("Helmet Point Functions", () => {
     });
   });
 
-  it("should have 60 points defined", () => {
-    expect(helmetPointFunctions).toHaveLength(60);
+  it("should have 35 points defined (matching image)", () => {
+    expect(helmetPointFunctions).toHaveLength(35);
   });
 
   it("should have all unique point names", () => {

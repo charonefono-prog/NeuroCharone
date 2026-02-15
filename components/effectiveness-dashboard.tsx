@@ -428,11 +428,7 @@ export function EffectivenessDashboard({
   );
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 20 }}
-    >
-      <View style={{ gap: 20 }}>
+    <View style={{ gap: 20, paddingBottom: 20 }}>
         {/* Título e Botão de Exportação */}
         <View
           style={{
@@ -593,7 +589,6 @@ export function EffectivenessDashboard({
             </Text>
           </View>
         )}
-      </View>
-    </ScrollView>
+    </View>
   );
 }
