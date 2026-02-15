@@ -756,3 +756,8 @@
 - [ ] Salvar checkpoint com alterações pendentes
 - [ ] Rebuild Android APK
 - [ ] Rebuild iOS
+
+## Correção Build iOS e Checkpoint
+- [ ] Corrigir erro do iOS build - módulo lightningcss não encontrado no Metro config
+- [ ] Salvar checkpoint para resolver aviso de "alterações não empacotadas"
+- [ ] Iniciar novo build iOS após correção
