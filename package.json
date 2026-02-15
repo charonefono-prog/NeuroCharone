@@ -24,8 +24,7 @@
     "electron-build:win": "electron-builder --win",
     "electron-build:mac": "electron-builder --mac",
     "electron-build:linux": "electron-builder --linux",
-    "electron-build:all": "electron-builder -mwl",
-    "postinstall": "node scripts/install-lightningcss-darwin.js"
+    "electron-build:all": "electron-builder -mwl"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -80,8 +79,7 @@
     "superjson": "^1.13.3",
     "tailwind-merge": "^2.6.0",
     "xlsx": "^0.18.5",
-    "zod": "^4.2.1",
-    "lightningcss": "~1.27.0"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@expo/ngrok": "^4.1.3",

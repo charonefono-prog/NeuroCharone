@@ -783,6 +783,10 @@
 - [x] Salvar checkpoint
 
 ## Bug: Tela do paciente travada no Android - não rola verticalmente
-- [ ] Corrigir conflito de gestos - GestureDetector do swipe lateral bloqueia scroll vertical
-- [ ] Testar e salvar checkpoint
-- [ ] Compilar novo APK
+- [x] Corrigir conflito de gestos - GestureDetector do swipe lateral bloqueia scroll vertical
+- [x] Testar e salvar checkpoint
+- [ ] Compilar novo APK (aguardando)
+
+## Bug: Backend não publica - lightningcss falha no Docker
+- [x] Remover lightningcss das dependências principais ou torná-lo opcional para Docker
+- [x] Salvar checkpoint e testar publicação
