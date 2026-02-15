@@ -1,7 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -71,16 +71,17 @@ export default function PatientDetailScreen() {
   }, [activeTab]);
 
   const panGesture = Gesture.Pan()
-    .activeOffsetX([-20, 20])
-    .failOffsetY([-10, 10])
+    .activeOffsetX([-30, 30])
+    .failOffsetY([-20, 20])
+    .runOnJS(true)
     .onUpdate((event) => {
       translateX.value = event.translationX * 0.3;
     })
     .onEnd((event) => {
       if (event.translationX < -SWIPE_THRESHOLD) {
-        runOnJS(goToTab)('left');
+        goToTab('left');
       } else if (event.translationX > SWIPE_THRESHOLD) {
-        runOnJS(goToTab)('right');
+        goToTab('right');
       }
       translateX.value = withTiming(0, { duration: 200 });
     });

@@ -781,3 +781,8 @@
 - [x] Corrigir testes helmet-point-functions
 - [x] Corrigir testes eeg-image
 - [x] Salvar checkpoint
+
+## Bug: Tela do paciente travada no Android - não rola verticalmente
+- [ ] Corrigir conflito de gestos - GestureDetector do swipe lateral bloqueia scroll vertical
+- [ ] Testar e salvar checkpoint
+- [ ] Compilar novo APK
