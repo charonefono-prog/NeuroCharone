@@ -790,3 +790,15 @@
 ## Bug: Backend não publica - lightningcss falha no Docker
 - [x] Remover lightningcss das dependências principais ou torná-lo opcional para Docker
 - [x] Salvar checkpoint e testar publicação
+
+## Fix Android Scroll + Backend Publish (Feb 2026)
+- [x] Refatorar gesture handler para não bloquear scroll vertical no Android
+- [x] Adicionar detecção de scroll ativo (isScrolling ref)
+- [x] Aumentar activeOffsetX para [-40,40] e adicionar minDistance(20)
+- [x] Verificar ratio horizontal/vertical antes de trocar aba
+- [x] Adicionar nestedScrollEnabled no ScrollView principal
+- [x] Criar testes unitários para lógica de gesture vs scroll (14 testes)
+- [x] Todos os 384 testes passando
+- [x] Salvar checkpoint final
+- [ ] Compilar novo APK Android
+- [ ] Compilar iOS

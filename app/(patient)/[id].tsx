@@ -1,7 +1,7 @@
-import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -54,6 +54,8 @@ export default function PatientDetailScreen() {
   const [generatingReport, setGeneratingReport] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const translateX = useSharedValue(0);
+  const isScrolling = useRef(false);
+  const scrollOffsetY = useRef(0);
 
   const goToTab = useCallback((direction: 'left' | 'right') => {
     const currentIndex = TABS.indexOf(activeTab);
@@ -70,18 +72,36 @@ export default function PatientDetailScreen() {
     }
   }, [activeTab]);
 
+  const handleScrollBegin = useCallback(() => {
+    isScrolling.current = true;
+  }, []);
+
+  const handleScrollEnd = useCallback(() => {
+    isScrolling.current = false;
+  }, []);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    scrollOffsetY.current = event.nativeEvent.contentOffset.y;
+  }, []);
+
   const panGesture = Gesture.Pan()
-    .activeOffsetX([-30, 30])
-    .failOffsetY([-20, 20])
+    .activeOffsetX([-40, 40])
+    .failOffsetY([-15, 15])
+    .minDistance(20)
     .runOnJS(true)
     .onUpdate((event) => {
-      translateX.value = event.translationX * 0.3;
+      // Only apply horizontal translation if not scrolling vertically
+      if (!isScrolling.current) {
+        translateX.value = event.translationX * 0.3;
+      }
     })
     .onEnd((event) => {
-      if (event.translationX < -SWIPE_THRESHOLD) {
-        goToTab('left');
-      } else if (event.translationX > SWIPE_THRESHOLD) {
-        goToTab('right');
+      if (!isScrolling.current && Math.abs(event.translationX) > Math.abs(event.translationY) * 1.5) {
+        if (event.translationX < -SWIPE_THRESHOLD) {
+          goToTab('left');
+        } else if (event.translationX > SWIPE_THRESHOLD) {
+          goToTab('right');
+        }
       }
       translateX.value = withTiming(0, { duration: 200 });
     });
@@ -249,7 +269,15 @@ export default function PatientDetailScreen() {
 
   return (
     <ScreenContainer>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        onScrollBeginDrag={handleScrollBegin}
+        onScrollEndDrag={handleScrollEnd}
+        onMomentumScrollEnd={handleScrollEnd}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        nestedScrollEnabled={true}
+      >
         <View style={{ flex: 1 }}>
           {/* Header */}
           <View
@@ -377,7 +405,7 @@ export default function PatientDetailScreen() {
 
           {/* Content with Swipe */}
           <GestureDetector gesture={panGesture}>
-          <Animated.View style={[{ padding: 24, gap: 20 }, animatedContentStyle]}>
+            <Animated.View style={[{ padding: 24, gap: 20, minHeight: 200 }, animatedContentStyle]}>
             {activeTab === "info" && (
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -850,7 +878,7 @@ export default function PatientDetailScreen() {
                 <AuditHistory entityType="patient" entityId={id} />
               </View>
             )}
-          </Animated.View>
+            </Animated.View>
           </GestureDetector>
         </View>
       </ScrollView>
