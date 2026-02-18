@@ -299,30 +299,7 @@ export default function PatientsScreen() {
             </View>
           </ScrollView>
 
-          {/* Botão Flutuante */}
-          <TouchableOpacity
-            onPress={() => setShowAddModal(true)}
-            activeOpacity={0.8}
-            style={{
-              position: "absolute",
-              right: 24,
-              bottom: 24,
-              width: 56,
-              height: 56,
-              borderRadius: 28,
-              backgroundColor: colors.primary,
-              alignItems: "center",
-              justifyContent: "center",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 8,
-              zIndex: 999,
-            }}
-          >
-            <IconSymbol name="house.fill" size={28} color="#FFFFFF" />
-          </TouchableOpacity>
+
 
           {/* Lista de Pacientes */}
           <View style={{ gap: 12 }}>
