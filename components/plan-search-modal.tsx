@@ -157,7 +157,6 @@ export function PlanSearchModal({
             <View
               style={{
                 flexDirection: "row", flexWrap: "wrap",
-                flexWrap: "wrap",
                 gap: 8,
               }}
             >
@@ -281,7 +280,6 @@ export function PlanSearchModal({
                     style={{
                       flexDirection: "row", flexWrap: "wrap",
                       gap: 8,
-                      flexWrap: "wrap",
                     }}
                   >
                     {result.template.targetRegions.slice(0, 2).map((region) => (

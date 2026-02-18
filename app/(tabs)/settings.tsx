@@ -54,7 +54,7 @@ export default function SettingsScreen() {
         <View style={{ padding: 24, gap: 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "700", flexWrap: "wrap", flexWrap: "wrap", color: colors.foreground }}>
+            <Text style={{ fontSize: 28, fontWeight: "700", flexWrap: "wrap", color: colors.foreground }}>
               ⚙️ Configurações
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
