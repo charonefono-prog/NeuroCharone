@@ -802,3 +802,26 @@
 - [x] Salvar checkpoint final
 - [ ] Compilar novo APK Android
 - [ ] Compilar iOS
+
+## Nova Versão v1.0.4 - Rotação de Tela e E2E (Feb 2026)
+- [x] Remover FAB flutuante da tela de pacientes (estava duplicado com tab bar)
+- [x] Restaurar botão "+ Paciente" no header da tela de pacientes
+- [x] Adicionar suporte a rotação de tela (orientation: "default" - portrait + landscape)
+- [x] Corrigir orientação de "all" para "default" (valor válido do Expo)
+- [x] Criar suite E2E completa testando absolutamente tudo (459 testes passando)
+- [x] Testar CRUD de pacientes (criar, ler, atualizar, deletar)
+- [x] Testar CRUD de planos terapêuticos
+- [x] Testar CRUD de sessões
+- [x] Testar todas as 10 escalas clínicas (DOSS, BDAE, SARA, CM, QCS, BTSS, VHI, GRBAS, FOIS, ASHA-NOMS)
+- [x] Testar cálculo de scores e melhoria entre escalas
+- [x] Testar busca de protocolos e templates
+- [x] Testar histórico de buscas
+- [x] Testar sistema de backup (exportar/importar JSON)
+- [x] Testar log de auditoria
+- [x] Testar geração de PDF
+- [x] Testar metas de progresso e recomendações
+- [x] Testar validação E2E completa (fluxo paciente → plano → sessão → escala)
+- [x] 0 erros TypeScript
+- [x] 459 testes passando, 0 falhas
+- [ ] Compilar novo APK Android (AAB)
+- [ ] Compilar iOS

@@ -160,6 +160,22 @@ export default function PatientsScreen() {
             </View>
             <View style={{ flexDirection: "row", gap: 8 }}>
               <TouchableOpacity
+                onPress={() => setShowAddModal(true)}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.primary,
+                }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                  + Paciente
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={handleExportCSV}
                 activeOpacity={0.7}
                 style={{
