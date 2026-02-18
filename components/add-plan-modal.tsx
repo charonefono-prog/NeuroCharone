@@ -146,7 +146,7 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
         >
           <ScrollView contentContainerStyle={{ padding: 24, gap: 20 }}>
             {/* Header */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground }}>
                 Novo Plano Terapêutico
               </Text>
@@ -221,7 +221,7 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
               </View>
 
               {/* Frequência e Duração */}
-              <View style={{ flexDirection: "row", gap: 12 }}>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
                 <View style={{ flex: 1, gap: 8 }}>
                   <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                     Frequência (x/semana) *
@@ -304,7 +304,7 @@ export function AddPlanModal({ visible, patientId, onClose, onSuccess }: AddPlan
             </View>
 
             {/* Botões */}
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
               <TouchableOpacity
                 onPress={handleCancel}
                 disabled={loading}

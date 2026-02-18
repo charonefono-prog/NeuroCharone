@@ -84,7 +84,7 @@ export function PlanSearchModal({
       <View style={{ paddingHorizontal: 16, paddingBottom: 16, gap: 12 }}>
         <View
           style={{
-            flexDirection: "row",
+            flexDirection: "row", flexWrap: "wrap",
             justifyContent: "space-between",
             alignItems: "center",
           }}
@@ -106,7 +106,7 @@ export function PlanSearchModal({
         {/* Campo de busca */}
         <View
           style={{
-            flexDirection: "row",
+            flexDirection: "row", flexWrap: "wrap",
             alignItems: "center",
             backgroundColor: colors.surface,
             borderRadius: 12,
@@ -156,7 +156,7 @@ export function PlanSearchModal({
             </Text>
             <View
               style={{
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 flexWrap: "wrap",
                 gap: 8,
               }}
@@ -195,7 +195,7 @@ export function PlanSearchModal({
           <View style={{ gap: 12 }}>
             <View
               style={{
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 justifyContent: "space-between",
                 alignItems: "center",
               }}
@@ -229,7 +229,7 @@ export function PlanSearchModal({
                 >
                   <View
                     style={{
-                      flexDirection: "row",
+                      flexDirection: "row", flexWrap: "wrap",
                       justifyContent: "space-between",
                       alignItems: "flex-start",
                       gap: 8,
@@ -279,7 +279,7 @@ export function PlanSearchModal({
                   {/* Regiões e pontos */}
                   <View
                     style={{
-                      flexDirection: "row",
+                      flexDirection: "row", flexWrap: "wrap",
                       gap: 8,
                       flexWrap: "wrap",
                     }}

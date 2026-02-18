@@ -147,7 +147,7 @@ export function AddSessionModal({ visible, patientId, planId, plans = [], onClos
         >
           <ScrollView contentContainerStyle={{ padding: 24, gap: 20 }}>
             {/* Header */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground }}>
                 Registrar Sessão
               </Text>
@@ -194,7 +194,7 @@ export function AddSessionModal({ visible, patientId, planId, plans = [], onClos
                   borderColor: colors.primary + "30",
                 }}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                       Agendar Sessão Futura
@@ -412,7 +412,7 @@ export function AddSessionModal({ visible, patientId, planId, plans = [], onClos
             </View>
 
             {/* Botões */}
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
               <TouchableOpacity
                 onPress={handleCancel}
                 disabled={loading}

@@ -149,16 +149,16 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <View style={{ gap: 8, flex: 1 }}>
-              <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground, letterSpacing: -0.5 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+            <View style={{ gap: 8, flex: 1, minWidth: 150 }}>
+              <Text style={{ fontSize: 28, fontWeight: "700", flexWrap: "wrap", flexWrap: "wrap", color: colors.foreground, letterSpacing: -0.5, flexWrap: "wrap" }}>
                 Pacientes
               </Text>
               <Text style={{ fontSize: 14, color: colors.muted }}>
                 {filteredPatients.length} paciente(s) encontrado(s)
               </Text>
             </View>
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
               <TouchableOpacity
                 onPress={() => setShowAddModal(true)}
                 activeOpacity={0.7}
@@ -169,9 +169,10 @@ export default function PatientsScreen() {
                   borderRadius: 12,
                   borderWidth: 1,
                   borderColor: colors.primary,
+                  minWidth: 120,
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF", textAlign: "center" }}>
                   + Paciente
                 </Text>
               </TouchableOpacity>
@@ -201,7 +202,7 @@ export default function PatientsScreen() {
                   borderRadius: 12,
                   borderWidth: 1,
                   borderColor: activeFiltersCount > 0 ? colors.primary : colors.border,
-                  flexDirection: "row",
+                  flexDirection: "row", flexWrap: "wrap",
                   alignItems: "center",
                   gap: 8,
                 }}
@@ -238,7 +239,7 @@ export default function PatientsScreen() {
                 backgroundColor: colors.surface,
                 borderRadius: 12,
                 padding: 12,
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "space-between",
                 borderWidth: 1,
@@ -263,7 +264,7 @@ export default function PatientsScreen() {
               borderRadius: 12,
               borderWidth: 1,
               borderColor: colors.border,
-              flexDirection: "row",
+              flexDirection: "row", flexWrap: "wrap",
               alignItems: "center",
               paddingHorizontal: 12,
               gap: 8,
@@ -286,7 +287,7 @@ export default function PatientsScreen() {
 
           {/* Filtros */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {(["all", "active", "paused", "completed"] as const).map((status) => (
                 <TouchableOpacity
                   key={status}
@@ -344,7 +345,7 @@ export default function PatientsScreen() {
                     gap: 8,
                   }}
                 >
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
                         {patient.fullName}
@@ -374,7 +375,7 @@ export default function PatientsScreen() {
                   )}
 
                   {patient.phone && (
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 }}>
+                    <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 4 }}>
                       <IconSymbol name="house.fill" size={16} color={colors.muted} />
                       <Text style={{ fontSize: 14, color: colors.muted }}>
                         {patient.phone}
@@ -383,7 +384,7 @@ export default function PatientsScreen() {
                   )}
 
                   {/* Botões de Ação */}
-                  <View style={{ flexDirection: "row", gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
                     {patient.status !== "completed" && (
                       <TouchableOpacity
                         onPress={() => {

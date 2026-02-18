@@ -128,7 +128,7 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
         >
           <ScrollView contentContainerStyle={{ padding: 24, gap: 20 }}>
             {/* Header */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground }}>
                 Editar Paciente
               </Text>
@@ -332,7 +332,7 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
                 <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                   Status do Tratamento
                 </Text>
-                <View style={{ flexDirection: "row", gap: 8 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                   {[
                     { value: "active" as const, label: "Ativo", color: colors.success },
                     { value: "paused" as const, label: "Pausado", color: colors.warning },
@@ -368,7 +368,7 @@ export function EditPatientModal({ visible, patient, onClose, onSuccess }: EditP
             </View>
 
             {/* Botões */}
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
               <TouchableOpacity
                 onPress={handleCancel}
                 disabled={loading}

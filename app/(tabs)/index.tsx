@@ -142,7 +142,7 @@ export default function HomeScreen() {
             <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
               Estatísticas
             </Text>
-            <View style={{ flexDirection: "row", gap: 12 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
               <View
                 style={{
                   flex: 1,
@@ -178,7 +178,7 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            <View style={{ flexDirection: "row", gap: 12 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
               <View
                 style={{
                   flex: 1,
@@ -227,7 +227,7 @@ export default function HomeScreen() {
                 backgroundColor: colors.primary,
                 padding: 16,
                 borderRadius: 12,
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 alignItems: "center",
                 gap: 12,
               }}
@@ -248,7 +248,7 @@ export default function HomeScreen() {
                 borderColor: colors.success,
                 padding: 16,
                 borderRadius: 12,
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 alignItems: "center",
                 gap: 12,
               }}
@@ -266,7 +266,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               onPress={() => setShowStatistics(!showStatistics)}
               style={{
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "space-between",
               }}

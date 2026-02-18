@@ -229,7 +229,7 @@ export default function ProfileScreen() {
             {!isEditing ? (
               <>
                 {/* Avatar e Nome - Modo Visualização */}
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
                   <View
                     style={{
                       width: 64,
@@ -332,7 +332,7 @@ export default function ProfileScreen() {
                         borderRadius: 8,
                         paddingHorizontal: 12,
                         paddingVertical: 12,
-                        flexDirection: "row",
+                        flexDirection: "row", flexWrap: "wrap",
                         justifyContent: "space-between",
                         alignItems: "center",
                       }}
@@ -512,7 +512,7 @@ export default function ProfileScreen() {
                 </View>
 
                 {/* Botões de Ação */}
-                <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 16 }}>
                   <TouchableOpacity
                     onPress={() => {
                       setIsEditing(false);
@@ -641,7 +641,7 @@ export default function ProfileScreen() {
               }}
             >
               {/* Status das notificações */}
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
                 <View
                   style={{
                     width: 40,
@@ -670,7 +670,7 @@ export default function ProfileScreen() {
                   <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                     Antecedência do Lembrete
                   </Text>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
                     <TextInput
                       value={reminderAdvance.toString()}
                       onChangeText={handleReminderAdvanceChange}
@@ -709,12 +709,12 @@ export default function ProfileScreen() {
                 borderWidth: 1,
                 borderColor: colors.border,
                 padding: 16,
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "space-between",
               }}
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
                 <View
                   style={{
                     width: 40,
@@ -756,7 +756,7 @@ export default function ProfileScreen() {
                 borderWidth: 1,
                 borderColor: colors.border,
                 padding: 16,
-                flexDirection: "row",
+                flexDirection: "row", flexWrap: "wrap",
                 alignItems: "center",
                 gap: 12,
               }}

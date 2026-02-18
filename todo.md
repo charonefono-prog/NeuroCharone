@@ -825,3 +825,8 @@
 - [x] 459 testes passando, 0 falhas
 - [ ] Compilar novo APK Android (AAB)
 - [ ] Compilar iOS
+
+## Restaurar Ícone Original e Imagem HD
+- [ ] Restaurar ícone original do app (antes da mudança)
+- [ ] Garantir imagem em HD
+- [ ] Corrigir tudo direitinho

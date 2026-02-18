@@ -111,7 +111,7 @@ export default function EffectivenessScreen() {
         <View style={{ flex: 1, gap: 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground }}>
+            <Text style={{ fontSize: 28, fontWeight: "700", flexWrap: "wrap", flexWrap: "wrap", color: colors.foreground }}>
               Efetividade
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
@@ -172,7 +172,7 @@ export default function EffectivenessScreen() {
                   gap: 8,
                 }}
               >
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
                       {selectedPatient.fullName}
@@ -203,7 +203,7 @@ export default function EffectivenessScreen() {
                   <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
                     Resumo
                   </Text>
-                  <View style={{ flexDirection: "row", gap: 12 }}>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
                     <View
                       style={{
                         flex: 1,
@@ -276,7 +276,7 @@ export default function EffectivenessScreen() {
                         gap: 12,
                       }}
                     >
-                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <View style={{ flex: 1 }}>
                           <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
                             {response.scaleName}
@@ -313,7 +313,7 @@ export default function EffectivenessScreen() {
                           gap: 8,
                         }}
                       >
-                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
                           <Text style={{ fontSize: 12, color: colors.muted }}>Pontuação:</Text>
                           <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
                             {response.totalScore}
