@@ -149,8 +149,8 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
-            <View style={{ gap: 8, flex: 1 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+            <View style={{ gap: 8, flex: 1, minWidth: 120 }}>
               <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground, letterSpacing: -0.5 }}>
                 Pacientes
               </Text>
@@ -158,7 +158,7 @@ export default function PatientsScreen() {
                 {filteredPatients.length} paciente(s) encontrado(s)
               </Text>
             </View>
-            <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+            <View style={{ flexDirection: "row", gap: 8, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
               <TouchableOpacity
                 onPress={() => setShowAddModal(true)}
                 activeOpacity={0.7}
