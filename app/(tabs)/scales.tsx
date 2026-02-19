@@ -384,9 +384,9 @@ export default function ScalesScreen() {
 
       {/* Modal - Formulário da Escala */}
       <Modal visible={showScaleForm} transparent animationType="slide">
-        <ScreenContainer className="p-6">
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View style={{ gap: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: 12 }}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }} scrollEnabled={true}>
+            <View style={{ gap: 16, paddingHorizontal: 24, paddingTop: 12 }}>
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground }}>
                   {selectedScale?.name}
@@ -489,7 +489,7 @@ export default function ScalesScreen() {
               </View>
             </View>
           </ScrollView>
-        </ScreenContainer>
+        </View>
       </Modal>
 
       {/* Modal - Resultados */}
@@ -506,9 +506,9 @@ export default function ScalesScreen() {
 
       {/* Modal - Histórico e Gráficos */}
       <Modal visible={showHistory} transparent animationType="slide">
-        <ScreenContainer className="p-6">
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View style={{ gap: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: 12 }}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }} scrollEnabled={true}>
+            <View style={{ gap: 16, paddingHorizontal: 24, paddingTop: 12 }}>
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground }}>
                   Histórico: {selectedScale?.name}
@@ -637,7 +637,7 @@ export default function ScalesScreen() {
               </TouchableOpacity>
             </View>
           </ScrollView>
-        </ScreenContainer>
+        </View>
       </Modal>
     </ScreenContainer>
   );

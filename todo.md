@@ -107,3 +107,25 @@
 ✅ Auditoria realizada  
 
 **Próximo passo:** Aguardar aprovação das lojas (Apple App Store e Google Play)
+
+
+## 🐛 Bugs Reportados
+
+### Bug Crítico 1: Flickering na Tela de Escalas
+- [x] Investigar causa do flickering ao abrir escala
+- [x] Corrigir sobreposição de conteúdo (nome da escala fica escondido)
+- [x] Remover ScreenContainer conflitante do modal
+- [x] Validar renderização em portrait e landscape
+- [x] Testar fluxo completo de preenchimento
+
+### Bug Crítico 2: Rotação de Tela não Funciona
+- [ ] Verificar configuração de orientação no app.config.ts
+- [ ] Validar se orientação está setada como 'sensor' ou 'all'
+- [ ] Testar rotação em portrait e landscape
+- [ ] Garantir que useWindowDimensions detecta mudanças
+
+### Bug Crítico 3: Drag/Swipe Quebrado (Android)
+- [x] Botões embaixo não aparecem ao arrastar
+- [x] Trava ao tentar arrastar para mudar de tela
+- [x] Problema específico no Android
+- [x] Verificar GestureHandler e ScrollView aninhados
