@@ -13,6 +13,13 @@ import * as Haptics from "expo-haptics";
 interface Patient {
   id: string;
   fullName: string;
+  birthDate?: string;
+  phone?: string;
+  diagnosis?: string;
+  initialSymptomScore?: number;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export default function ScalesScreen() {
@@ -38,7 +45,37 @@ export default function ScalesScreen() {
   const loadPatients = async () => {
     try {
       const data = await getPatients();
-      setPatients(data);
+      
+      // Se não houver pacientes, criar dados de teste
+      if (!data || data.length === 0) {
+        const testPatients = [
+          {
+            id: 'test-1',
+            fullName: 'Teste',
+            birthDate: '1990-01-01',
+            phone: '123456789',
+            diagnosis: 'Depressão',
+            initialSymptomScore: 8,
+            status: 'active' as const,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: 'test-2',
+            fullName: 'João Silva',
+            birthDate: '1985-05-15',
+            phone: '987654321',
+            diagnosis: 'Ansiedade',
+            initialSymptomScore: 6,
+            status: 'active' as const,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+        setPatients(testPatients);
+      } else {
+        setPatients(data);
+      }
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
     }
