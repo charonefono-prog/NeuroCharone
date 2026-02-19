@@ -330,6 +330,7 @@ export default function ScalesScreen() {
               borderTopRightRadius: 24,
               padding: 24,
               maxHeight: "80%",
+              flex: 1,
             }}
           >
             <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground, marginBottom: 16 }}>
@@ -338,7 +339,8 @@ export default function ScalesScreen() {
             <FlatList
               data={patients}
               keyExtractor={(item) => item.id}
-              scrollEnabled={false}
+              scrollEnabled={true}
+              nestedScrollEnabled={true}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => handleSelectPatient(item)}
@@ -354,6 +356,7 @@ export default function ScalesScreen() {
                   </Text>
                 </TouchableOpacity>
               )}
+              style={{ flex: 1 }}
             />
             <TouchableOpacity
               onPress={() => setShowPatientSelector(false)}
