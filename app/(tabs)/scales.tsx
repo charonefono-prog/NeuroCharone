@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, TouchableOpacity, Modal, FlatList, Alert, TextInput, Platform } from "react-native";
 import { useState, useEffect } from "react";
+import { Alert, Platform, ScrollView, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";

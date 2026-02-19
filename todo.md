@@ -802,3 +802,16 @@
 - [x] Salvar checkpoint final
 - [ ] Compilar novo APK Android
 - [ ] Compilar iOS
+
+
+## Correções Críticas - v1.0.4 Final (Feb 19, 2026)
+- [x] Corrigir bug de carregamento de pacientes na tela de escalas (travamento) - CORRIGIDO: Adicionados imports faltantes (Alert, Platform, ScrollView, View, Text, TouchableOpacity, Modal, FlatList)
+- [x] Criar teste E2E para validar correção (9 testes passando)
+- [ ] Auditar TODAS as 23 escalas - cálculos e scores
+- [ ] Auditar gráficos de efetividade
+- [ ] Auditar análise comparativa (multi-paciente)
+- [ ] Verificar exportações PDF
+- [ ] Implementar/verificar assinatura eletrônica nos PDFs
+- [ ] Teste E2E completo - TODAS as funcionalidades
+- [ ] Validar rotação de tela (landscape + portrait)
+- [ ] Garantir link dos testadores funcionando
