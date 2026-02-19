@@ -70,7 +70,7 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
-    screenOrientation: "sensorPortrait",
+    screenOrientation: "portrait",
     permissions: ["POST_NOTIFICATIONS"],
     intentFilters: [
       {
