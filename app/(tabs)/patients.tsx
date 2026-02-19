@@ -149,7 +149,7 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
             <View style={{ gap: 8, flex: 1 }}>
               <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground, letterSpacing: -0.5 }}>
                 Pacientes
@@ -158,7 +158,21 @@ export default function PatientsScreen() {
                 {filteredPatients.length} paciente(s) encontrado(s)
               </Text>
             </View>
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => setShowAddModal(true)}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "white" }}>
+                  + Paciente
+                </Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleExportCSV}
                 activeOpacity={0.7}
