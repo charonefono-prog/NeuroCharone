@@ -54,7 +54,7 @@ export default function SettingsScreen() {
         <View style={{ padding: 24, gap: 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 28, fontWeight: "700", flexWrap: "wrap", color: colors.foreground }}>
+            <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground }}>
               ⚙️ Configurações
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
@@ -69,7 +69,7 @@ export default function SettingsScreen() {
               <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
                 TÍTULO
               </Text>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              <View style={{ flexDirection: "row", gap: 8 }}>
                 <TouchableOpacity
                   onPress={() => setFormData({ ...formData, title: "Dr" })}
                   style={{

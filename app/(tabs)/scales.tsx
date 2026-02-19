@@ -165,7 +165,7 @@ export default function ScalesScreen() {
               backgroundColor: colors.primary,
               borderRadius: 12,
               padding: 16,
-              flexDirection: "row", flexWrap: "wrap",
+              flexDirection: "row",
               alignItems: "center",
               gap: 12,
             }}
@@ -411,7 +411,7 @@ export default function ScalesScreen() {
               </View>
 
               {/* Botões */}
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 16 }}>
+              <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
                 <TouchableOpacity
                   onPress={() => setShowScaleForm(false)}
                   style={{
@@ -489,31 +489,31 @@ export default function ScalesScreen() {
                     Estatísticas
                   </Text>
                   <View style={{ gap: 8 }}>
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Text style={{ fontSize: 14, color: colors.muted }}>Total de aplicações:</Text>
                       <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                         {statistics.totalApplications}
                       </Text>
                     </View>
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Text style={{ fontSize: 14, color: colors.muted }}>Pontuação média:</Text>
                       <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                         {statistics.averageScore}
                       </Text>
                     </View>
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Text style={{ fontSize: 14, color: colors.muted }}>Maior pontuação:</Text>
                       <Text style={{ fontSize: 14, fontWeight: "600", color: colors.success }}>
                         {statistics.highestScore}
                       </Text>
                     </View>
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Text style={{ fontSize: 14, color: colors.muted }}>Menor pontuação:</Text>
                       <Text style={{ fontSize: 14, fontWeight: "600", color: colors.error }}>
                         {statistics.lowestScore}
                       </Text>
                     </View>
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                       <Text style={{ fontSize: 14, color: colors.muted }}>Tendência:</Text>
                       <Text
                         style={{
@@ -555,7 +555,7 @@ export default function ScalesScreen() {
                       gap: 8,
                     }}
                   >
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                       <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                         {new Date(response.date).toLocaleDateString("pt-BR")}
                       </Text>

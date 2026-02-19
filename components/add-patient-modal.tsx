@@ -158,7 +158,7 @@ export function AddPatientModal({ visible, onClose, onSuccess }: AddPatientModal
         >
           <ScrollView contentContainerStyle={{ padding: 24, gap: 20 }}>
             {/* Header */}
-            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground }}>
                 Novo Paciente
               </Text>
@@ -314,7 +314,7 @@ export function AddPatientModal({ visible, onClose, onSuccess }: AddPatientModal
             </View>
 
             {/* Botões */}
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
+            <View style={{ flexDirection: "row", gap: 12, marginTop: 8 }}>
               <TouchableOpacity
                 onPress={handleCancel}
                 disabled={loading}

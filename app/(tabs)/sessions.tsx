@@ -116,7 +116,7 @@ export default function SessionsScreen() {
                   }}
                 >
                   {/* Header da Sessão */}
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
                         {getPatientName(session.patientId)}
@@ -208,7 +208,7 @@ export default function SessionsScreen() {
                         paddingVertical: 10,
                         paddingHorizontal: 12,
                         borderRadius: 8,
-                        flexDirection: "row", flexWrap: "wrap",
+                        flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 8,

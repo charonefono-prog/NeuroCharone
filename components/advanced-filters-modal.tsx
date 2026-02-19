@@ -85,7 +85,7 @@ export function AdvancedFiltersModal({ visible, filters, onApply, onClose }: Adv
         >
           <ScrollView contentContainerStyle={{ padding: 24, gap: 24 }}>
             {/* Header */}
-            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
               <View>
                 <Text style={{ fontSize: 24, fontWeight: "bold", color: colors.foreground }}>
                   Filtros Avançados
@@ -249,7 +249,7 @@ export function AdvancedFiltersModal({ visible, filters, onApply, onClose }: Adv
                         backgroundColor: isSelected ? region.colorHex : colors.surface,
                         borderWidth: 1,
                         borderColor: isSelected ? region.colorHex : colors.border,
-                        flexDirection: "row", flexWrap: "wrap",
+                        flexDirection: "row",
                         alignItems: "center",
                         gap: 8,
                       }}
