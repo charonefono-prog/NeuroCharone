@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useWindowDimensions } from "react-native";
 import { Alert, Platform, ScrollView, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -24,6 +25,8 @@ interface Patient {
 
 export default function ScalesScreen() {
   const colors = useColors();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = useMemo(() => width > height, [width, height]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [showScaleList, setShowScaleList] = useState(false);
   const [showPatientSelector, setShowPatientSelector] = useState(false);
@@ -182,9 +185,9 @@ export default function ScalesScreen() {
   };
 
   return (
-    <ScreenContainer className="p-6">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ gap: 24 }}>
+    <ScreenContainer className={isLandscape ? "px-6 py-3" : "p-6"}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} scrollEnabled={true}>
+        <View style={{ gap: isLandscape ? 12 : 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
             <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
@@ -341,6 +344,7 @@ export default function ScalesScreen() {
               keyExtractor={(item) => item.id}
               scrollEnabled={true}
               nestedScrollEnabled={true}
+              numColumns={isLandscape ? 2 : 1}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => handleSelectPatient(item)}
@@ -349,6 +353,7 @@ export default function ScalesScreen() {
                     paddingHorizontal: 16,
                     borderBottomWidth: 1,
                     borderBottomColor: colors.border,
+                    flex: isLandscape ? 1 : undefined,
                   }}
                 >
                   <Text style={{ fontSize: 16, color: colors.foreground, fontWeight: "500" }}>
