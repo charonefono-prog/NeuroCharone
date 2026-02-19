@@ -1,29 +1,54 @@
-import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
-import { useAuth } from "@/lib/auth-context";
+import { useColors } from "@/hooks/use-colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, isLoading } = useAuth();
+  const colors = useColors();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError("Por favor, preencha email e senha");
       return;
     }
 
+    setIsLoading(true);
+    setError("");
+
     try {
-      setError("");
-      await login(email, password);
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Falha ao fazer login");
+        return;
+      }
+
+      // Salvar token e dados do usuário
+      await AsyncStorage.setItem("authToken", data.token);
+      await AsyncStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirecionar para home
       router.replace("/(tabs)");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-      Alert.alert("Login Error", error);
+      setError("Erro de conexão. Tente novamente.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,19 +109,10 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Register Link */}
-          <View className="flex-row justify-center gap-1">
-            <Text className="text-muted">Não tem conta?</Text>
-            <TouchableOpacity onPress={() => router.push("/register")}>
-              <Text className="text-primary font-semibold">Cadastre-se</Text>
-            </TouchableOpacity>
-          </View>
-
           {/* Info Box */}
-          <View className="bg-surface rounded-lg p-4 border border-border mt-4">
-            <Text className="text-xs text-muted leading-relaxed">
-              Após o cadastro, sua conta será analisada pelo administrador. Você receberá um email
-              de confirmação quando for aprovado.
+          <View className="bg-surface rounded-lg p-4 border border-border mt-8">
+            <Text className="text-xs text-muted text-center">
+              Credenciais de teste fornecidas por email. Acesso válido por 30 dias.
             </Text>
           </View>
         </View>

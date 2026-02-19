@@ -42,7 +42,7 @@ const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
   version: "1.0.4",
-  orientation: "all",
+  orientation: "sensor",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
@@ -52,13 +52,13 @@ const config: ExpoConfig = {
       projectId: "519c0503-478c-4806-902e-3616c7b36313"
     }
   },
-
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
-    "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+    requireFullScreen: false,
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false
+    }
   },
   android: {
     adaptiveIcon: {
@@ -70,6 +70,7 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
+    screenOrientation: "sensorPortrait",
     permissions: ["POST_NOTIFICATIONS"],
     intentFilters: [
       {
