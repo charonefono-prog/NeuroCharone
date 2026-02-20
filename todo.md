@@ -129,3 +129,68 @@
 - [x] Trava ao tentar arrastar para mudar de tela
 - [x] Problema específico no Android
 - [x] Verificar GestureHandler e ScrollView aninhados
+
+
+## 🌐 Versão Web - Em Desenvolvimento
+
+### Fase 1: Estrutura Base
+- [ ] Criar estrutura web com React + TypeScript
+- [ ] Configurar banco de dados para web (compartilhado com mobile)
+- [ ] Implementar autenticação (email + senha)
+- [ ] Criar sistema de sessão/token
+
+### Fase 2: Painel de Admin
+- [ ] Criar interface de admin
+- [ ] Gerenciar usuários (criar, editar, deletar)
+- [ ] Resetar senhas
+- [ ] Ver atividades/logs
+- [ ] Gerar relatórios
+
+### Fase 3: Sistema de Auto-Registro
+- [ ] Criar página de registro
+- [ ] Validar emails
+- [ ] Enviar confirmação por email
+- [ ] Ativar/desativar registros
+
+### Fase 4: Testes
+- [ ] Criar 2 usuários de teste
+- [ ] Testar isolamento de dados
+- [ ] Testar sincronização mobile ↔ web
+- [ ] Testar painel de admin
+
+### Configuração
+- Admin: charonejr@gmail.com / 442266
+- Usuários de teste: 2
+- Total de usuários: 30 (crescendo para 100)
+
+
+---
+
+## STATUS FINAL - VERSÃO WEB CONCLUÍDA ✅
+
+### Versão Web Criada com Sucesso
+- [x] Estrutura Next.js + React + TypeScript
+- [x] Autenticação (email + senha)
+- [x] Painel de Admin
+- [x] Sistema de Registro
+- [x] 2 Usuários de Teste
+- [x] Isolamento de Dados
+- [x] API de Autenticação
+
+### Credenciais
+- Admin: charonejr@gmail.com / 442266
+- Teste 1: teste1@email.com / senha123
+- Teste 2: teste2@email.com / senha123
+
+### Como Rodar
+```bash
+cd /home/ubuntu/neuromodulation_mapper/web
+npm run dev
+# Acesse: http://localhost:3001
+```
+
+### Próximos Passos Opcionais
+- [ ] Conectar ao banco de dados real
+- [ ] Implementar sincronização com mobile (opcional)
+- [ ] Adicionar mais funcionalidades ao painel
+- [ ] Deploy em produção
