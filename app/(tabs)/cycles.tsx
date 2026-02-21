@@ -1,8 +1,9 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal, TextInput } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPatients, type Patient } from '@/lib/local-storage';
+import { useColors } from '@/hooks/use-colors';
 
 interface TherapeuticCycle {
   id: string;
@@ -20,6 +21,7 @@ interface TherapeuticCycle {
 }
 
 export default function CyclesScreen() {
+  const colors = useColors();
   const [cycles, setCycles] = useState<TherapeuticCycle[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -172,25 +174,24 @@ export default function CyclesScreen() {
               {/* Objetivos */}
               <View>
                 <Text className="text-sm font-medium text-foreground mb-1">Objetivos do Ciclo</Text>
-                <View className="bg-background p-3 rounded border border-border">
-                  <Text
-                    className="text-muted"
-                    onPress={() => {
-                      // Simulando input de texto
-                      Alert.prompt(
-                        'Objetivos',
-                        'Digite os objetivos do ciclo',
-                        (text) => {
-                          if (text) setFormData({ ...formData, objectives: text });
-                        },
-                        'plain-text',
-                        formData.objectives
-                      );
-                    }}
-                  >
-                    {formData.objectives || 'Toque para adicionar objetivos...'}
-                  </Text>
-                </View>
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: 8,
+                    padding: 12,
+                    color: colors.foreground,
+                    backgroundColor: colors.background,
+                    minHeight: 80,
+                    textAlignVertical: 'top',
+                  }}
+                  placeholder="Digite os objetivos do ciclo..."
+                  placeholderTextColor={colors.muted}
+                  value={formData.objectives}
+                  onChangeText={(text) => setFormData({ ...formData, objectives: text })}
+                  multiline
+                  numberOfLines={4}
+                />
               </View>
 
               {/* Sessões Planejadas */}
