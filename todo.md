@@ -194,3 +194,42 @@ npm run dev
 - [ ] Implementar sincronização com mobile (opcional)
 - [ ] Adicionar mais funcionalidades ao painel
 - [ ] Deploy em produção
+
+
+---
+
+## 🌐 Expansão da Versão Web - Em Desenvolvimento
+
+### Fase 1: Dashboard do Usuário
+- [ ] Listar pacientes do usuário
+- [ ] Criar novo paciente
+- [ ] Editar paciente
+- [ ] Deletar paciente
+- [ ] Visualizar detalhes do paciente
+
+### Fase 2: Escalas e Preenchimento
+- [ ] Listar escalas disponíveis
+- [ ] Abrir escala para preenchimento
+- [ ] Salvar respostas da escala
+- [ ] Visualizar histórico de escalas
+- [ ] Gráficos de evolução
+
+### Fase 3: Gráficos e Visualizações
+- [ ] Gráficos de progresso por escala
+- [ ] Comparação de escalas ao longo do tempo
+- [ ] Dashboard com estatísticas
+
+### Fase 4: Painel de Admin Expandido
+- [ ] Listar todos os usuários
+- [ ] Criar novo usuário
+- [ ] Editar usuário
+- [ ] Deletar usuário
+- [ ] Resetar senha
+- [ ] Ver atividades dos usuários
+- [ ] Relatórios de uso
+
+### Fase 5: Testes e Deploy
+- [ ] Testar fluxo completo
+- [ ] Validar isolamento de dados
+- [ ] Salvar checkpoint
+- [ ] Deploy no Vercel
