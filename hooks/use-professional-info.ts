@@ -19,7 +19,7 @@ const DEFAULT_PROFESSIONAL: ProfessionalInfo = {
   specialty: "Terapia",
 };
 
-const STORAGE_KEY = "@professional_info";
+const STORAGE_KEY = "professionalProfile";
 
 export function useProfessionalInfo() {
   const [professional, setProfessional] = useState<ProfessionalInfo>(DEFAULT_PROFESSIONAL);
