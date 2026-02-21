@@ -1,6 +1,5 @@
-
-import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import { useState, useEffect } from "react";
+import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useProfessionalInfo, type ProfessionalInfo } from "@/hooks/use-professional-info";
@@ -275,38 +274,6 @@ export default function SettingsScreen() {
                 }}
               />
             </View>
-
-            {/* Assinatura Eletrônica (Texto) */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                ✍️ ASSINATURA ELETRÔNICA (OPCIONAL)
-              </Text>
-              <TextInput
-                value={formData.signature || ""}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, signature: text })
-                }
-                placeholder="Ex: Carlos Charone - CRFa 9-10025-5"
-                placeholderTextColor={colors.muted}
-                multiline
-                numberOfLines={3}
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                  minHeight: 80,
-                  textAlignVertical: "top",
-                }}
-              />
-              <Text style={{ fontSize: 12, color: colors.muted, fontStyle: "italic" }}>
-                Esta assinatura aparecerá em todos os PDFs exportados
-              </Text>
-            </View>
           </View>
 
           {/* Botão Salvar */}
@@ -354,4 +321,4 @@ export default function SettingsScreen() {
   );
 }
 
-
+import { Platform } from "react-native";
