@@ -9,7 +9,6 @@ export interface ProfessionalInfo {
   specialty: string;
   email?: string;
   phone?: string;
-  electronicSignature?: string;
 }
 
 const DEFAULT_PROFESSIONAL: ProfessionalInfo = {
@@ -18,7 +17,6 @@ const DEFAULT_PROFESSIONAL: ProfessionalInfo = {
   lastName: "de Saúde",
   registrationNumber: "N/A",
   specialty: "Terapia",
-  electronicSignature: "",
 };
 
 const STORAGE_KEY = "@professional_info";

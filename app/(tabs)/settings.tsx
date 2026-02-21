@@ -274,34 +274,6 @@ export default function SettingsScreen() {
                 }}
               />
             </View>
-
-            {/* Assinatura Eletrônica */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                ASSINATURA ELETRÔNICA (OPCIONAL)
-              </Text>
-              <TextInput
-                value={formData.electronicSignature || ""}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, electronicSignature: text })
-                }
-                placeholder="Ex: Carlos Charone - CRFa 9-10025-5"
-                placeholderTextColor={colors.muted}
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-              <Text style={{ fontSize: 11, color: colors.muted, fontStyle: "italic" }}>
-                Esta assinatura aparecerá em todos os PDFs exportados
-              </Text>
-            </View>
           </View>
 
           {/* Botão Salvar */}
