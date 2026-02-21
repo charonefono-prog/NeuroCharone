@@ -5,7 +5,6 @@ import { useColors } from "@/hooks/use-colors";
 import { useEffect, useState } from "react";
 import { getSessions, getPatients, type Session, type Patient } from "@/lib/local-storage";
 import { generateSessionPDF } from "@/lib/session-pdf-generator";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SessionsScreen() {
   const colors = useColors();
@@ -110,7 +109,6 @@ export default function SessionsScreen() {
     };
 
     const updated = [...sessions, newSession];
-    await AsyncStorage.setItem("sessions", JSON.stringify(updated));
     setSessions(updated);
 
     setFormData({
