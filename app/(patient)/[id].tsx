@@ -806,10 +806,7 @@ export default function PatientDetailScreen() {
                             gap: 8,
                           }}
                         >
-                          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                            <Text style={{ fontSize: 14, color: colors.muted }}>
-                              {formatDate(session.sessionDate)}
-                            </Text>
+                          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                             <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
                               {session.durationMinutes} min
                             </Text>
