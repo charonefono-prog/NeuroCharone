@@ -6,6 +6,7 @@
 import { type Session } from "@/lib/local-storage";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface SessionPDFData {
   session: Session;
@@ -18,8 +19,19 @@ export interface SessionPDFData {
  */
 export async function generateSessionPDF(session: Session, patientName: string): Promise<void> {
   try {
+    // Carregar dados profissionais do AsyncStorage
+    let professional = null;
+    try {
+      const savedProfessional = await AsyncStorage.getItem("@professional_info");
+      if (savedProfessional) {
+        professional = JSON.parse(savedProfessional);
+      }
+    } catch (error) {
+      console.warn("Erro ao carregar dados profissionais:", error);
+    }
+
     // Gerar HTML do PDF
-    const htmlContent = generateSessionHTML(session, patientName, null);
+    const htmlContent = generateSessionHTML(session, patientName, professional);
 
     // Salvar arquivo temporário
     const fileName = `sessao_${patientName.replace(/\s+/g, "_")}_${new Date().getTime()}.html`;
