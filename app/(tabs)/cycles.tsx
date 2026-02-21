@@ -1,8 +1,9 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal, TextInput } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPatients, type Patient } from '@/lib/local-storage';
+import { useColors } from '@/hooks/use-colors';
 
 interface TherapeuticCycle {
   id: string;
@@ -63,7 +64,7 @@ export default function CyclesScreen() {
       Alert.alert('Erro', 'Por favor, selecione um paciente');
       return;
     }
-    if (!formData.objectives.trim()) {
+    if (!formData.objectives || !formData.objectives.trim()) {
       Alert.alert('Erro', 'Por favor, preencha os objetivos do ciclo');
       return;
     }
