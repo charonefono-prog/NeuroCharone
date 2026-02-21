@@ -21,6 +21,7 @@ interface TherapeuticCycle {
 }
 
 export default function CyclesScreen() {
+  const colors = useColors();
   const [cycles, setCycles] = useState<TherapeuticCycle[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [showForm, setShowForm] = useState(false);
