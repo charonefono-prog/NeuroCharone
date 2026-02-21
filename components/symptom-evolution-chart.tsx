@@ -59,8 +59,8 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
   // Calcular melhora total
   const initialScore = dataPoints[0].score;
   const latestScore = dataPoints[dataPoints.length - 1].score;
-  const improvement = initialScore - latestScore;
-  const improvementPercentage = (improvement / initialScore) * 100;
+  const improvement = Math.max(0, initialScore - latestScore);
+  const improvementPercentage = Math.max(0, (improvement / initialScore) * 100);
 
   // Calcular posições dos pontos
   const pointSpacing = chartWidth / (dataPoints.length - 1);

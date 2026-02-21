@@ -319,7 +319,7 @@ export function ScaleComparison({
   after: ScaleResponse;
 }) {
   const colors = useColors();
-  const improvement = after.totalScore - before.totalScore;
+  const improvement = Math.max(0, after.totalScore - before.totalScore);
   const isImprovement = improvement > 0;
 
   return (
