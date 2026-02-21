@@ -81,18 +81,18 @@ export default function ProfileScreen() {
       }
 
       let profileToSave = { ...editingProfile };
-      if (!profileToSave.electronicSignature) {
-        const signature = generateProfessionalSignature(
-          editingProfile.title,
-          editingProfile.firstName,
-          editingProfile.lastName,
-          editingProfile.registrationNumber,
-          editingProfile.councilNumber,
-          editingProfile.email
-        );
-        profileToSave.electronicSignature = signature.signatureHash;
-        profileToSave.signatureDate = signature.signatureDate;
-      }
+      // Auto-preenchimento de assinatura com nome do profissional
+      const autoSignature = `${editingProfile.title} ${editingProfile.firstName} ${editingProfile.lastName}`;
+      const signature = generateProfessionalSignature(
+        editingProfile.title,
+        editingProfile.firstName,
+        editingProfile.lastName,
+        editingProfile.registrationNumber,
+        editingProfile.councilNumber,
+        editingProfile.email
+      );
+      profileToSave.electronicSignature = autoSignature; // Usar nome do profissional como assinatura
+      profileToSave.signatureDate = signature.signatureDate;
 
       await AsyncStorage.setItem("professionalProfile", JSON.stringify(profileToSave));
       setProfile(profileToSave);

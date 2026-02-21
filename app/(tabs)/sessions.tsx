@@ -2,6 +2,7 @@ import { ScrollView, Text, View, ActivityIndicator, Pressable, Alert } from "rea
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useProfessionalInfo } from "@/hooks/use-professional-info";
 import { useEffect, useState } from "react";
 import { getSessions, getPatients, type Session, type Patient } from "@/lib/local-storage";
 import { generateSessionPDF } from "@/lib/session-pdf-generator";
@@ -54,7 +55,30 @@ export default function SessionsScreen() {
     });
   };
 
+  const { professional } = useProfessionalInfo();
+
+  const validateProfessionalData = (): boolean => {
+    if (!professional.firstName.trim() || !professional.lastName.trim()) {
+      Alert.alert(
+        "Perfil Incompleto",
+        "Por favor, preencha seu nome completo no Perfil antes de exportar PDFs."
+      );
+      return false;
+    }
+    if (!professional.registrationNumber.trim()) {
+      Alert.alert(
+        "Perfil Incompleto",
+        "Por favor, preencha seu número de registro no Perfil antes de exportar PDFs."
+      );
+      return false;
+    }
+    return true;
+  };
+
   const exportSessionPDF = async (session: Session, patientName: string) => {
+    if (!validateProfessionalData()) {
+      return;
+    }
     try {
       await generateSessionPDF(session, patientName);
       Alert.alert("Sucesso", "PDF exportado com sucesso!");
@@ -198,6 +222,31 @@ export default function SessionsScreen() {
                       </Text>
                     </View>
                   )}
+
+                  {/* Botão Visualizar Prévia */}
+                  <Pressable
+                    onPress={() => Alert.alert("Visualização Prévia", "Prévia do PDF será exibida em breve. Clique em Exportar PDF para salvar.")}
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.primary,
+                        borderWidth: 1,
+                        paddingVertical: 10,
+                        paddingHorizontal: 12,
+                        borderRadius: 8,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                        opacity: pressed ? 0.7 : 1,
+                      },
+                    ]}
+                  >
+                    <IconSymbol name="doc.text.fill" size={16} color={colors.primary} />
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: colors.primary }}>
+                      Visualizar
+                    </Text>
+                  </Pressable>
 
                   {/* Botão Exportar PDF */}
                   <Pressable

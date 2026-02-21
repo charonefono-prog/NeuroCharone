@@ -255,3 +255,12 @@ npm run dev
 - [x] Corrigir assinatura eletrônica (Profile → PDF, sincronizar chaves AsyncStorage)
 - [x] Garantir compatibilidade iOS/Android em TODOS os campos
 - [x] Testes E2E completos: 475 testes passando, 0 erros TypeScript
+
+
+---
+
+## 🌟 MELHORIAS v1.0.9 (Validação, Auto-preenchimento, Visualização Prévia)
+
+- [x] Validação obrigatória de Perfil antes de exportar PDF (avisar se dados vazios)
+- [x] Auto-preenchimento de assinatura com nome do profissional quando salvo
+- [x] Modo de visualização prévia do PDF antes de exportar
