@@ -12,6 +12,9 @@ export default function SessionsScreen() {
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [showPatientModal, setShowPatientModal] = useState(false);
   const [formData, setFormData] = useState({
     durationMinutes: '30',
     stimulatedPoints: [] as string[],
@@ -137,6 +140,23 @@ export default function SessionsScreen() {
             </Text>
           </View>
 
+          {/* Botão Nova Sessão */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: colors.primary,
+              paddingVertical: 12,
+              paddingHorizontal: 16,
+              borderRadius: 8,
+              alignItems: 'center',
+            }}
+            onPress={() => setShowForm(!showForm)}
+          >
+            <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>
+              {showForm ? '✕ Cancelar' : '+ Nova Sessão'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Formulário Nova Sessão */}
           {showForm && (
             <View style={{
               backgroundColor: colors.surface,
