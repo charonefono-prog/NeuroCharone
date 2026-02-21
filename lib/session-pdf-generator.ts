@@ -316,7 +316,7 @@ function generateSessionHTML(session: Session, patientName: string, professional
                         ${professional?.firstName || "N/A"} ${professional?.lastName || ""}
                     </div>
                     <div style="font-size: 12px; color: #687076; margin-top: 5px;">
-                        ${professional?.council || "N/A"}
+                        ${professional?.councilNumber || ""}
                     </div>
                     ${professional?.signature ? `
                     <div class="signature-hash">${professional.signature}</div>
