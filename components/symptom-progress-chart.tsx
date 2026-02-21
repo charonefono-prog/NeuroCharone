@@ -60,7 +60,7 @@ export function SymptomProgressChart({ patient, sessions }: SymptomProgressChart
   // Calcular melhora percentual
   const initialScore = dataPoints[0].score;
   const latestScore = dataPoints[dataPoints.length - 1].score;
-  const improvement = Math.max(0, initialScore > 0 ? ((initialScore - latestScore) / initialScore) * 100 : 0);
+  const improvement = initialScore > 0 ? ((initialScore - latestScore) / initialScore) * 100 : 0;
   const improvementText =
     improvement > 0
       ? `Melhora de ${improvement.toFixed(0)}%`

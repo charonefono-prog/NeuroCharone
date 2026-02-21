@@ -3,9 +3,7 @@
  * Cria relatórios completos com histórico de escalas, gráficos e evolução
  */
 
-import { Share, Alert, Platform } from "react-native";
-import * as FileSystem from "expo-file-system/legacy";
-import * as WebBrowser from "expo-web-browser";
+import { Share } from "react-native";
 import { ScaleResponse } from "./clinical-scales";
 import { Patient } from "./local-storage";
 import { ProfessionalInfo } from "@/hooks/use-professional-info";
@@ -445,21 +443,12 @@ export async function exportAndShareEffectivenessReport(
       professional
     );
 
-    const timestamp = Date.now();
-    const fileName = `efetividade_${timestamp}.html`;
-    const filePath = `${FileSystem.documentDirectory}${fileName}`;
+    const message = `Relatório de Efetividade\n\nPaciente: ${patient.fullName}\nTotal de Escalas: ${statistics?.totalApplications || 0}\nEscalas Diferentes: ${statistics?.uniqueScales || 0}\n\nData: ${new Date().toLocaleDateString("pt-BR")}`;
 
-    await FileSystem.writeAsStringAsync(filePath, htmlContent, {
-      encoding: FileSystem.EncodingType.UTF8,
+    await Share.share({
+      message,
+      title: `Relatório de Efetividade - ${patient.fullName}`,
     });
-
-    if (Platform.OS === "web") {
-      const blob = new Blob([htmlContent], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } else {
-      await WebBrowser.openBrowserAsync(`file://${filePath}`);
-    }
 
     return true;
   } catch (error) {

@@ -94,9 +94,7 @@ export default function ProfileScreen() {
         profileToSave.signatureDate = signature.signatureDate;
       }
 
-      // Salvar em ambas as chaves para sincronização com use-professional-info hook
       await AsyncStorage.setItem("professionalProfile", JSON.stringify(profileToSave));
-      await AsyncStorage.setItem("@professional_info", JSON.stringify(profileToSave));
       setProfile(profileToSave);
       setEditingProfile(profileToSave);
       setIsEditing(false);

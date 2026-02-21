@@ -319,8 +319,8 @@ export function ScaleComparison({
   after: ScaleResponse;
 }) {
   const colors = useColors();
-  const improvement = Math.abs(before.totalScore - after.totalScore);
-  const isImprovement = before.totalScore > after.totalScore;
+  const improvement = after.totalScore - before.totalScore;
+  const isImprovement = improvement > 0;
 
   return (
     <View

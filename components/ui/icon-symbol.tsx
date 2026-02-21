@@ -37,7 +37,6 @@ const MAPPING = {
   "cube.transparent": "cube",
   "gearshape.fill": "settings",
   "chart.bar.fill": "bar-chart",
-  "clock.fill": "schedule",
 } as const satisfies Record<string, string>;
 
 /**
