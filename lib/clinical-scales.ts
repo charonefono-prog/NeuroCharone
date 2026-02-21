@@ -146,7 +146,7 @@ export const DOSS_SCALE = {
     else if (average >= 3) interpretation = "Disfagia moderada a severa";
     else interpretation = "Disfagia severa";
     
-    return { score: Math.round(average * 10) / 10, interpretation };
+    return { score: Math.max(0, Math.round(average * 10) / 10), interpretation };
   },
 };
 
@@ -194,7 +194,7 @@ export const BTSS_SCALE = {
     else if (total <= 18) interpretation = "Zumbido moderado a severo";
     else interpretation = "Zumbido severo";
     
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -285,7 +285,7 @@ export const BDAE_SCALE = {
     else if (total >= 5) interpretation = "Afasia moderada a severa";
     else interpretation = "Afasia severa";
     
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -366,7 +366,7 @@ export const CM_SCALE = {
     else if (percentage >= 20) interpretation = "Comunicação funcional limitada";
     else interpretation = "Comunicação funcional mínima";
     
-    return { score: Math.round(percentage), interpretation };
+    return { score: Math.max(0, Math.round(percentage)), interpretation };
   },
 };
 
@@ -472,7 +472,7 @@ export const SARA_SCALE = {
     else if (total <= 30) interpretation = "Ataxia moderada a severa";
     else interpretation = "Ataxia severa";
     
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -564,7 +564,7 @@ export const QCS_SCALE = {
     else if (percentage >= 20) interpretation = "Comunicação social prejudicada";
     else interpretation = "Comunicação social severamente prejudicada";
     
-    return { score: Math.round(percentage), interpretation };
+    return { score: Math.max(0, Math.round(percentage)), interpretation };
   },
 };
 
@@ -626,7 +626,7 @@ export const PDQ39_SCALE = {
     else if (percentage <= 50) interpretation = "Qualidade de vida boa";
     else if (percentage <= 75) interpretation = "Qualidade de vida moderada";
     else interpretation = "Qualidade de vida prejudicada";
-    return { score: Math.round(percentage), interpretation };
+    return { score: Math.max(0, Math.round(percentage)), interpretation };
   },
 };
 
@@ -673,7 +673,7 @@ export const DSFS_SCALE = {
     else if (total <= 5) interpretation = "Salivação leve";
     else if (total <= 7) interpretation = "Salivação moderada";
     else interpretation = "Salivação severa";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -702,7 +702,7 @@ export const GRBASI_SCALE = {
     else if (percentage <= 50) interpretation = "Alteração leve de voz";
     else if (percentage <= 75) interpretation = "Alteração moderada de voz";
     else interpretation = "Alteração severa de voz";
-    return { score: Math.round(percentage), interpretation };
+    return { score: Math.max(0, Math.round(percentage)), interpretation };
   },
 };
 
@@ -734,7 +734,7 @@ export const EAT10_SCALE = {
     else if (total <= 20) interpretation = "Risco leve de disfagia";
     else if (total <= 30) interpretation = "Risco moderado de disfagia";
     else interpretation = "Risco severo de disfagia";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -763,7 +763,7 @@ export const STOPBANG_SCALE = {
     if (total <= 2) interpretation = "Baixo risco de apneia";
     else if (total <= 4) interpretation = "Risco intermediário de apneia";
     else interpretation = "Alto risco de apneia";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -825,7 +825,7 @@ export const PHQ9_SCALE = {
     else if (total <= 14) interpretation = "Depressão moderada";
     else if (total <= 19) interpretation = "Depressão moderadamente severa";
     else interpretation = "Depressão severa";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -859,7 +859,7 @@ export const MDQ_SCALE = {
     if (total <= 5) interpretation = "Baixo risco de transtorno bipolar";
     else if (total <= 8) interpretation = "Risco moderado de transtorno bipolar";
     else interpretation = "Alto risco de transtorno bipolar";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -900,7 +900,7 @@ export const SNAPIV_SCALE = {
     else if (percentage <= 50) interpretation = "Sintomas leves de TDAH";
     else if (percentage <= 75) interpretation = "Sintomas moderados de TDAH";
     else interpretation = "Sintomas severos de TDAH";
-    return { score: Math.round(percentage), interpretation };
+    return { score: Math.max(0, Math.round(percentage)), interpretation };
   },
 };
 
@@ -937,7 +937,7 @@ export const AMISOS_SCALE = {
     else if (percentage <= 50) interpretation = "Sintomas leves de misofonia";
     else if (percentage <= 75) interpretation = "Sintomas moderados de misofonia";
     else interpretation = "Sintomas severos de misofonia";
-    return { score: Math.round(percentage), interpretation };
+    return { score: Math.max(0, Math.round(percentage)), interpretation };
   },
 };
 
@@ -969,7 +969,7 @@ export const CONNERS_SCALE = {
     else if (total <= 20) interpretation = "Sintomas leves de TDAH";
     else if (total <= 30) interpretation = "Sintomas moderados de TDAH";
     else interpretation = "Sintomas severos de TDAH";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -999,7 +999,7 @@ export const VANDERBILT_SCALE = {
     else if (total <= 16) interpretation = "Sintomas leves de TDAH";
     else if (total <= 20) interpretation = "Sintomas moderados de TDAH";
     else interpretation = "Sintomas severos de TDAH";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -1029,7 +1029,7 @@ export const ODDRS_SCALE = {
     else if (total <= 12) interpretation = "Sintomas leves";
     else if (total <= 18) interpretation = "Sintomas moderados";
     else interpretation = "Sintomas severos";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -1123,7 +1123,7 @@ export const MDSUPDRS_SCALE = {
     else if (total <= 80) interpretation = "Parkinson moderadamente severa";
     else if (total <= 120) interpretation = "Parkinson severa";
     else interpretation = "Parkinson muito severa";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -1193,7 +1193,7 @@ export const PHQ44_SCALE = {
     else if (total <= 50) interpretation = "Depressão moderada";
     else if (total <= 75) interpretation = "Depressão moderadamente severa";
     else interpretation = "Depressão severa";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
@@ -1219,7 +1219,7 @@ export const SALIVA_SCALE = {
     else if (total <= 8) interpretation = "Salivação leve";
     else if (total <= 12) interpretation = "Salivação moderada";
     else interpretation = "Salivação severa";
-    return { score: total, interpretation };
+    return { score: Math.max(0, total), interpretation };
   },
 };
 
