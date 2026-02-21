@@ -172,25 +172,16 @@ export default function CyclesScreen() {
               {/* Objetivos */}
               <View>
                 <Text className="text-sm font-medium text-foreground mb-1">Objetivos do Ciclo</Text>
-                <View className="bg-background p-3 rounded border border-border">
-                  <Text
-                    className="text-muted"
-                    onPress={() => {
-                      // Simulando input de texto
-                      Alert.prompt(
-                        'Objetivos',
-                        'Digite os objetivos do ciclo',
-                        (text) => {
-                          if (text) setFormData({ ...formData, objectives: text });
-                        },
-                        'plain-text',
-                        formData.objectives
-                      );
-                    }}
-                  >
-                    {formData.objectives || 'Toque para adicionar objetivos...'}
-                  </Text>
-                </View>
+                <TextInput
+                  className="bg-background text-foreground border border-border rounded p-3"
+                  placeholder="Digite os objetivos do ciclo"
+                  placeholderTextColor={colors.muted}
+                  value={formData.objectives}
+                  onChangeText={(text) => setFormData({ ...formData, objectives: text })}
+                  multiline
+                  numberOfLines={3}
+                  editable={true}
+                />
               </View>
 
               {/* Sessões Planejadas */}
