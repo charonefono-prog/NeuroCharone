@@ -64,6 +64,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="agenda"
+        options={{
+          title: "Agenda",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Perfil",
@@ -87,8 +94,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="admin"
         options={{
-          title: "Admin",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
+          href: null,
         }}
       />
     </Tabs>

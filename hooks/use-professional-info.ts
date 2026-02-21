@@ -9,6 +9,9 @@ export interface ProfessionalInfo {
   specialty: string;
   email?: string;
   phone?: string;
+  councilNumber?: string;
+  electronicSignature?: string;
+  signatureDate?: string;
 }
 
 const DEFAULT_PROFESSIONAL: ProfessionalInfo = {
@@ -20,6 +23,7 @@ const DEFAULT_PROFESSIONAL: ProfessionalInfo = {
 };
 
 const STORAGE_KEY = "@professional_info";
+const PROFILE_KEY = "professionalProfile";
 
 export function useProfessionalInfo() {
   const [professional, setProfessional] = useState<ProfessionalInfo>(DEFAULT_PROFESSIONAL);
@@ -31,10 +35,25 @@ export function useProfessionalInfo() {
 
   const loadProfessionalInfo = async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setProfessional(JSON.parse(stored));
+      // Tenta carregar de ambas as chaves e mescla os dados
+      const storedSettings = await AsyncStorage.getItem(STORAGE_KEY);
+      const storedProfile = await AsyncStorage.getItem(PROFILE_KEY);
+
+      let merged: ProfessionalInfo = { ...DEFAULT_PROFESSIONAL };
+
+      // Dados de Settings (chave antiga)
+      if (storedSettings) {
+        const parsed = JSON.parse(storedSettings);
+        merged = { ...merged, ...parsed };
       }
+
+      // Dados de Profile (chave nova) - sobrescreve se existir
+      if (storedProfile) {
+        const parsed = JSON.parse(storedProfile);
+        merged = { ...merged, ...parsed };
+      }
+
+      setProfessional(merged);
     } catch (error) {
       console.error("Erro ao carregar dados do profissional:", error);
     } finally {
@@ -44,7 +63,10 @@ export function useProfessionalInfo() {
 
   const saveProfessionalInfo = async (info: ProfessionalInfo) => {
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(info));
+      // Salva em ambas as chaves para manter compatibilidade
+      const data = JSON.stringify(info);
+      await AsyncStorage.setItem(STORAGE_KEY, data);
+      await AsyncStorage.setItem(PROFILE_KEY, data);
       setProfessional(info);
       return true;
     } catch (error) {

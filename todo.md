@@ -242,3 +242,13 @@ npm run dev
 - [ ] Bug: Agendamento não separa registros por dia (mostra tudo como sessão do dia)
 - [ ] Bug: Exportação PDF não inclui as abas, apenas o relatório
 - [ ] Bug: Efetividade não importa dados na íntegra
+
+
+---
+
+## 🔧 Correções v1.0.5 - Pedidos do Usuário (SEGURANÇA MÁXIMA)
+
+- [x] Remover aba "Admin" da barra inferior de navegação (href: null)
+- [x] Corrigir assinatura eletrônica: sincronizar chaves AsyncStorage (@professional_info + professionalProfile)
+- [x] Criar nova aba "Agenda" na barra inferior com data, hora e observações por sessão
+- [x] Corrigir "Objetivos do Ciclo" no Android: substituir Alert.prompt (iOS only) por TextInput real
