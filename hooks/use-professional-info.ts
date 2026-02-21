@@ -16,10 +16,10 @@ export interface ProfessionalInfo {
 
 const DEFAULT_PROFESSIONAL: ProfessionalInfo = {
   title: "Dr",
-  firstName: "Profissional",
-  lastName: "de Saúde",
-  registrationNumber: "N/A",
-  specialty: "Terapia",
+  firstName: "",
+  lastName: "",
+  registrationNumber: "",
+  specialty: "",
   electronicSignature: "",
   signatureDate: "",
   councilNumber: "",
