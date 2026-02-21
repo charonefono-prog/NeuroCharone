@@ -36,7 +36,7 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
 
       const firstScore = sortedResponses[0]?.totalScore || 0;
       const lastScore = sortedResponses[sortedResponses.length - 1]?.totalScore || 0;
-      const improvement = Math.max(0, firstScore > 0 ? ((lastScore - firstScore) / firstScore) * 100 : 0);
+      const improvement = Math.max(0, firstScore > 0 ? ((firstScore - lastScore) / firstScore) * 100 : 0);
 
       return {
         patientName: patient.patientName,

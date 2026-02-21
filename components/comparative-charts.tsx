@@ -56,7 +56,7 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
     return {
       before: firstResponse.totalScore || 0,
       after: lastResponse.totalScore || 0,
-      improvement: Math.max(0, ((lastResponse.totalScore || 0) - (firstResponse.totalScore || 0)) / (firstResponse.totalScore || 1) * 100),
+      improvement: Math.max(0, ((firstResponse.totalScore || 0) - (lastResponse.totalScore || 0)) / (firstResponse.totalScore || 1) * 100),
     };
   }, [sortedResponses]);
 
