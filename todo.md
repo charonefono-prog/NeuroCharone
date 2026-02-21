@@ -263,3 +263,9 @@ npm run dev
 - [ ] Corrigir cálculos negativos nas escalas (valores devem ser >= 0)
 - [ ] Fazer gráficos aparecerem no PDF do relatório (não apenas texto)
 - [ ] Exportar página completa com formatação e gráficos (não só cópia de texto)
+
+## 🔧 CORREÇÕES EM PROGRESSO
+
+- [ ] PROBLEMA 1: Remover valores negativos de todos os cálculos de escalas
+- [ ] PROBLEMA 2: Integrar gráficos Chart.js nos PDFs (scale, session, effectiveness, cycle)
+- [ ] PROBLEMA 3: Implementar captura visual completa das páginas no botão Exportar
