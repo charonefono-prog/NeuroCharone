@@ -121,6 +121,9 @@ export default function SessionsScreen() {
                       <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
                         {getPatientName(session.patientId)}
                       </Text>
+                      <Text style={{ fontSize: 14, color: colors.muted, marginTop: 4 }}>
+                        {formatDate(session.sessionDate)} às {formatTime(session.sessionDate)}
+                      </Text>
                     </View>
                     <View
                       style={{

@@ -1,8 +1,6 @@
-# TODO - NeuroLaserMap v1.0.5
+# TODO - NeuroLaserMap v1.0.4
 
 **Status Geral:** ✅ PRONTO PARA PUBLICAÇÃO
-
-**Última Atualização:** Removido "N/A" do PDF e data/hora do histórico de sessões
 
 ---
 

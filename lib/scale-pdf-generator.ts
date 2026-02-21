@@ -565,7 +565,7 @@ export function generateScalePDFHTML(
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
               <div>
                 <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Número do Conselho:</div>
-                <div style="font-size: 14px; color: #333;">${professional.councilNumber || ''}</div>
+                <div style="font-size: 14px; color: #333;">${professional.councilNumber || 'Não informado'}</div>
               </div>
               <div>
                 <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Especialidade:</div>
@@ -576,11 +576,11 @@ export function generateScalePDFHTML(
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
               <div>
                 <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Email:</div>
-                <div style="font-size: 14px; color: #333;">${professional.email || ''}</div>
+                <div style="font-size: 14px; color: #333;">${professional.email || 'Não informado'}</div>
               </div>
               <div>
                 <div style="font-weight: 600; color: #0a7ea4; margin-bottom: 5px;">Assinatura Eletrônica:</div>
-                <div style="font-size: 12px; color: #0a7ea4; font-family: monospace; font-weight: bold;">${professional.electronicSignature || ''}</div>
+                <div style="font-size: 12px; color: #0a7ea4; font-family: monospace; font-weight: bold;">${professional.electronicSignature || 'Não gerada'}</div>
               </div>
             </div>
             
@@ -601,7 +601,7 @@ export function generateScalePDFHTML(
             
             <div style="margin-top: 30px; padding: 15px; background-color: #f0f8ff; border-radius: 4px; border-left: 4px solid #0a7ea4;">
               <div style="font-size: 11px; color: #666; line-height: 1.6;">
-                <strong>Certificação:</strong> Este documento foi gerado pelo sistema NeuroLaserMaps e é válido como registro eletrônico de avaliação clínica. A assinatura eletrônica do profissional responsável (${professional.electronicSignature || ''}) certifica a autenticidade e a precisão dos dados registrados.
+                <strong>Certificação:</strong> Este documento foi gerado pelo sistema NeuroLaserMaps e é válido como registro eletrônico de avaliação clínica. A assinatura eletrônica do profissional responsável (${professional.electronicSignature || 'N/A'}) certifica a autenticidade e a precisão dos dados registrados.
               </div>
             </div>
           </div>
