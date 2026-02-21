@@ -242,3 +242,8 @@ npm run dev
 - [ ] Bug: Agendamento não separa registros por dia (mostra tudo como sessão do dia)
 - [ ] Bug: Exportação PDF não inclui as abas, apenas o relatório
 - [ ] Bug: Efetividade não importa dados na íntegra
+
+
+## 🐛 BUG ATUAL - Em Investigação
+
+- [ ] Bug: Em "Nova Sessão" não aparece campo para entrar novos pacientes
