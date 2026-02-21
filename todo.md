@@ -233,3 +233,12 @@ npm run dev
 - [ ] Validar isolamento de dados
 - [ ] Salvar checkpoint
 - [ ] Deploy no Vercel
+
+---
+
+## 🐛 BUGS CRÍTICOS - NOVA RODADA DE CORREÇÕES
+
+- [ ] Bug: Assinatura eletrônica não aparece após registro na configuração
+- [ ] Bug: Agendamento não separa registros por dia (mostra tudo como sessão do dia)
+- [ ] Bug: Exportação PDF não inclui as abas, apenas o relatório
+- [ ] Bug: Efetividade não importa dados na íntegra
