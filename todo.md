@@ -238,6 +238,7 @@ npm run dev
 
 ## 🐛 BUGS CRÍTICOS - NOVA RODADA DE CORREÇÕES
 
+- [x] Bug: Histórico de sessões não atualiza automaticamente após criar nova sessão (CORRIGIDO - useFocusEffect adicionado)
 - [ ] Bug: Assinatura eletrônica não aparece após registro na configuração
 - [ ] Bug: Agendamento não separa registros por dia (mostra tudo como sessão do dia)
 - [ ] Bug: Exportação PDF não inclui as abas, apenas o relatório

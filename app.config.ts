@@ -41,7 +41,7 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.1",
+  version: "1.0.3",
   orientation: "sensor",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
@@ -54,7 +54,8 @@ const config: ExpoConfig = {
   },
   ios: {
     supportsTablet: true,
-    bundleIdentifier: env.iosBundleId,
+    bundleIdentifier: "space.manus.neuromodulation.mapper.t20260118155822",
+    buildNumber: "2",
     requireFullScreen: false,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false
@@ -70,6 +71,7 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
+    versionCode: 3,
     permissions: ["POST_NOTIFICATIONS"],
     intentFilters: [
       {
