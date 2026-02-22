@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { ScreenContainer } from '@/components/screen-container';
-import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPatients, type Patient } from '@/lib/local-storage';
 import { useColors } from '@/hooks/use-colors';
@@ -35,10 +36,12 @@ export default function CyclesScreen() {
     intensity: 'média',
   });
 
-  useEffect(() => {
-    loadCycles();
-    loadPatients();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadCycles();
+      loadPatients();
+    }, [])
+  );
 
   const loadPatients = async () => {
     try {
@@ -184,6 +187,7 @@ export default function CyclesScreen() {
                     backgroundColor: colors.background,
                     minHeight: 80,
                     textAlignVertical: 'top',
+                    fontFamily: 'System',
                   }}
                   placeholder="Digite os objetivos do ciclo..."
                   placeholderTextColor={colors.muted}
@@ -191,6 +195,8 @@ export default function CyclesScreen() {
                   onChangeText={(text) => setFormData({ ...formData, objectives: text })}
                   multiline
                   numberOfLines={4}
+                  returnKeyType="done"
+                  blurOnSubmit={true}
                 />
               </View>
 
@@ -351,55 +357,50 @@ export default function CyclesScreen() {
               </View>
             ) : (
               cycles.map((cycle) => (
-                <View key={cycle.id} className="bg-surface p-4 rounded-lg border border-border gap-2">
-                  {/* Paciente e Status */}
+                <View key={cycle.id} className="bg-surface p-5 rounded-xl border-2 gap-4" style={{ borderColor: getStatusColor(cycle.status) }}>
+                  {/* Header: Paciente e Status */}
                   <View className="flex-row items-center justify-between">
-                    <View>
-                      <Text className="text-xs text-muted">Paciente</Text>
-                      <Text className="text-base font-semibold text-foreground">{cycle.patientName}</Text>
+                    <View className="flex-1">
+                      <Text className="text-xs font-medium text-muted">PACIENTE</Text>
+                      <Text className="text-lg font-bold text-foreground mt-1">{cycle.patientName}</Text>
                     </View>
-                    <View
-                      className="px-3 py-1 rounded-full"
-                      style={{ backgroundColor: getStatusColor(cycle.status) }}
-                    >
-                      <Text className="text-white text-xs font-semibold">
+                    <View className="px-4 py-2 rounded-full" style={{ backgroundColor: getStatusColor(cycle.status) }}>
+                      <Text className="text-white text-xs font-bold">
                         {getStatusLabel(cycle.status)}
                       </Text>
                     </View>
                   </View>
 
+                  {/* Divisor */}
+                  <View className="h-px bg-border" />
+
                   {/* Objetivos */}
                   <View>
-                    <Text className="text-xs text-muted">Objetivos</Text>
-                    <Text className="text-sm text-foreground">{cycle.objectives}</Text>
+                    <Text className="text-xs font-semibold text-muted mb-2">OBJETIVOS</Text>
+                    <Text className="text-sm text-foreground leading-relaxed">{cycle.objectives}</Text>
                   </View>
 
-                  {/* Detalhes */}
-                  <View className="flex-row gap-4 mt-2">
-                    <View>
-                      <Text className="text-xs text-muted">Sessões</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {cycle.plannedSessions}
-                      </Text>
+                  {/* Detalhes em Grid */}
+                  <View className="flex-row gap-3">
+                    <View className="flex-1 bg-background p-3 rounded-lg">
+                      <Text className="text-xs text-muted font-medium mb-1">Sessoes</Text>
+                      <Text className="text-xl font-bold text-primary">{cycle.plannedSessions}</Text>
                     </View>
-                    <View>
-                      <Text className="text-xs text-muted">Duração</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {cycle.estimatedDuration}d
-                      </Text>
+                    <View className="flex-1 bg-background p-3 rounded-lg">
+                      <Text className="text-xs text-muted font-medium mb-1">Duracao</Text>
+                      <Text className="text-xl font-bold text-primary">{cycle.estimatedDuration}d</Text>
                     </View>
-                    <View>
-                      <Text className="text-xs text-muted">Frequência</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {cycle.frequency}
-                      </Text>
+                    <View className="flex-1 bg-background p-3 rounded-lg">
+                      <Text className="text-xs text-muted font-medium mb-1">Frequencia</Text>
+                      <Text className="text-xs font-bold text-primary text-center">{cycle.frequency}</Text>
                     </View>
                   </View>
 
                   {/* Datas */}
-                  <View className="flex-row justify-between mt-2 pt-2 border-t border-border">
-                    <Text className="text-xs text-muted">
-                      {cycle.startDate} até {cycle.endDate}
+                  <View className="bg-background p-3 rounded-lg">
+                    <Text className="text-xs text-muted font-medium mb-1">PERIODO</Text>
+                    <Text className="text-sm font-semibold text-foreground">
+                      {cycle.startDate} ate {cycle.endDate}
                     </Text>
                   </View>
                 </View>
