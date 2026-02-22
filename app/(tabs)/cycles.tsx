@@ -335,71 +335,82 @@ export default function CyclesScreen() {
           </Modal>
 
           {/* Lista de Ciclos */}
-          <View className="gap-3">
-            {cycles.length === 0 ? (
-              <View className="bg-surface p-6 rounded-lg items-center">
-                <Text className="text-lg text-muted">Nenhum ciclo criado ainda</Text>
-                <Text className="text-sm text-muted mt-2">
-                  Clique em "Novo Ciclo" para começar
-                </Text>
-              </View>
-            ) : (
-              cycles.map((cycle) => (
-                <View key={cycle.id} className="bg-surface p-4 rounded-lg border border-border gap-2">
-                  {/* Paciente e Status */}
-                  <View className="flex-row items-center justify-between">
-                    <View>
-                      <Text className="text-xs text-muted">Paciente</Text>
-                      <Text className="text-base font-semibold text-foreground">{cycle.patientName}</Text>
+          {cycles && cycles.length > 0 && (
+            <View className="gap-3 mt-4">
+              <Text className="text-lg font-semibold text-foreground mb-2">Ciclos Criados</Text>
+              {cycles.map((cycle) => {
+                if (!cycle || !cycle.id) return null;
+                return (
+                  <View key={cycle.id} className="bg-surface p-4 rounded-lg border border-border gap-3">
+                    {/* Cabeçalho: Paciente e Status */}
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-1">
+                        <Text className="text-xs text-muted mb-1">Paciente</Text>
+                        <Text className="text-base font-bold text-foreground" numberOfLines={1}>
+                          {cycle.patientName || 'Sem nome'}
+                        </Text>
+                      </View>
+                      <View
+                        className="px-3 py-1 rounded-full ml-2"
+                        style={{ backgroundColor: getStatusColor(cycle.status) }}
+                      >
+                        <Text className="text-white text-xs font-semibold">
+                          {getStatusLabel(cycle.status)}
+                        </Text>
+                      </View>
                     </View>
-                    <View
-                      className="px-3 py-1 rounded-full"
-                      style={{ backgroundColor: getStatusColor(cycle.status) }}
-                    >
-                      <Text className="text-white text-xs font-semibold">
-                        {getStatusLabel(cycle.status)}
-                      </Text>
-                    </View>
-                  </View>
 
-                  {/* Objetivos */}
-                  <View>
-                    <Text className="text-xs text-muted">Objetivos</Text>
-                    <Text className="text-sm text-foreground">{cycle.objectives}</Text>
-                  </View>
+                    {/* Objetivos */}
+                    <View className="bg-background p-3 rounded">
+                      <Text className="text-xs text-muted mb-1">Objetivos</Text>
+                      <Text className="text-sm text-foreground leading-5">
+                        {cycle.objectives || 'Sem objetivos'}
+                      </Text>
+                    </View>
 
-                  {/* Detalhes */}
-                  <View className="flex-row gap-4 mt-2">
-                    <View>
-                      <Text className="text-xs text-muted">Sessões</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {cycle.plannedSessions}
-                      </Text>
+                    {/* Detalhes em Grid */}
+                    <View className="gap-2">
+                      <View className="flex-row gap-3">
+                        <View className="flex-1 bg-background p-2 rounded">
+                          <Text className="text-xs text-muted">Sessões</Text>
+                          <Text className="text-lg font-bold text-primary mt-1">
+                            {cycle.plannedSessions || 0}
+                          </Text>
+                        </View>
+                        <View className="flex-1 bg-background p-2 rounded">
+                          <Text className="text-xs text-muted">Duração</Text>
+                          <Text className="text-lg font-bold text-primary mt-1">
+                            {cycle.estimatedDuration || 0}d
+                          </Text>
+                        </View>
+                        <View className="flex-1 bg-background p-2 rounded">
+                          <Text className="text-xs text-muted">Frequência</Text>
+                          <Text className="text-xs font-semibold text-foreground mt-1" numberOfLines={2}>
+                            {cycle.frequency || '-'}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
-                    <View>
-                      <Text className="text-xs text-muted">Duração</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {cycle.estimatedDuration}d
-                      </Text>
-                    </View>
-                    <View>
-                      <Text className="text-xs text-muted">Frequência</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {cycle.frequency}
-                      </Text>
-                    </View>
-                  </View>
 
-                  {/* Datas */}
-                  <View className="flex-row justify-between mt-2 pt-2 border-t border-border">
-                    <Text className="text-xs text-muted">
-                      {cycle.startDate} até {cycle.endDate}
-                    </Text>
+                    {/* Datas */}
+                    <View className="pt-2 border-t border-border">
+                      <Text className="text-xs text-muted">
+                        📅 {cycle.startDate} até {cycle.endDate}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              ))
-            )}
-          </View>
+                );
+              })}
+            </View>
+          )}
+          {(!cycles || cycles.length === 0) && (
+            <View className="bg-surface p-6 rounded-lg items-center mt-4">
+              <Text className="text-lg text-muted">Nenhum ciclo criado ainda</Text>
+              <Text className="text-sm text-muted mt-2">
+                Clique em "Novo Ciclo" para começar
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </ScreenContainer>
