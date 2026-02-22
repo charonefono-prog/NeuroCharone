@@ -36,29 +36,6 @@ export default function CyclesScreen() {
     intensity: 'média',
   });
 
-  // Limpar dados de teste na primeira renderização
-  useEffect(() => {
-    const clearTestData = async () => {
-      try {
-        const stored = await AsyncStorage.getItem('therapeutic_cycles');
-        if (stored) {
-          const cyclesData = JSON.parse(stored);
-          // Remover ciclos com dados de teste
-          const filtered = cyclesData.filter((c: TherapeuticCycle) => 
-            !['fghbn', 'Hahahahah', 'Hhhjjj', 'Drdsfvcfg', 'Fdrdsdfsdcsd', 'Fgvv'].includes(c.objectives)
-          );
-          if (filtered.length !== cyclesData.length) {
-            await AsyncStorage.setItem('therapeutic_cycles', JSON.stringify(filtered));
-            console.log('✅ Dados de teste removidos');
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao limpar dados:', error);
-      }
-    };
-    clearTestData();
-  }, []);
-
   useFocusEffect(
     React.useCallback(() => {
       loadCycles();
