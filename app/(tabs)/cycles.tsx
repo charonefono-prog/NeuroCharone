@@ -3,6 +3,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPatients, type Patient } from '@/lib/local-storage';
+import { useOrientation } from '@/hooks/use-orientation';
 
 interface TherapeuticCycle {
   id: string;
@@ -20,6 +21,7 @@ interface TherapeuticCycle {
 }
 
 export default function CyclesScreen() {
+  const { isPortrait, isLandscape, width } = useOrientation();
   const [cycles, setCycles] = useState<TherapeuticCycle[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -129,13 +131,13 @@ export default function CyclesScreen() {
   };
 
   return (
-    <ScreenContainer className="p-4">
+    <ScreenContainer className={isPortrait ? 'p-4' : 'p-2'}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="gap-4">
+        <View className={isPortrait ? 'gap-4' : 'gap-2'}>
           {/* Header */}
-          <View className="items-center gap-2 mb-4">
-            <Text className="text-3xl font-bold text-foreground">🔄 Ciclos Terapêuticos</Text>
-            <Text className="text-base text-muted text-center">
+          <View className={isPortrait ? 'items-center gap-2 mb-4' : 'items-center gap-1 mb-2'}>
+            <Text className={isPortrait ? 'text-3xl font-bold text-foreground' : 'text-2xl font-bold text-foreground'}>🔄 Ciclos Terapêuticos</Text>
+            <Text className={isPortrait ? 'text-base text-muted text-center' : 'text-sm text-muted text-center'}>
               Planeje e acompanhe os ciclos de tratamento
             </Text>
           </View>

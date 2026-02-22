@@ -837,3 +837,36 @@
 - Adicionado `TextInput` ao import de react-native
 - Substituído Alert.prompt por TextInput nativo
 - Adicionado teste em `__tests__/cycles-textinput.test.ts`
+
+
+## 🔄 ROTAÇÃO DE TELA IMPLEMENTADA
+
+### Suporte a Orientação Vertical e Horizontal
+- [x] Configurado app.config.ts com orientation: "default"
+- [x] Criado hook useOrientation para detectar mudanças
+- [x] Adaptado layout de ciclos para portrait e landscape
+- [x] 16 testes de orientação passando
+- [x] 412 testes totais passando (sem quebras)
+- [x] Suporta múltiplas resoluções (iPhone, Android)
+- [x] Adapta padding, gap, fontes automaticamente
+
+**Arquivos criados/modificados:**
+- `hooks/use-orientation.ts` - Hook para detectar orientação
+- `app/(tabs)/cycles.tsx` - Layout adaptado para landscape
+- `__tests__/orientation.test.ts` - 16 testes de validação
+- `app.config.ts` - orientation: "default" (linha 45)
+
+**Como usar em outras telas:**
+```tsx
+import { useOrientation } from '@/hooks/use-orientation';
+
+export default function MyScreen() {
+  const { isPortrait, isLandscape, width, height } = useOrientation();
+  
+  return (
+    <View className={isPortrait ? 'gap-4' : 'gap-2'}>
+      {/* Seu conteúdo aqui */}
+    </View>
+  );
+}
+```
