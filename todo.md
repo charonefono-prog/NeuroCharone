@@ -818,3 +818,22 @@
 - [ ] Upload AAB no Google Play Console
 - [ ] Criar app no App Store Connect (se publicar iOS)
 - [ ] Upload IPA na App Store
+
+
+## 🔧 CORREÇÃO APLICADA - Bug do Campo de Objetivos (Android)
+
+### Bug Crítico 4: Campo de Objetivos Trava no Android
+- [x] Campo de objetivo do ciclo trava ao digitar no Android
+- [x] Funcionava apenas no iOS
+- [x] Substituído Alert.prompt() por TextInput nativo
+- [x] 12 testes passando - validado para Android/iOS
+- [x] Suporta múltiplas linhas (3 linhas visíveis)
+- [x] returnKeyType="done" + blurOnSubmit para melhor UX
+- [x] Funciona com caracteres especiais
+- [x] Limpa campo após salvar ciclo
+
+**Mudanças no arquivo:**
+- `/home/ubuntu/neuromodulation_mapper/app/(tabs)/cycles.tsx` - Linhas 172-187
+- Adicionado `TextInput` ao import de react-native
+- Substituído Alert.prompt por TextInput nativo
+- Adicionado teste em `__tests__/cycles-textinput.test.ts`

@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList, Modal, TextInput } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -172,25 +172,18 @@ export default function CyclesScreen() {
               {/* Objetivos */}
               <View>
                 <Text className="text-sm font-medium text-foreground mb-1">Objetivos do Ciclo</Text>
-                <View className="bg-background p-3 rounded border border-border">
-                  <Text
-                    className="text-muted"
-                    onPress={() => {
-                      // Simulando input de texto
-                      Alert.prompt(
-                        'Objetivos',
-                        'Digite os objetivos do ciclo',
-                        (text) => {
-                          if (text) setFormData({ ...formData, objectives: text });
-                        },
-                        'plain-text',
-                        formData.objectives
-                      );
-                    }}
-                  >
-                    {formData.objectives || 'Toque para adicionar objetivos...'}
-                  </Text>
-                </View>
+                <TextInput
+                  className="bg-background p-3 rounded border border-border text-foreground"
+                  placeholder="Digite os objetivos do ciclo..."
+                  placeholderTextColor="#999"
+                  value={formData.objectives}
+                  onChangeText={(text) => setFormData({ ...formData, objectives: text })}
+                  multiline
+                  numberOfLines={3}
+                  style={{ textAlignVertical: 'top' }}
+                  returnKeyType="done"
+                  blurOnSubmit={true}
+                />
               </View>
 
               {/* Sessões Planejadas */}
