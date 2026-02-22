@@ -1,9 +1,8 @@
 import { ScrollView, Text, View, ActivityIndicator, Pressable, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { useEffect, useState } from "react";
 import { getSessions, getPatients, type Session, type Patient } from "@/lib/local-storage";
 import { generateSessionPDF } from "@/lib/session-pdf-generator";
 
@@ -13,11 +12,9 @@ export default function SessionsScreen() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      loadData();
-    }, [])
-  );
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const loadData = async () => {
     try {

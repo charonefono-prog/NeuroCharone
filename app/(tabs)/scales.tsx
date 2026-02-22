@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { useWindowDimensions } from "react-native";
-import { Alert, Platform, ScrollView, View, Text, TouchableOpacity, Modal, FlatList, TextInput } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Modal, FlatList, Alert, TextInput, Platform } from "react-native";
+import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -14,19 +13,10 @@ import * as Haptics from "expo-haptics";
 interface Patient {
   id: string;
   fullName: string;
-  birthDate?: string;
-  phone?: string;
-  diagnosis?: string;
-  initialSymptomScore?: number;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export default function ScalesScreen() {
   const colors = useColors();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = useMemo(() => width > height, [width, height]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [showScaleList, setShowScaleList] = useState(false);
   const [showPatientSelector, setShowPatientSelector] = useState(false);
@@ -48,37 +38,7 @@ export default function ScalesScreen() {
   const loadPatients = async () => {
     try {
       const data = await getPatients();
-      
-      // Se não houver pacientes, criar dados de teste
-      if (!data || data.length === 0) {
-        const testPatients = [
-          {
-            id: 'test-1',
-            fullName: 'Teste',
-            birthDate: '1990-01-01',
-            phone: '123456789',
-            diagnosis: 'Depressão',
-            initialSymptomScore: 8,
-            status: 'active' as const,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: 'test-2',
-            fullName: 'João Silva',
-            birthDate: '1985-05-15',
-            phone: '987654321',
-            diagnosis: 'Ansiedade',
-            initialSymptomScore: 6,
-            status: 'active' as const,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        ];
-        setPatients(testPatients);
-      } else {
-        setPatients(data);
-      }
+      setPatients(data);
     } catch (error) {
       console.error("Erro ao carregar pacientes:", error);
     }
@@ -185,9 +145,9 @@ export default function ScalesScreen() {
   };
 
   return (
-    <ScreenContainer className={isLandscape ? "px-6 py-3" : "p-6"}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} scrollEnabled={true}>
-        <View style={{ gap: isLandscape ? 12 : 24 }}>
+    <ScreenContainer className="p-6">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ gap: 24 }}>
           {/* Header */}
           <View style={{ gap: 8 }}>
             <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
@@ -333,7 +293,6 @@ export default function ScalesScreen() {
               borderTopRightRadius: 24,
               padding: 24,
               maxHeight: "80%",
-              flex: 1,
             }}
           >
             <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground, marginBottom: 16 }}>
@@ -342,9 +301,7 @@ export default function ScalesScreen() {
             <FlatList
               data={patients}
               keyExtractor={(item) => item.id}
-              scrollEnabled={true}
-              nestedScrollEnabled={true}
-              numColumns={isLandscape ? 2 : 1}
+              scrollEnabled={false}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => handleSelectPatient(item)}
@@ -353,7 +310,6 @@ export default function ScalesScreen() {
                     paddingHorizontal: 16,
                     borderBottomWidth: 1,
                     borderBottomColor: colors.border,
-                    flex: isLandscape ? 1 : undefined,
                   }}
                 >
                   <Text style={{ fontSize: 16, color: colors.foreground, fontWeight: "500" }}>
@@ -361,7 +317,6 @@ export default function ScalesScreen() {
                   </Text>
                 </TouchableOpacity>
               )}
-              style={{ flex: 1 }}
             />
             <TouchableOpacity
               onPress={() => setShowPatientSelector(false)}
@@ -384,9 +339,9 @@ export default function ScalesScreen() {
 
       {/* Modal - Formulário da Escala */}
       <Modal visible={showScaleForm} transparent animationType="slide">
-        <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: 12 }}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }} scrollEnabled={true}>
-            <View style={{ gap: 16, paddingHorizontal: 24, paddingTop: 12 }}>
+        <ScreenContainer className="p-6">
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={{ gap: 16 }}>
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground }}>
                   {selectedScale?.name}
@@ -489,7 +444,7 @@ export default function ScalesScreen() {
               </View>
             </View>
           </ScrollView>
-        </View>
+        </ScreenContainer>
       </Modal>
 
       {/* Modal - Resultados */}
@@ -506,9 +461,9 @@ export default function ScalesScreen() {
 
       {/* Modal - Histórico e Gráficos */}
       <Modal visible={showHistory} transparent animationType="slide">
-        <View style={{ flex: 1, backgroundColor: colors.background, paddingTop: 12 }}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }} scrollEnabled={true}>
-            <View style={{ gap: 16, paddingHorizontal: 24, paddingTop: 12 }}>
+        <ScreenContainer className="p-6">
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={{ gap: 16 }}>
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground }}>
                   Histórico: {selectedScale?.name}
@@ -637,7 +592,7 @@ export default function ScalesScreen() {
               </TouchableOpacity>
             </View>
           </ScrollView>
-        </View>
+        </ScreenContainer>
       </Modal>
     </ScreenContainer>
   );

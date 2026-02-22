@@ -6,7 +6,7 @@ import type { ExpoConfig } from "expo/config";
 // e.g., "my-app" created at 2024-01-15 10:30:45 -> "space.manus.my.app.t20240115103045"
 // Bundle ID can only contain letters, numbers, and dots
 // Android requires each dot-separated segment to start with a letter
-const rawBundleId = "space.manus.neurolasermap.pro";
+const rawBundleId = "com.charone.neuromodulationmapper";
 const bundleId =
   rawBundleId
     .replace(/[-_]/g, ".") // Replace hyphens/underscores with dots
@@ -28,7 +28,7 @@ const schemeFromBundleId = `manus${timestamp}`;
 
 const env = {
   // App branding - update these values directly (do not use env vars)
-  appName: "NeuroLaserMap PRO",
+  appName: "NeuroLaserMap",
   appSlug: "neuromodulation-mapper",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
@@ -41,8 +41,8 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.5",
-  orientation: "sensor",
+  version: "1.0.2",
+  orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "automatic",
@@ -52,14 +52,13 @@ const config: ExpoConfig = {
       projectId: "519c0503-478c-4806-902e-3616c7b36313"
     }
   },
+
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "space.manus.neuromodulation.mapper.t20260118155822",
-    buildNumber: "5",
-    requireFullScreen: false,
-    infoPlist: {
-      ITSAppUsesNonExemptEncryption: false
-    }
+    bundleIdentifier: env.iosBundleId,
+    "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
   },
   android: {
     adaptiveIcon: {
@@ -71,7 +70,6 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
-    versionCode: 5,
     permissions: ["POST_NOTIFICATIONS"],
     intentFilters: [
       {

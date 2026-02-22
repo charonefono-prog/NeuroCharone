@@ -149,8 +149,8 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, gap: 16 }}>
           {/* Header */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-            <View style={{ gap: 8, flex: 1, minWidth: 120 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <View style={{ gap: 8, flex: 1 }}>
               <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground, letterSpacing: -0.5 }}>
                 Pacientes
               </Text>
@@ -158,21 +158,7 @@ export default function PatientsScreen() {
                 {filteredPatients.length} paciente(s) encontrado(s)
               </Text>
             </View>
-            <View style={{ flexDirection: "row", gap: 8, alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <TouchableOpacity
-                onPress={() => setShowAddModal(true)}
-                activeOpacity={0.7}
-                style={{
-                  backgroundColor: colors.primary,
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                  borderRadius: 12,
-                }}
-              >
-                <Text style={{ fontSize: 14, fontWeight: "600", color: "white" }}>
-                  + Paciente
-                </Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: "row", gap: 8 }}>
               <TouchableOpacity
                 onPress={handleExportCSV}
                 activeOpacity={0.7}
@@ -313,7 +299,30 @@ export default function PatientsScreen() {
             </View>
           </ScrollView>
 
-
+          {/* Botão Flutuante */}
+          <TouchableOpacity
+            onPress={() => setShowAddModal(true)}
+            activeOpacity={0.8}
+            style={{
+              position: "absolute",
+              right: 24,
+              bottom: 24,
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: colors.primary,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+              zIndex: 999,
+            }}
+          >
+            <IconSymbol name="house.fill" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
 
           {/* Lista de Pacientes */}
           <View style={{ gap: 12 }}>
