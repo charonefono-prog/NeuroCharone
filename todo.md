@@ -870,3 +870,24 @@ export default function MyScreen() {
   );
 }
 ```
+
+
+## 🐛 BUGS CORRIGIDOS - Sessão e Relatório
+
+### Bug 1: Home Não Atualiza Sessão Registrada
+- [x] Adicionado useFocusEffect ao arquivo sessions.tsx
+- [x] Agora recarrega dados quando volta da tela de criar nova sessão
+- [x] Home atualiza automaticamente com novas sessões
+- [x] Arquivo: app/(tabs)/sessions.tsx (linhas 5-6, 20-24)
+
+### Bug 2: Relatório Gera Códigos em Vez de PDF
+- [x] Alterado tipo MIME de text/plain para text/html
+- [x] Arquivo salvo como .html em vez de .htm
+- [x] Relatório agora exibe como documento formatado
+- [x] Compatível com web e mobile (FileSystem + Sharing)
+- [x] Arquivo: lib/pdf-generator-native.ts (linhas 17, 22, 26, 49-51, 56)
+
+**Testes:**
+- [x] 412/413 testes passando
+- [x] Nenhuma regressão introduzida
+- [x] Ambas as correções validadas

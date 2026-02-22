@@ -14,16 +14,16 @@ export async function generatePatientPDFReport(
     const htmlContent = generateReportHTML(patient, plan, sessions);
 
     // Nome do arquivo
-    const htmlFileName = `relatorio_${patient.fullName.replace(/\s/g, "_")}_${Date.now()}.htm`;
+    const pdfFileName = `relatorio_${patient.fullName.replace(/\s/g, "_")}_${Date.now()}.html`;
 
     // Verificar se está rodando na web
     if (Platform.OS === "web") {
       // Download direto no navegador
-      const blob = new Blob([htmlContent], { type: "text/plain" });
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = htmlFileName.replace('.htm', '.htm');
+      link.download = pdfFileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -36,7 +36,7 @@ export async function generatePatientPDFReport(
       );
     } else {
       // Mobile: usar FileSystem e Sharing
-      const htmlFilePath = `${FileSystem.documentDirectory}${htmlFileName}`;
+      const htmlFilePath = `${FileSystem.documentDirectory}${pdfFileName}`;
 
       await FileSystem.writeAsStringAsync(htmlFilePath, htmlContent, {
         encoding: FileSystem.EncodingType.UTF8,
@@ -46,14 +46,14 @@ export async function generatePatientPDFReport(
       const isAvailable = await Sharing.isAvailableAsync();
       if (isAvailable) {
         await Sharing.shareAsync(htmlFilePath, {
-          mimeType: "text/plain",
+          mimeType: "text/html",
           dialogTitle: "Compartilhar Relatório",
-          UTI: "public.text",
+          UTI: "public.html",
         });
       } else {
         Alert.alert(
           "Sucesso",
-          `Relatório salvo em: ${htmlFilePath}`,
+          `Relatório HTML salvo com sucesso!`,
           [{ text: "OK" }]
         );
       }

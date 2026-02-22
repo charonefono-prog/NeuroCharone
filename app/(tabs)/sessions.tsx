@@ -2,7 +2,8 @@ import { ScrollView, Text, View, ActivityIndicator, Pressable, Alert } from "rea
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import { getSessions, getPatients, type Session, type Patient } from "@/lib/local-storage";
 import { generateSessionPDF } from "@/lib/session-pdf-generator";
 
@@ -15,6 +16,12 @@ export default function SessionsScreen() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
