@@ -18,8 +18,8 @@
     },
     "production": {
       "android": {
-        "buildType": "apk",
-        "credentialsSource": "local"
+        "buildType": "aab",
+        "credentialsSource": "remote"
       },
       "ios": {
         "credentialsSource": "remote",
