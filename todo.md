@@ -891,3 +891,15 @@ export default function MyScreen() {
 - [x] 412/413 testes passando
 - [x] Nenhuma regressão introduzida
 - [x] Ambas as correções validadas
+
+
+## 🔧 CORREÇÃO APLICADA - Travamento de Scroll em Seleções
+
+### Bug: Rolagem de Pacientes Trava ao Selecionar Escala
+- [x] Identificado problema com FlatList + scrollEnabled=false em Modals
+- [x] Substituído FlatList por ScrollView com nestedScrollEnabled=true em 3 locais
+- [x] Corrigido em scales.tsx (modal de escalas)
+- [x] Corrigido em scales.tsx (modal de pacientes)
+- [x] Corrigido em treatment-timeline.tsx (timeline)
+- [x] 412/413 testes passando - sem regressões
+- [x] Scroll agora funciona perfeitamente em todas as seleções

@@ -296,12 +296,9 @@ export function TreatmentTimeline({ sessions, plans }: TreatmentTimelineProps) {
         </Text>
       </View>
 
-      <FlatList
-        data={events}
-        renderItem={renderTimelineEvent}
-        keyExtractor={item => item.id}
-        scrollEnabled={false}
-      />
+      <ScrollView showsVerticalScrollIndicator={true} nestedScrollEnabled={true}>
+        {events.map(item => renderTimelineEvent({ item }))}
+      </ScrollView>
     </View>
   );
 }

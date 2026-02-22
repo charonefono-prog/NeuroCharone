@@ -241,12 +241,10 @@ export default function ScalesScreen() {
             <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground, marginBottom: 16 }}>
               Selecione uma Escala
             </Text>
-            <FlatList
-              data={ALL_SCALES}
-              keyExtractor={(item) => item.type}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
+            <ScrollView showsVerticalScrollIndicator={true} nestedScrollEnabled={true}>
+              {ALL_SCALES.map((item) => (
                 <TouchableOpacity
+                  key={item.type}
                   onPress={() => handleSelectScale(item)}
                   style={{
                     paddingVertical: 12,
@@ -262,8 +260,8 @@ export default function ScalesScreen() {
                     {item.description}
                   </Text>
                 </TouchableOpacity>
-              )}
-            />
+              ))}
+            </ScrollView>
             <TouchableOpacity
               onPress={() => setShowScaleList(false)}
               style={{
@@ -298,12 +296,10 @@ export default function ScalesScreen() {
             <Text style={{ fontSize: 20, fontWeight: "700", color: colors.foreground, marginBottom: 16 }}>
               Selecione um Paciente
             </Text>
-            <FlatList
-              data={patients}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
+            <ScrollView showsVerticalScrollIndicator={true} nestedScrollEnabled={true}>
+              {patients.map((item) => (
                 <TouchableOpacity
+                  key={item.id}
                   onPress={() => handleSelectPatient(item)}
                   style={{
                     paddingVertical: 12,
@@ -316,8 +312,8 @@ export default function ScalesScreen() {
                     {item.fullName}
                   </Text>
                 </TouchableOpacity>
-              )}
-            />
+              ))}
+            </ScrollView>
             <TouchableOpacity
               onPress={() => setShowPatientSelector(false)}
               style={{
