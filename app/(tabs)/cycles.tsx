@@ -56,10 +56,27 @@ export default function CyclesScreen() {
     try {
       const stored = await AsyncStorage.getItem('therapeutic_cycles');
       if (stored) {
-        setCycles(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        // Remover dados de teste
+        const testValues = ['fghbn', 'Hahahahah', 'Hhhjjj', 'Drdsfvcfg', 'Fdrdsdfsdcsd', 'Fgvv', 'Gg', 'Hahaha'];
+        const clean = parsed.filter((c: TherapeuticCycle) => {
+          const obj = c.objectives?.trim() || '';
+          return !testValues.includes(obj);
+        });
+        
+        // Se removeu dados de teste, salvar versão limpa
+        if (clean.length !== parsed.length) {
+          await AsyncStorage.setItem('therapeutic_cycles', JSON.stringify(clean));
+          console.log('✅ Dados de teste removidos');
+        }
+        
+        setCycles(clean.length > 0 ? clean : []);
+      } else {
+        setCycles([]);
       }
     } catch (error) {
       console.error('Erro ao carregar ciclos:', error);
+      setCycles([]);
     }
   };
 
