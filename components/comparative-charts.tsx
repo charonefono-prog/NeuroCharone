@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text, Dimensions } from "react-native";
 import { useColors } from "@/hooks/use-colors";
-import { ScaleResponse } from "@/lib/clinical-scales";
+import { ScaleResponse, getScale, ScaleType } from "@/lib/clinical-scales";
 import {
   calculateImprovementPercentage,
   calculateAbsoluteImprovement,
@@ -9,17 +9,55 @@ import {
   isInverseScale,
 } from "@/lib/improvement-calculator";
 
+// Cores padrão científico (consistentes com scale-chart.tsx)
+const SCI = {
+  baseline: "#1E40AF",
+  improvement: "#16A34A",
+  decline: "#DC2626",
+  neutral: "#6B7280",
+  grid: "#E5E7EB",
+  axis: "#374151",
+  label: "#6B7280",
+  bgWhite: "#FFFFFF",
+  bgLight: "#F9FAFB",
+};
+
 export interface ComparativeChartsProps {
   scaleResponses: ScaleResponse[];
   scaleName?: string;
 }
 
 /**
- * Componente de gráficos comparativos
- * Exibe gráfico de linha (evolução) e barras (antes/depois)
+ * Gera os níveis do eixo Y baseado no range de scores.
+ */
+function generateYAxisLevels(minVal: number, maxVal: number, steps: number = 5): number[] {
+  const range = maxVal - minVal;
+  if (range === 0) return [minVal];
+  const rawStep = range / steps;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const normalizedStep = rawStep / magnitude;
+  let niceStep: number;
+  if (normalizedStep <= 1.5) niceStep = 1;
+  else if (normalizedStep <= 3) niceStep = 2;
+  else if (normalizedStep <= 7) niceStep = 5;
+  else niceStep = 10;
+  niceStep *= magnitude;
+  const niceMin = Math.floor(minVal / niceStep) * niceStep;
+  const niceMax = Math.ceil(maxVal / niceStep) * niceStep;
+  const levels: number[] = [];
+  for (let v = niceMin; v <= niceMax; v += niceStep) {
+    levels.push(Math.round(v * 100) / 100);
+  }
+  return levels;
+}
+
+/**
+ * Componente de gráficos comparativos com padrão de publicação científica.
  * 
- * Usa o calculador centralizado para determinar melhora/piora
- * respeitando a direção de cada escala (direta vs inversa).
+ * Inclui:
+ * 1. Gráfico de linha temporal com marcadores circulares e linhas de grade
+ * 2. Gráfico de barras Pré vs Pós com eixos rotulados
+ * 3. Tabela de dados numéricos
  */
 export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChartsProps) {
   const colors = useColors();
@@ -38,133 +76,246 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
   if (sortedResponses.length === 0) {
     return (
       <View style={{ padding: 16, alignItems: "center" }}>
-        <Text style={{ fontSize: 14, color: colors.muted }}>
+        <Text style={{ fontSize: 14, color: SCI.label }}>
           Nenhuma resposta de escala disponível
         </Text>
       </View>
     );
   }
 
-  // Determinar o tipo de escala a partir das respostas
   const scaleType = sortedResponses[0]?.scaleType || "";
-  const inverse = isInverseScale(scaleType);
-
-  // Calcular scores - usar o score real, não normalizar para 100
+  const scaleInfo = getScale(scaleType as ScaleType);
   const scores = sortedResponses.map((r) => r.totalScore || 0);
   const maxScoreInData = Math.max(...scores, 1);
+  const minScoreInData = Math.min(...scores, 0);
 
-  const chartData = sortedResponses.map((response) => ({
-    date: new Date(response.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
-    score: response.totalScore || 0,
-    normalizedHeight: ((response.totalScore || 0) / maxScoreInData) * 100,
-  }));
+  // Eixo Y
+  const yAxisLevels = generateYAxisLevels(Math.min(0, minScoreInData), maxScoreInData, 4);
+  const yMin = yAxisLevels[0];
+  const yMax = yAxisLevels[yAxisLevels.length - 1];
+  const yRange = yMax - yMin || 1;
 
-  // Dados para gráfico de barras (antes/depois) usando calculador centralizado
+  // Dados para barras pré/pós
   const beforeAfterData = useMemo(() => {
     if (sortedResponses.length < 2) return null;
-
     const firstResponse = sortedResponses[0];
     const lastResponse = sortedResponses[sortedResponses.length - 1];
     const firstScore = firstResponse.totalScore || 0;
     const lastScore = lastResponse.totalScore || 0;
-
-    const pctImprovement = calculateImprovementPercentage(scaleType, firstScore, lastScore);
-    const absImprovement = calculateAbsoluteImprovement(scaleType, firstScore, lastScore);
-    const direction = getScoreDirection(scaleType, firstScore, lastScore);
-
     return {
       before: firstScore,
       after: lastScore,
-      improvement: pctImprovement,
-      absoluteImprovement: absImprovement,
-      direction,
+      beforeDate: firstResponse.date,
+      afterDate: lastResponse.date,
+      improvement: calculateImprovementPercentage(scaleType, firstScore, lastScore),
+      absoluteImprovement: calculateAbsoluteImprovement(scaleType, firstScore, lastScore),
+      direction: getScoreDirection(scaleType, firstScore, lastScore),
     };
   }, [sortedResponses, scaleType]);
 
-  const maxChartHeight = 200;
+  const chartHeight = 160;
+  const yAxisWidth = 36;
+  const plotWidth = chartWidth - yAxisWidth - 24;
 
   return (
-    <View style={{ gap: 24 }}>
-      {/* Gráfico de Linha - Evolução */}
+    <View style={{ gap: 20 }}>
+      {/* ===== GRÁFICO DE LINHA TEMPORAL ===== */}
       <View
         style={{
-          backgroundColor: colors.surface,
-          borderRadius: 12,
+          backgroundColor: SCI.bgWhite,
+          borderRadius: 8,
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor: SCI.grid,
           padding: 16,
-          gap: 12,
+          gap: 10,
         }}
       >
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-          Evolução ao Longo do Tempo
-        </Text>
-
-        <View style={{ height: maxChartHeight, justifyContent: "flex-end", gap: 8 }}>
-          {[0, 25, 50, 75, 100].map((value) => (
-            <View
-              key={`grid-${value}`}
-              style={{
-                height: 1,
-                backgroundColor: colors.border,
-                opacity: 0.3,
-              }}
-            />
-          ))}
-
-          <View
-            style={{
-              position: "absolute",
-              width: chartWidth - 32,
-              height: maxChartHeight,
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "flex-end",
-              paddingHorizontal: 16,
-            }}
-          >
-            {chartData.map((data, index) => {
-              // Determinar cor da barra usando calculador centralizado
-              let barColor = colors.primary;
-              if (index > 0) {
-                const dir = getScoreDirection(scaleType, chartData[index - 1].score, data.score);
-                if (dir === "improvement") barColor = colors.success;
-                else if (dir === "decline") barColor = colors.error;
-              }
-
-              return (
-                <View key={index} style={{ alignItems: "center", gap: 8 }}>
-                  <View
-                    style={{
-                      width: 8,
-                      height: (data.normalizedHeight / 100) * maxChartHeight,
-                      backgroundColor: barColor,
-                      borderRadius: 4,
-                    }}
-                  />
-                  <Text style={{ fontSize: 10, color: colors.muted }}>
-                    {data.date}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
+        <View style={{ gap: 2 }}>
+          <Text style={{ fontSize: 15, fontWeight: "700", color: SCI.axis }}>
+            Evolução Temporal do Score
+          </Text>
+          <Text style={{ fontSize: 10, color: SCI.label, fontStyle: "italic" }}>
+            {isInverseScale(scaleType)
+              ? "Score menor = melhor resultado clínico"
+              : "Score maior = melhor resultado clínico"}
+            {" · n = "}{sortedResponses.length}{" avaliações"}
+          </Text>
         </View>
 
-        {/* Dados numéricos */}
-        <View style={{ gap: 8, marginTop: 12 }}>
-          {chartData.map((data, index) => {
-            let changeLabel = "";
-            let changeColor = colors.muted;
+        {sortedResponses.length >= 2 ? (
+          <>
+            {/* Área do gráfico de linha */}
+            <View style={{ flexDirection: "row", height: chartHeight + 8 }}>
+              {/* Eixo Y */}
+              <View style={{ width: yAxisWidth, height: chartHeight, justifyContent: "space-between" }}>
+                {[...yAxisLevels].reverse().map((level, index) => (
+                  <Text
+                    key={`y-${index}`}
+                    style={{ fontSize: 9, color: SCI.label, textAlign: "right", paddingRight: 4 }}
+                  >
+                    {level}
+                  </Text>
+                ))}
+              </View>
+
+              {/* Plot area */}
+              <View style={{ flex: 1, height: chartHeight, paddingHorizontal: 8 }}>
+                {/* Grade horizontal */}
+                {yAxisLevels.map((level, index) => {
+                  const yPos = chartHeight - ((level - yMin) / yRange) * chartHeight;
+                  return (
+                    <View
+                      key={`grid-${index}`}
+                      style={{
+                        position: "absolute",
+                        top: yPos,
+                        left: 0,
+                        right: 0,
+                        height: 1,
+                        backgroundColor: SCI.grid,
+                      }}
+                    />
+                  );
+                })}
+
+                {/* Linhas e pontos */}
+                {(() => {
+                  const pointSpacing = scores.length > 1 ? plotWidth / (scores.length - 1) : plotWidth / 2;
+                  const points = scores.map((score, index) => ({
+                    x: scores.length > 1 ? index * pointSpacing : plotWidth / 2,
+                    y: chartHeight - ((score - yMin) / yRange) * chartHeight,
+                    score,
+                  }));
+
+                  return (
+                    <>
+                      {/* Linhas conectoras */}
+                      {points.map((point, index) => {
+                        if (index === 0) return null;
+                        const prev = points[index - 1];
+                        const dx = point.x - prev.x;
+                        const dy = point.y - prev.y;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                        const dir = getScoreDirection(scaleType, scores[index - 1], scores[index]);
+                        const lineColor = dir === "improvement" ? SCI.improvement : dir === "decline" ? SCI.decline : SCI.neutral;
+
+                        return (
+                          <View
+                            key={`line-${index}`}
+                            style={{
+                              position: "absolute",
+                              left: prev.x,
+                              top: prev.y,
+                              width: length,
+                              height: 2,
+                              backgroundColor: lineColor,
+                              transform: [{ rotate: `${angle}deg` }],
+                              transformOrigin: "left center",
+                            }}
+                          />
+                        );
+                      })}
+
+                      {/* Marcadores circulares */}
+                      {points.map((point, index) => {
+                        const dir = index > 0 ? getScoreDirection(scaleType, scores[index - 1], scores[index]) : "stable";
+                        const pointColor = index === 0 ? SCI.baseline : dir === "improvement" ? SCI.improvement : dir === "decline" ? SCI.decline : SCI.neutral;
+                        return (
+                          <View key={`point-${index}`}>
+                            <View
+                              style={{
+                                position: "absolute",
+                                left: point.x - 6,
+                                top: point.y - 6,
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                backgroundColor: SCI.bgWhite,
+                                borderWidth: 2,
+                                borderColor: pointColor,
+                                zIndex: 10,
+                              }}
+                            />
+                            <Text
+                              style={{
+                                position: "absolute",
+                                left: point.x - 14,
+                                top: point.y - 20,
+                                width: 28,
+                                fontSize: 9,
+                                fontWeight: "700",
+                                color: SCI.axis,
+                                textAlign: "center",
+                              }}
+                            >
+                              {point.score}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </>
+                  );
+                })()}
+              </View>
+            </View>
+
+            {/* Eixo X */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginLeft: yAxisWidth + 8,
+                marginRight: 8,
+                borderTopWidth: 1,
+                borderTopColor: SCI.axis,
+                paddingTop: 4,
+              }}
+            >
+              {sortedResponses.map((r, index) => (
+                <Text key={index} style={{ fontSize: 8, color: SCI.label, textAlign: "center" }}>
+                  {new Date(r.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                </Text>
+              ))}
+            </View>
+          </>
+        ) : (
+          <View style={{ height: 80, justifyContent: "center", alignItems: "center" }}>
+            <Text style={{ fontSize: 12, color: SCI.label }}>
+              Necessário pelo menos 2 avaliações para gráfico de tendência
+            </Text>
+          </View>
+        )}
+
+        {/* Tabela de dados */}
+        <View style={{ gap: 0, borderWidth: 1, borderColor: SCI.grid, borderRadius: 6, overflow: "hidden", marginTop: 4 }}>
+          {/* Cabeçalho */}
+          <View style={{ flexDirection: "row", backgroundColor: SCI.bgLight, borderBottomWidth: 1, borderBottomColor: SCI.grid }}>
+            <Text style={{ flex: 1, fontSize: 10, fontWeight: "700", color: SCI.axis, padding: 6 }}>Avaliação</Text>
+            <Text style={{ width: 60, fontSize: 10, fontWeight: "700", color: SCI.axis, padding: 6, textAlign: "center" }}>Data</Text>
+            <Text style={{ width: 50, fontSize: 10, fontWeight: "700", color: SCI.axis, padding: 6, textAlign: "center" }}>Score</Text>
+            <Text style={{ width: 70, fontSize: 10, fontWeight: "700", color: SCI.axis, padding: 6, textAlign: "right" }}>Variação</Text>
+          </View>
+          {/* Linhas de dados */}
+          {sortedResponses.map((r, index) => {
+            const score = r.totalScore || 0;
+            let changeText = "—";
+            let changeColor = SCI.neutral;
             if (index > 0) {
-              const dir = getScoreDirection(scaleType, chartData[index - 1].score, data.score);
-              const diff = Math.abs(data.score - chartData[index - 1].score);
+              const prevScore = sortedResponses[index - 1].totalScore || 0;
+              const dir = getScoreDirection(scaleType, prevScore, score);
+              const diff = Math.abs(score - prevScore);
               if (dir === "improvement") {
-                changeLabel = ` (↑ melhora)`;
-                changeColor = colors.success;
+                changeText = `↓ ${diff}`;
+                if (isInverseScale(scaleType)) changeText = `↓ ${diff}`;
+                else changeText = `↑ ${diff}`;
+                changeColor = SCI.improvement;
               } else if (dir === "decline") {
-                changeLabel = ` (↓ piora)`;
-                changeColor = colors.error;
+                if (isInverseScale(scaleType)) changeText = `↑ ${diff}`;
+                else changeText = `↓ ${diff}`;
+                changeColor = SCI.decline;
+              } else {
+                changeText = "=";
               }
             }
 
@@ -173,17 +324,22 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
                 key={index}
                 style={{
                   flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingVertical: 4,
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors.border,
+                  borderBottomWidth: index < sortedResponses.length - 1 ? 1 : 0,
+                  borderBottomColor: SCI.grid,
+                  backgroundColor: index % 2 === 0 ? SCI.bgWhite : SCI.bgLight,
                 }}
               >
-                <Text style={{ fontSize: 12, color: colors.foreground }}>
-                  {data.date}
+                <Text style={{ flex: 1, fontSize: 10, color: SCI.axis, padding: 6 }}>
+                  {index === 0 ? "Baseline" : `Follow-up ${index}`}
                 </Text>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: changeColor }}>
-                  {data.score} pontos{changeLabel}
+                <Text style={{ width: 60, fontSize: 10, color: SCI.label, padding: 6, textAlign: "center" }}>
+                  {new Date(r.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                </Text>
+                <Text style={{ width: 50, fontSize: 10, fontWeight: "600", color: SCI.axis, padding: 6, textAlign: "center" }}>
+                  {score}
+                </Text>
+                <Text style={{ width: 70, fontSize: 10, fontWeight: "600", color: changeColor, padding: 6, textAlign: "right" }}>
+                  {changeText}
                 </Text>
               </View>
             );
@@ -191,132 +347,132 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
         </View>
       </View>
 
-      {/* Gráfico de Barras - Antes/Depois */}
+      {/* ===== GRÁFICO DE BARRAS PRÉ vs PÓS ===== */}
       {beforeAfterData && (
         <View
           style={{
-            backgroundColor: colors.surface,
-            borderRadius: 12,
+            backgroundColor: SCI.bgWhite,
+            borderRadius: 8,
             borderWidth: 1,
-            borderColor: colors.border,
+            borderColor: SCI.grid,
             padding: 16,
             gap: 12,
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-            Comparação Antes/Depois
+          <Text style={{ fontSize: 15, fontWeight: "700", color: SCI.axis }}>
+            Comparação Pré vs Pós-tratamento
           </Text>
 
-          <View
-            style={{
-              height: 180,
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "flex-end",
-              gap: 24,
-              paddingVertical: 16,
-            }}
-          >
-            {/* Barra Antes */}
-            <View style={{ alignItems: "center", gap: 8 }}>
-              <View
-                style={{
-                  width: 40,
-                  height: Math.max(4, (beforeAfterData.before / maxScoreInData) * 150),
-                  backgroundColor: colors.warning,
-                  borderRadius: 8,
-                }}
-              />
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-                {beforeAfterData.before}
-              </Text>
-              <Text style={{ fontSize: 11, color: colors.muted }}>Antes</Text>
+          {/* Barras lado a lado */}
+          <View style={{ alignItems: "center" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "flex-end",
+                gap: 40,
+                height: 140,
+                paddingBottom: 24,
+                borderBottomWidth: 1,
+                borderBottomColor: SCI.axis,
+              }}
+            >
+              {/* Barra Pré */}
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 13, fontWeight: "700", color: SCI.axis, marginBottom: 4 }}>
+                  {beforeAfterData.before}
+                </Text>
+                <View
+                  style={{
+                    width: 56,
+                    height: Math.max(4, (beforeAfterData.before / maxScoreInData) * 110),
+                    backgroundColor: SCI.baseline,
+                    borderTopLeftRadius: 2,
+                    borderTopRightRadius: 2,
+                  }}
+                />
+              </View>
+
+              {/* Barra Pós */}
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 13, fontWeight: "700", color: SCI.axis, marginBottom: 4 }}>
+                  {beforeAfterData.after}
+                </Text>
+                <View
+                  style={{
+                    width: 56,
+                    height: Math.max(4, (beforeAfterData.after / maxScoreInData) * 110),
+                    backgroundColor: beforeAfterData.direction === "improvement" ? SCI.improvement : beforeAfterData.direction === "decline" ? SCI.decline : SCI.neutral,
+                    borderTopLeftRadius: 2,
+                    borderTopRightRadius: 2,
+                  }}
+                />
+              </View>
             </View>
 
-            {/* Barra Depois */}
-            <View style={{ alignItems: "center", gap: 8 }}>
-              <View
-                style={{
-                  width: 40,
-                  height: Math.max(4, (beforeAfterData.after / maxScoreInData) * 150),
-                  backgroundColor: beforeAfterData.direction === "improvement" ? colors.success : beforeAfterData.direction === "decline" ? colors.error : colors.primary,
-                  borderRadius: 8,
-                }}
-              />
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-                {beforeAfterData.after}
-              </Text>
-              <Text style={{ fontSize: 11, color: colors.muted }}>Depois</Text>
+            {/* Rótulos */}
+            <View style={{ flexDirection: "row", gap: 40, marginTop: 6 }}>
+              <View style={{ width: 56, alignItems: "center" }}>
+                <Text style={{ fontSize: 11, fontWeight: "600", color: SCI.axis }}>Pré</Text>
+                <Text style={{ fontSize: 9, color: SCI.label }}>
+                  {new Date(beforeAfterData.beforeDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                </Text>
+              </View>
+              <View style={{ width: 56, alignItems: "center" }}>
+                <Text style={{ fontSize: 11, fontWeight: "600", color: SCI.axis }}>Pós</Text>
+                <Text style={{ fontSize: 9, color: SCI.label }}>
+                  {new Date(beforeAfterData.afterDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
+                </Text>
+              </View>
             </View>
           </View>
 
-          {/* Estatísticas */}
-          <View style={{ gap: 8, marginTop: 12 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingVertical: 8,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-              }}
-            >
-              <Text style={{ fontSize: 12, color: colors.muted }}>Score Inicial</Text>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.warning }}>
-                {beforeAfterData.before} pontos
-              </Text>
+          {/* Legenda */}
+          <View style={{ flexDirection: "row", justifyContent: "center", gap: 16 }}>
+            <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+              <View style={{ width: 10, height: 10, backgroundColor: SCI.baseline }} />
+              <Text style={{ fontSize: 10, color: SCI.label }}>Pré-tratamento</Text>
             </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingVertical: 8,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-              }}
-            >
-              <Text style={{ fontSize: 12, color: colors.muted }}>Score Final</Text>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: beforeAfterData.direction === "improvement" ? colors.success : beforeAfterData.direction === "decline" ? colors.error : colors.muted }}>
-                {beforeAfterData.after} pontos
-              </Text>
+            <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
+              <View style={{ width: 10, height: 10, backgroundColor: beforeAfterData.direction === "improvement" ? SCI.improvement : beforeAfterData.direction === "decline" ? SCI.decline : SCI.neutral }} />
+              <Text style={{ fontSize: 10, color: SCI.label }}>Pós-tratamento</Text>
             </View>
+          </View>
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingVertical: 8,
-                backgroundColor: beforeAfterData.direction === "improvement"
-                  ? colors.success + "10"
-                  : beforeAfterData.direction === "decline"
-                  ? colors.error + "10"
-                  : colors.muted + "10",
-                paddingHorizontal: 8,
-                borderRadius: 8,
-              }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-                {beforeAfterData.direction === "improvement" ? "Melhora" : beforeAfterData.direction === "decline" ? "Piora" : "Sem Alteração"}
+          {/* Resultado */}
+          <View
+            style={{
+              backgroundColor: beforeAfterData.direction === "improvement" ? "#F0FDF4" : beforeAfterData.direction === "decline" ? "#FEF2F2" : SCI.bgLight,
+              borderRadius: 6,
+              padding: 12,
+              gap: 4,
+              borderWidth: 1,
+              borderColor: beforeAfterData.direction === "improvement" ? "#BBF7D0" : beforeAfterData.direction === "decline" ? "#FECACA" : SCI.grid,
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={{ fontSize: 12, fontWeight: "600", color: SCI.axis }}>
+                {beforeAfterData.direction === "improvement" ? "Melhora observada" : beforeAfterData.direction === "decline" ? "Piora observada" : "Sem alteração significativa"}
               </Text>
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: "700",
-                  color: beforeAfterData.direction === "improvement"
-                    ? colors.success
-                    : beforeAfterData.direction === "decline"
-                    ? colors.error
-                    : colors.muted,
+                  color: beforeAfterData.direction === "improvement" ? SCI.improvement : beforeAfterData.direction === "decline" ? SCI.decline : SCI.neutral,
                 }}
               >
                 {beforeAfterData.direction === "improvement"
-                  ? `+${beforeAfterData.improvement.toFixed(1)}%`
+                  ? `${beforeAfterData.improvement.toFixed(1)}%`
                   : beforeAfterData.direction === "decline"
-                  ? "Piora detectada"
+                  ? `+${Math.abs(beforeAfterData.after - beforeAfterData.before)} pts`
                   : "0%"}
               </Text>
             </View>
+            {beforeAfterData.direction === "improvement" && (
+              <Text style={{ fontSize: 10, color: SCI.label }}>
+                Variação absoluta: {beforeAfterData.absoluteImprovement} pontos
+              </Text>
+            )}
           </View>
         </View>
       )}

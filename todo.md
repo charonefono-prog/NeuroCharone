@@ -926,3 +926,17 @@ export default function MyScreen() {
 - [x] Corrigir effectiveness-analysis.tsx
 - [x] Criar módulo centralizado improvement-calculator.ts com funções reutilizáveis
 - [x] Adicionar BTSS e HB à lista de escalas inversas (estavam faltando)
+
+
+## Redesign de Gráficos - Padrão Científico
+- [x] Pesquisar padrões visuais de gráficos em publicações científicas
+- [x] Corrigir terminologia: "Estabilidade" substituído por "Sem alteração" em 6 arquivos
+- [x] Redesenhar gráfico de Evolução da Escala (barras) com padrão científico
+- [x] Redesenhar gráfico de Tendência com padrão científico (linha com marcadores circulares, eixos rotulados)
+- [x] Melhorar legenda com terminologia clínica correta (Baseline, Follow-up, Pré/Pós-tratamento)
+- [x] Adicionar eixos Y com rótulos de score e eixos X com datas
+- [x] Usar cores padronizadas de publicações científicas (azul #1E40AF, verde #16A34A, vermelho #DC2626)
+- [x] Testar todos os gráficos redesenhados (535 testes passando)
+- [x] Adicionar tabela de dados numéricos com Baseline/Follow-up
+- [x] Adicionar Resumo Estatístico com variação absoluta e percentual
+- [x] Indicar direção da escala (score menor/maior = melhor resultado clínico)

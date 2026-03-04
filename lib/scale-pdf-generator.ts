@@ -537,7 +537,7 @@ export function generateScalePDFHTML(
                   ? "Melhorando"
                   : statistics.trend === "declining"
                   ? "Piorando"
-                  : "Estável"
+                  : "Sem alteração"
               }</div>
             </div>
           </div>

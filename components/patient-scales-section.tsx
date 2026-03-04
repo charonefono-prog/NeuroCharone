@@ -216,7 +216,7 @@ export function PatientScalesSection({ patientId, patientName }: PatientScalesSe
                         ? "📈 Melhorando"
                         : stats.trend === "declining"
                         ? "📉 Piorando"
-                        : "➡️ Estável"}
+                        : "➡️ Sem alteração"}
                     </Text>
                   </View>
                 </View>

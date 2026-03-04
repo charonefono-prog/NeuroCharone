@@ -362,7 +362,7 @@ export function SymptomEvolutionLineChart({
                     ? `${Math.abs(pct).toFixed(1)}% melhora`
                     : last > first
                     ? 'Piora'
-                    : 'Estável'}
+                    : 'Sem alteração'}
                 </Text>
               );
             })()}

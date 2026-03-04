@@ -201,7 +201,7 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
                       ? `+${data.improvement.toFixed(1)}%`
                       : data.direction === "decline"
                       ? "Piora"
-                      : "Estável"}
+                      : "Sem alteração"}
                   </Text>
                 </View>
 
@@ -284,7 +284,7 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
                       ? `+${data.improvement.toFixed(1)}%`
                       : data.direction === "decline"
                       ? "Piora"
-                      : "Estável"}
+                      : "Sem alteração"}
                   </Text>
                 </View>
               </View>
