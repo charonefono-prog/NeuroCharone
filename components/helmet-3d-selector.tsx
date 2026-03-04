@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Platform, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Platform } from "react-native";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useColors } from "@/hooks/use-colors";
@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import { RegionInfoModal } from "./region-info-modal";
 import { PointInfoModal } from "./point-info-modal";
 import { IconSymbol } from "./ui/icon-symbol";
+import { ZoomableImage } from "./zoomable-image";
 
 interface Helmet3DSelectorProps {
   selectedPoints: string[];
@@ -83,29 +84,14 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         </View>
       </View>
 
-      {/* Imagem do Sistema 10-20 EEG */}
-      <View
-        style={{
-          backgroundColor: colors.surface,
-          padding: 16,
-          alignItems: "center",
-          borderWidth: 1,
-          borderColor: colors.border,
-          borderRadius: 16,
-        }}
-      >
-        <Image
-          source={require("@/assets/images/eeg-10-20-system.jpg")}
-          style={{
-            width: 320,
-            height: 320,
-            resizeMode: "contain",
-          }}
-        />
-        <Text style={{ fontSize: 14, fontWeight: "500", color: colors.muted, textAlign: "center", marginTop: 8 }}>
-          Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)
-        </Text>
-      </View>
+      {/* Imagem do Sistema 10-20 EEG com Zoom */}
+      <ZoomableImage
+        source={require("@/assets/images/eeg-10-20-system.jpg")}
+        imageWidth={320}
+        imageHeight={320}
+        caption="Sistema 10-20 - Pontos de Estimulação (Apenas áreas coloridas)"
+        showControls={true}
+      />
 
       {/* Seleção por Região */}
       <View style={{ gap: 12 }}>

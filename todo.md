@@ -952,3 +952,15 @@ export default function MyScreen() {
 - [x] Effectiveness PDF agora mostra nome, conselho, registro e assinatura do profissional
 - [x] Tela de Configurações simplificada (redireciona ao Perfil para edição)
 - [x] Perfil sempre regenera assinatura eletrônica quando dados mudam
+
+
+## Zoom na Imagem do Sistema 10-20
+- [x] Investigar implementação atual da imagem do sistema 10-20
+- [x] Implementar zoom efetivo com pinch-to-zoom e pan
+- [x] Garantir que o zoom funcione bem em Android e iOS (cross-platform)
+- [x] Adicionar botões de zoom +/- para acessibilidade
+- [x] Adicionar duplo toque para zoom rápido (2.5x)
+- [x] Botão de reset para voltar ao tamanho original
+- [x] Criar componente reutilizável ZoomableImage
+- [x] Integrar ZoomableImage no helmet-3d-selector.tsx
+- [x] Indicador de nível de zoom atual (1.0x a 5.0x)
