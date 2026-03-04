@@ -2,6 +2,12 @@ import React, { useMemo } from "react";
 import { View, Text, Dimensions } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { ScaleResponse } from "@/lib/clinical-scales";
+import {
+  calculateImprovementPercentage,
+  calculateAbsoluteImprovement,
+  getScoreDirection,
+  isInverseScale,
+} from "@/lib/improvement-calculator";
 
 export interface ComparativeChartsProps {
   scaleResponses: ScaleResponse[];
@@ -11,19 +17,20 @@ export interface ComparativeChartsProps {
 /**
  * Componente de gráficos comparativos
  * Exibe gráfico de linha (evolução) e barras (antes/depois)
+ * 
+ * Usa o calculador centralizado para determinar melhora/piora
+ * respeitando a direção de cada escala (direta vs inversa).
  */
 export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChartsProps) {
   const colors = useColors();
   const screenWidth = Dimensions.get("window").width;
-  const chartWidth = screenWidth - 48; // padding
+  const chartWidth = screenWidth - 48;
 
-  // Filtrar respostas pela escala se especificada
   const filteredResponses = useMemo(() => {
     if (!scaleName) return scaleResponses;
     return scaleResponses.filter((r) => r.scaleName === scaleName);
   }, [scaleResponses, scaleName]);
 
-  // Ordenar por data
   const sortedResponses = useMemo(() => {
     return [...filteredResponses].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [filteredResponses]);
@@ -38,29 +45,42 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
     );
   }
 
-  // Calcular scores normalizados (0-100)
-  const maxScore = 100;
+  // Determinar o tipo de escala a partir das respostas
+  const scaleType = sortedResponses[0]?.scaleType || "";
+  const inverse = isInverseScale(scaleType);
+
+  // Calcular scores - usar o score real, não normalizar para 100
+  const scores = sortedResponses.map((r) => r.totalScore || 0);
+  const maxScoreInData = Math.max(...scores, 1);
+
   const chartData = sortedResponses.map((response) => ({
     date: new Date(response.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
     score: response.totalScore || 0,
-    normalizedScore: ((response.totalScore || 0) / maxScore) * 100,
+    normalizedHeight: ((response.totalScore || 0) / maxScoreInData) * 100,
   }));
 
-  // Dados para gráfico de barras (antes/depois)
+  // Dados para gráfico de barras (antes/depois) usando calculador centralizado
   const beforeAfterData = useMemo(() => {
     if (sortedResponses.length < 2) return null;
 
     const firstResponse = sortedResponses[0];
     const lastResponse = sortedResponses[sortedResponses.length - 1];
+    const firstScore = firstResponse.totalScore || 0;
+    const lastScore = lastResponse.totalScore || 0;
+
+    const pctImprovement = calculateImprovementPercentage(scaleType, firstScore, lastScore);
+    const absImprovement = calculateAbsoluteImprovement(scaleType, firstScore, lastScore);
+    const direction = getScoreDirection(scaleType, firstScore, lastScore);
 
     return {
-      before: firstResponse.totalScore || 0,
-      after: lastResponse.totalScore || 0,
-      improvement: ((lastResponse.totalScore || 0) - (firstResponse.totalScore || 0)) / (firstResponse.totalScore || 1) * 100,
+      before: firstScore,
+      after: lastScore,
+      improvement: pctImprovement,
+      absoluteImprovement: absImprovement,
+      direction,
     };
-  }, [sortedResponses]);
+  }, [sortedResponses, scaleType]);
 
-  // Altura máxima do gráfico
   const maxChartHeight = 200;
 
   return (
@@ -77,12 +97,10 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
         }}
       >
         <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-          📈 Evolução ao Longo do Tempo
+          Evolução ao Longo do Tempo
         </Text>
 
-        {/* Gráfico de Linha ASCII */}
         <View style={{ height: maxChartHeight, justifyContent: "flex-end", gap: 8 }}>
-          {/* Linhas de grade */}
           {[0, 25, 50, 75, 100].map((value) => (
             <View
               key={`grid-${value}`}
@@ -94,7 +112,6 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
             />
           ))}
 
-          {/* Pontos do gráfico */}
           <View
             style={{
               position: "absolute",
@@ -106,60 +123,71 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
               paddingHorizontal: 16,
             }}
           >
-            {chartData.map((data, index) => (
-              <View
-                key={index}
-                style={{
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                {/* Barra */}
-                <View
-                  style={{
-                    width: 8,
-                    height: (data.normalizedScore / 100) * maxChartHeight,
-                    backgroundColor: colors.primary,
-                    borderRadius: 4,
-                  }}
-                />
-                {/* Label */}
-                <Text style={{ fontSize: 10, color: colors.muted }}>
-                  {data.date}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
+            {chartData.map((data, index) => {
+              // Determinar cor da barra usando calculador centralizado
+              let barColor = colors.primary;
+              if (index > 0) {
+                const dir = getScoreDirection(scaleType, chartData[index - 1].score, data.score);
+                if (dir === "improvement") barColor = colors.success;
+                else if (dir === "decline") barColor = colors.error;
+              }
 
-        {/* Legenda */}
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 8 }}>
-          <Text style={{ fontSize: 12, color: colors.muted }}>0%</Text>
-          <Text style={{ fontSize: 12, color: colors.muted }}>50%</Text>
-          <Text style={{ fontSize: 12, color: colors.muted }}>100%</Text>
+              return (
+                <View key={index} style={{ alignItems: "center", gap: 8 }}>
+                  <View
+                    style={{
+                      width: 8,
+                      height: (data.normalizedHeight / 100) * maxChartHeight,
+                      backgroundColor: barColor,
+                      borderRadius: 4,
+                    }}
+                  />
+                  <Text style={{ fontSize: 10, color: colors.muted }}>
+                    {data.date}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
 
         {/* Dados numéricos */}
         <View style={{ gap: 8, marginTop: 12 }}>
-          {chartData.map((data, index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingVertical: 4,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-              }}
-            >
-              <Text style={{ fontSize: 12, color: colors.foreground }}>
-                {data.date}
-              </Text>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
-                {data.score} pontos ({data.normalizedScore.toFixed(1)}%)
-              </Text>
-            </View>
-          ))}
+          {chartData.map((data, index) => {
+            let changeLabel = "";
+            let changeColor = colors.muted;
+            if (index > 0) {
+              const dir = getScoreDirection(scaleType, chartData[index - 1].score, data.score);
+              const diff = Math.abs(data.score - chartData[index - 1].score);
+              if (dir === "improvement") {
+                changeLabel = ` (↑ melhora)`;
+                changeColor = colors.success;
+              } else if (dir === "decline") {
+                changeLabel = ` (↓ piora)`;
+                changeColor = colors.error;
+              }
+            }
+
+            return (
+              <View
+                key={index}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingVertical: 4,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <Text style={{ fontSize: 12, color: colors.foreground }}>
+                  {data.date}
+                </Text>
+                <Text style={{ fontSize: 12, fontWeight: "600", color: changeColor }}>
+                  {data.score} pontos{changeLabel}
+                </Text>
+              </View>
+            );
+          })}
         </View>
       </View>
 
@@ -176,10 +204,9 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
           }}
         >
           <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-            📊 Comparação Antes/Depois
+            Comparação Antes/Depois
           </Text>
 
-          {/* Gráfico de Barras */}
           <View
             style={{
               height: 180,
@@ -195,7 +222,7 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
               <View
                 style={{
                   width: 40,
-                  height: (beforeAfterData.before / maxScore) * 150,
+                  height: Math.max(4, (beforeAfterData.before / maxScoreInData) * 150),
                   backgroundColor: colors.warning,
                   borderRadius: 8,
                 }}
@@ -211,8 +238,8 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
               <View
                 style={{
                   width: 40,
-                  height: (beforeAfterData.after / maxScore) * 150,
-                  backgroundColor: colors.success,
+                  height: Math.max(4, (beforeAfterData.after / maxScoreInData) * 150),
+                  backgroundColor: beforeAfterData.direction === "improvement" ? colors.success : beforeAfterData.direction === "decline" ? colors.error : colors.primary,
                   borderRadius: 8,
                 }}
               />
@@ -250,7 +277,7 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
               }}
             >
               <Text style={{ fontSize: 12, color: colors.muted }}>Score Final</Text>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.success }}>
+              <Text style={{ fontSize: 12, fontWeight: "600", color: beforeAfterData.direction === "improvement" ? colors.success : beforeAfterData.direction === "decline" ? colors.error : colors.muted }}>
                 {beforeAfterData.after} pontos
               </Text>
             </View>
@@ -260,23 +287,34 @@ export function ComparativeCharts({ scaleResponses, scaleName }: ComparativeChar
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingVertical: 8,
-                backgroundColor: beforeAfterData.improvement > 0 ? colors.success + "10" : colors.error + "10",
+                backgroundColor: beforeAfterData.direction === "improvement"
+                  ? colors.success + "10"
+                  : beforeAfterData.direction === "decline"
+                  ? colors.error + "10"
+                  : colors.muted + "10",
                 paddingHorizontal: 8,
                 borderRadius: 8,
               }}
             >
               <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-                Melhora
+                {beforeAfterData.direction === "improvement" ? "Melhora" : beforeAfterData.direction === "decline" ? "Piora" : "Sem Alteração"}
               </Text>
               <Text
                 style={{
                   fontSize: 12,
                   fontWeight: "700",
-                  color: beforeAfterData.improvement > 0 ? colors.success : colors.error,
+                  color: beforeAfterData.direction === "improvement"
+                    ? colors.success
+                    : beforeAfterData.direction === "decline"
+                    ? colors.error
+                    : colors.muted,
                 }}
               >
-                {beforeAfterData.improvement > 0 ? "+" : ""}
-                {beforeAfterData.improvement.toFixed(1)}%
+                {beforeAfterData.direction === "improvement"
+                  ? `+${beforeAfterData.improvement.toFixed(1)}%`
+                  : beforeAfterData.direction === "decline"
+                  ? "Piora detectada"
+                  : "0%"}
               </Text>
             </View>
           </View>

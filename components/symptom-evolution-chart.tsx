@@ -57,10 +57,13 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
   const scoreRange = maxScore - minScore;
 
   // Calcular melhora total
+  // Symptom scores são INVERSOS: score menor = melhor (0=sem sintomas, 10=muito intenso)
   const initialScore = dataPoints[0].score;
   const latestScore = dataPoints[dataPoints.length - 1].score;
-  const improvement = initialScore - latestScore;
-  const improvementPercentage = (improvement / initialScore) * 100;
+  const improved = latestScore < initialScore;
+  const worsened = latestScore > initialScore;
+  const improvement = initialScore - latestScore; // positivo = melhora
+  const improvementPercentage = initialScore > 0 ? Math.abs((improvement / initialScore) * 100) : 0;
 
   // Calcular posições dos pontos
   const pointSpacing = chartWidth / (dataPoints.length - 1);
@@ -95,7 +98,7 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
       {/* Indicador de Melhora */}
       <View
         style={{
-          backgroundColor: improvement > 0 ? colors.success + "20" : colors.error + "20",
+          backgroundColor: improved ? colors.success + "20" : worsened ? colors.error + "20" : colors.muted + "20",
           borderRadius: 12,
           padding: 16,
           flexDirection: "row",
@@ -109,12 +112,11 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
             style={{
               fontSize: 24,
               fontWeight: "bold",
-              color: improvement > 0 ? colors.success : colors.error,
+              color: improved ? colors.success : worsened ? colors.error : colors.muted,
               marginTop: 4,
             }}
           >
-            {improvement > 0 ? "+" : ""}
-            {improvement.toFixed(1)} pontos
+            {improved ? `+${improvement.toFixed(1)}` : worsened ? "Piora" : "0"} pontos
           </Text>
         </View>
         <View style={{ alignItems: "flex-end" }}>
@@ -123,12 +125,11 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
             style={{
               fontSize: 24,
               fontWeight: "bold",
-              color: improvement > 0 ? colors.success : colors.error,
+              color: improved ? colors.success : worsened ? colors.error : colors.muted,
               marginTop: 4,
             }}
           >
-            {improvementPercentage > 0 ? "-" : "+"}
-            {Math.abs(improvementPercentage).toFixed(0)}%
+            {improved ? `${improvementPercentage.toFixed(0)}%` : worsened ? "Piora" : "0%"}
           </Text>
         </View>
       </View>
@@ -180,7 +181,7 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
           <svg width={chartWidth} height={chartHeight} style={{ position: "absolute", left: 0, top: 0 }}>
             <path
               d={pathData}
-              stroke={improvement > 0 ? colors.success : colors.error}
+              stroke={improved ? colors.success : worsened ? colors.error : colors.muted}
               strokeWidth="3"
               fill="none"
               strokeLinecap="round"
@@ -199,7 +200,7 @@ export function SymptomEvolutionChart({ patient, sessions }: SymptomEvolutionCha
                 width: 12,
                 height: 12,
                 borderRadius: 6,
-                backgroundColor: point.isBaseline ? colors.primary : improvement > 0 ? colors.success : colors.error,
+                backgroundColor: point.isBaseline ? colors.primary : improved ? colors.success : worsened ? colors.error : colors.muted,
                 borderWidth: 2,
                 borderColor: colors.surface,
               }}

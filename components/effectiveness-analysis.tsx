@@ -31,7 +31,8 @@ export function EffectivenessAnalysis({ patients, sessions }: EffectivenessAnaly
       const patient = patients.find((p) => p.id === session.patientId);
       if (!patient || patient.initialSymptomScore === undefined) return;
 
-      // Calcular melhora (positivo = melhora, negativo = piora)
+      // Symptom scores são INVERSOS: score menor = melhor (0=sem sintomas, 10=muito intenso)
+      // improvement positivo = melhora (score diminuiu)
       const improvement = patient.initialSymptomScore - session.symptomScore;
 
       // Para cada ponto estimulado, encontrar a região
@@ -224,8 +225,8 @@ export function EffectivenessAnalysis({ patients, sessions }: EffectivenessAnaly
           💡 Como interpretar
         </Text>
         <Text style={{ fontSize: 13, color: colors.foreground, lineHeight: 20 }}>
-          • <Text style={{ fontWeight: "600" }}>Valores positivos</Text> indicam melhora dos sintomas
-          {"\n"}• <Text style={{ fontWeight: "600" }}>Valores negativos</Text> indicam piora dos sintomas
+          • <Text style={{ fontWeight: "600" }}>Valores positivos</Text> indicam redução dos sintomas (melhora)
+          {"\n"}• <Text style={{ fontWeight: "600" }}>Valores negativos</Text> indicam aumento dos sintomas (piora)
           {"\n"}• A análise considera a diferença entre a avaliação inicial do paciente e as avaliações nas sessões
           {"\n"}• Regiões com mais sessões e pacientes fornecem resultados mais confiáveis
         </Text>

@@ -75,14 +75,19 @@ export function EffectivenessDashboard({
         s => new Date(s.sessionDate) < new Date()
       );
 
-      const symptomScores = planSessions
+      // Ordenar sessões CRONOLOGICAMENTE para pegar primeiro e último score
+      const sessionsWithScores = planSessions
         .filter(s => s.symptomScore !== undefined)
-        .map(s => s.symptomScore || 0);
+        .sort((a, b) => new Date(a.sessionDate).getTime() - new Date(b.sessionDate).getTime());
 
-      const initialScore = Math.max(...symptomScores, 0);
-      const finalScore = Math.min(...symptomScores, 10);
+      const symptomScores = sessionsWithScores.map(s => s.symptomScore || 0);
+
+      // Symptom scores são INVERSOS: score menor = melhor
+      const initialScore = symptomScores.length > 0 ? symptomScores[0] : 0;
+      const finalScore = symptomScores.length > 0 ? symptomScores[symptomScores.length - 1] : 0;
+      const improved = finalScore < initialScore;
       const improvementRate =
-        initialScore > 0 ? ((initialScore - finalScore) / initialScore) * 100 : 0;
+        initialScore > 0 && improved ? ((initialScore - finalScore) / initialScore) * 100 : 0;
 
       stats[plan.id] = {
         protocol: plan.objective,

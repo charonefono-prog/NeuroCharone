@@ -58,14 +58,17 @@ export function SymptomProgressChart({ patient, sessions }: SymptomProgressChart
   });
 
   // Calcular melhora percentual
+  // Symptom scores são INVERSOS: score menor = melhor (0=sem sintomas, 10=muito intenso)
   const initialScore = dataPoints[0].score;
   const latestScore = dataPoints[dataPoints.length - 1].score;
-  const improvement = initialScore > 0 ? ((initialScore - latestScore) / initialScore) * 100 : 0;
+  const improved = latestScore < initialScore;
+  const worsened = latestScore > initialScore;
+  const improvementPct = initialScore > 0 ? Math.abs(((initialScore - latestScore) / initialScore) * 100) : 0;
   const improvementText =
-    improvement > 0
-      ? `Melhora de ${improvement.toFixed(0)}%`
-      : improvement < 0
-      ? `Piora de ${Math.abs(improvement).toFixed(0)}%`
+    improved
+      ? `Melhora de ${improvementPct.toFixed(0)}%`
+      : worsened
+      ? "Piora detectada"
       : "Sem alteração";
 
   // Calcular posições dos pontos
@@ -89,16 +92,16 @@ export function SymptomProgressChart({ patient, sessions }: SymptomProgressChart
       <View
         style={{
           backgroundColor:
-            improvement > 0
+            improved
               ? colors.success + "20"
-              : improvement < 0
+              : worsened
               ? colors.error + "20"
               : colors.muted + "20",
           padding: 16,
           borderRadius: 12,
           borderLeftWidth: 4,
           borderLeftColor:
-            improvement > 0 ? colors.success : improvement < 0 ? colors.error : colors.muted,
+            improved ? colors.success : worsened ? colors.error : colors.muted,
         }}
       >
         <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground, marginBottom: 4 }}>
@@ -108,7 +111,7 @@ export function SymptomProgressChart({ patient, sessions }: SymptomProgressChart
           style={{
             fontSize: 20,
             fontWeight: "bold",
-            color: improvement > 0 ? colors.success : improvement < 0 ? colors.error : colors.muted,
+            color: improved ? colors.success : worsened ? colors.error : colors.muted,
           }}
         >
           {improvementText}

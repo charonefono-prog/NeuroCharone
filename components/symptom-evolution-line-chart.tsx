@@ -343,15 +343,29 @@ export function SymptomEvolutionLineChart({
             <Text style={{ fontSize: 12, fontWeight: '600', color: colors.muted }}>
               Variação
             </Text>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: chartData[0].score > chartData[chartData.length - 1].score ? colors.success : colors.error,
-              }}
-            >
-              {(chartData[0].score - chartData[chartData.length - 1].score).toFixed(1)}
-            </Text>
+            {(() => {
+              const first = chartData[0].score;
+              const last = chartData[chartData.length - 1].score;
+              // Symptom scores são INVERSOS: score menor = melhor
+              const improved = last < first;
+              const variation = first - last; // positivo = melhora
+              const pct = first > 0 ? (variation / first) * 100 : 0;
+              return (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '700',
+                    color: improved ? colors.success : last > first ? colors.error : colors.muted,
+                  }}
+                >
+                  {improved
+                    ? `${Math.abs(pct).toFixed(1)}% melhora`
+                    : last > first
+                    ? 'Piora'
+                    : 'Estável'}
+                </Text>
+              );
+            })()}
           </View>
         </View>
       </View>

@@ -1,6 +1,12 @@
 import { View, Text, Dimensions } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { ScaleResponse } from "@/lib/clinical-scales";
+import {
+  isInverseScale,
+  getScoreDirection,
+  calculateAbsoluteImprovement,
+  calculateImprovementPercentage,
+} from "@/lib/improvement-calculator";
 
 interface ScaleChartProps {
   data: ScaleResponse[];
@@ -10,11 +16,16 @@ interface ScaleChartProps {
 /**
  * Componente de gráfico de evolução para escalas clínicas
  * Mostra visualmente a progressão dos scores ao longo do tempo
+ * 
+ * LÓGICA DE CORES:
+ * - Verde (success): score mudou na direção de MELHORA
+ * - Vermelho (error): score mudou na direção de PIORA
+ * - Azul (primary): primeiro ponto ou sem mudança
  */
 export function ScaleChart({ data, scaleType }: ScaleChartProps) {
   const colors = useColors();
   const screenWidth = Dimensions.get("window").width;
-  const chartWidth = screenWidth - 48; // 24px padding em cada lado
+  const chartWidth = screenWidth - 48;
 
   if (data.length === 0) {
     return (
@@ -37,16 +48,21 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
     );
   }
 
-  // Extrair scores
   const scores = data.map((d) => d.totalScore);
   const maxScore = Math.max(...scores);
   const minScore = Math.min(...scores);
   const range = maxScore - minScore || 1;
 
-  // Calcular altura de cada barra
   const barHeight = 150;
   const barWidth = Math.max(30, (chartWidth - 40) / data.length);
   const spacing = 8;
+
+  // Calcular variação usando o calculador centralizado
+  const firstScore = scores[0];
+  const lastScore = scores[scores.length - 1];
+  const overallDirection = getScoreDirection(scaleType, firstScore, lastScore);
+  const absImprovement = calculateAbsoluteImprovement(scaleType, firstScore, lastScore);
+  const pctImprovement = calculateImprovementPercentage(scaleType, firstScore, lastScore);
 
   return (
     <View
@@ -63,7 +79,7 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
         Evolução da Escala
       </Text>
 
-      {/* Gráfico de barras simples */}
+      {/* Gráfico de barras */}
       <View
         style={{
           height: barHeight + 40,
@@ -77,36 +93,29 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
       >
         {scores.map((score, index) => {
           const normalizedHeight = ((score - minScore) / range) * barHeight || barHeight / 2;
-          const isImproving = index > 0 && score > scores[index - 1];
-          const isDecline = index > 0 && score < scores[index - 1];
+          
+          // Usar calculador centralizado para determinar cor
+          let barColor = colors.primary; // Primeiro ponto ou estável
+          if (index > 0) {
+            const direction = getScoreDirection(scaleType, scores[index - 1], score);
+            if (direction === "improvement") barColor = colors.success;
+            else if (direction === "decline") barColor = colors.error;
+          }
 
           return (
-            <View
-              key={index}
-              style={{
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              {/* Barra */}
+            <View key={index} style={{ alignItems: "center", gap: 4 }}>
               <View
                 style={{
                   width: Math.min(barWidth - spacing, 40),
                   height: normalizedHeight,
-                  backgroundColor: isImproving
-                    ? colors.success
-                    : isDecline
-                    ? colors.error
-                    : colors.primary,
+                  backgroundColor: barColor,
                   borderRadius: 4,
                   opacity: 0.8,
                 }}
               />
-              {/* Valor */}
               <Text style={{ fontSize: 10, color: colors.muted, fontWeight: "600" }}>
                 {score}
               </Text>
-              {/* Data */}
               <Text style={{ fontSize: 8, color: colors.muted }}>
                 {new Date(data[index].date).toLocaleDateString("pt-BR", {
                   month: "short",
@@ -121,36 +130,15 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
       {/* Legenda */}
       <View style={{ gap: 8 }}>
         <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-          <View
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: 2,
-              backgroundColor: colors.success,
-            }}
-          />
+          <View style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: colors.success }} />
           <Text style={{ fontSize: 12, color: colors.muted }}>Melhora</Text>
         </View>
         <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-          <View
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: 2,
-              backgroundColor: colors.error,
-            }}
-          />
+          <View style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: colors.error }} />
           <Text style={{ fontSize: 12, color: colors.muted }}>Piora</Text>
         </View>
         <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-          <View
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: 2,
-              backgroundColor: colors.primary,
-            }}
-          />
+          <View style={{ width: 12, height: 12, borderRadius: 2, backgroundColor: colors.primary }} />
           <Text style={{ fontSize: 12, color: colors.muted }}>Estável</Text>
         </View>
       </View>
@@ -167,13 +155,13 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontSize: 12, color: colors.muted }}>Primeiro score:</Text>
           <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-            {scores[0]}
+            {firstScore}
           </Text>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontSize: 12, color: colors.muted }}>Último score:</Text>
           <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-            {scores[scores.length - 1]}
+            {lastScore}
           </Text>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -182,16 +170,18 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
             style={{
               fontSize: 12,
               fontWeight: "600",
-              color:
-                scores[scores.length - 1] > scores[0]
-                  ? colors.success
-                  : scores[scores.length - 1] < scores[0]
-                  ? colors.error
-                  : colors.muted,
+              color: overallDirection === "improvement"
+                ? colors.success
+                : overallDirection === "decline"
+                ? colors.error
+                : colors.muted,
             }}
           >
-            {scores[scores.length - 1] - scores[0] > 0 ? "+" : ""}
-            {scores[scores.length - 1] - scores[0]}
+            {overallDirection === "improvement"
+              ? `Melhora de ${pctImprovement.toFixed(1)}%`
+              : overallDirection === "decline"
+              ? "Piora detectada"
+              : "Sem alteração"}
           </Text>
         </View>
       </View>
@@ -201,7 +191,6 @@ export function ScaleChart({ data, scaleType }: ScaleChartProps) {
 
 /**
  * Componente de gráfico de linha simples (ASCII-like)
- * Útil para visualização em texto
  */
 export function ScaleLineChart({ data }: { data: ScaleResponse[] }) {
   const colors = useColors();
@@ -230,7 +219,6 @@ export function ScaleLineChart({ data }: { data: ScaleResponse[] }) {
   const minScore = Math.min(...scores);
   const range = maxScore - minScore || 1;
 
-  // Criar representação visual simples
   const lines: string[] = [];
   const height = 5;
 
@@ -310,6 +298,7 @@ export function ScaleLineChart({ data }: { data: ScaleResponse[] }) {
 
 /**
  * Componente de comparação de duas avaliações
+ * Usa o calculador centralizado para determinar melhora/piora
  */
 export function ScaleComparison({
   before,
@@ -319,8 +308,13 @@ export function ScaleComparison({
   after: ScaleResponse;
 }) {
   const colors = useColors();
-  const improvement = after.totalScore - before.totalScore;
-  const isImprovement = improvement > 0;
+  
+  // Usar calculador centralizado
+  const scaleType = before.scaleType;
+  const direction = getScoreDirection(scaleType, before.totalScore, after.totalScore);
+  const absImprovement = calculateAbsoluteImprovement(scaleType, before.totalScore, after.totalScore);
+  const pctImprovement = calculateImprovementPercentage(scaleType, before.totalScore, after.totalScore);
+  const improved = direction === "improvement";
 
   return (
     <View
@@ -353,31 +347,20 @@ export function ScaleComparison({
           <Text style={{ fontSize: 24, fontWeight: "700", color: colors.primary }}>
             {before.totalScore}
           </Text>
-          <Text
-            style={{
-              fontSize: 10,
-              color: colors.muted,
-              textAlign: "center",
-            }}
-          >
+          <Text style={{ fontSize: 10, color: colors.muted, textAlign: "center" }}>
             {new Date(before.date).toLocaleDateString("pt-BR")}
           </Text>
         </View>
 
         {/* Seta */}
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
           <Text
             style={{
               fontSize: 24,
-              color: isImprovement ? colors.success : colors.error,
+              color: improved ? colors.success : direction === "decline" ? colors.error : colors.muted,
             }}
           >
-            {isImprovement ? "→" : "←"}
+            →
           </Text>
         </View>
 
@@ -396,47 +379,69 @@ export function ScaleComparison({
           <Text style={{ fontSize: 24, fontWeight: "700", color: colors.primary }}>
             {after.totalScore}
           </Text>
-          <Text
-            style={{
-              fontSize: 10,
-              color: colors.muted,
-              textAlign: "center",
-            }}
-          >
+          <Text style={{ fontSize: 10, color: colors.muted, textAlign: "center" }}>
             {new Date(after.date).toLocaleDateString("pt-BR")}
           </Text>
         </View>
       </View>
 
-      {/* Mudança */}
-      <View
-        style={{
-          backgroundColor: isImprovement ? colors.success + "20" : colors.error + "20",
-          borderRadius: 8,
-          padding: 12,
-          alignItems: "center",
-          gap: 4,
-        }}
-      >
-        <Text
+      {/* Resultado */}
+      {improved && (
+        <View
           style={{
-            fontSize: 12,
-            color: isImprovement ? colors.success : colors.error,
-            fontWeight: "600",
+            backgroundColor: colors.success + "20",
+            borderRadius: 8,
+            padding: 12,
+            alignItems: "center",
+            gap: 4,
           }}
         >
-          {isImprovement ? "✓ Melhora" : "⚠ Piora"}
-        </Text>
-        <Text
+          <Text style={{ fontSize: 12, color: colors.success, fontWeight: "600" }}>
+            ✓ Melhora de {pctImprovement.toFixed(1)}%
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: "700", color: colors.success }}>
+            {absImprovement} pontos
+          </Text>
+        </View>
+      )}
+      
+      {direction === "decline" && (
+        <View
           style={{
-            fontSize: 18,
-            fontWeight: "700",
-            color: isImprovement ? colors.success : colors.error,
+            backgroundColor: colors.error + "20",
+            borderRadius: 8,
+            padding: 12,
+            alignItems: "center",
+            gap: 4,
           }}
         >
-          {isImprovement ? "+" : ""}{improvement}
-        </Text>
-      </View>
+          <Text style={{ fontSize: 12, color: colors.error, fontWeight: "600" }}>
+            ✗ Piora detectada
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: "700", color: colors.error }}>
+            {Math.abs(after.totalScore - before.totalScore)} pontos
+          </Text>
+        </View>
+      )}
+
+      {direction === "stable" && (
+        <View
+          style={{
+            backgroundColor: colors.muted + "20",
+            borderRadius: 8,
+            padding: 12,
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <Text style={{ fontSize: 12, color: colors.muted, fontWeight: "600" }}>
+            ℹ Sem alteração
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: "700", color: colors.muted }}>
+            0
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

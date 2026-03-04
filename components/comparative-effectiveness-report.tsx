@@ -51,12 +51,15 @@ export function ComparativeEffectivenessReport({ patients, sessions }: Comparati
     }
 
     // Calcular melhora
+    // Symptom scores são INVERSOS: score menor = melhor (0=sem sintomas, 10=muito intenso)
     if (patient.initialSymptomScore !== undefined) {
-      const sessionsWithScores = patientSessions.filter((s) => s.symptomScore !== undefined);
+      const sessionsWithScores = patientSessions
+        .filter((s) => s.symptomScore !== undefined)
+        .sort((a, b) => new Date(a.sessionDate).getTime() - new Date(b.sessionDate).getTime());
       if (sessionsWithScores.length > 0) {
         const latestScore = sessionsWithScores[sessionsWithScores.length - 1].symptomScore!;
-        const improvement = patient.initialSymptomScore - latestScore;
-        diagnosisStats[diagnosis].avgImprovement += improvement;
+        const improvement = patient.initialSymptomScore - latestScore; // positivo = melhora
+        diagnosisStats[diagnosis].avgImprovement += Math.max(0, improvement); // só somar melhora positiva
         
         if (improvement > 0) {
           diagnosisStats[diagnosis].improvementRate++;

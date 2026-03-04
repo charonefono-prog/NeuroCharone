@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useProfessionalInfo, type ProfessionalInfo } from "@/hooks/use-professional-info";
 import * as Haptics from "expo-haptics";
+import { recalculateAllScaleResponses } from "@/lib/scale-storage";
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -297,6 +298,36 @@ export default function SettingsScreen() {
             )}
           </TouchableOpacity>
 
+          {/* Botão Recalcular Escalas */}
+          <TouchableOpacity
+            onPress={async () => {
+              try {
+                if (Platform.OS !== "web") {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }
+                const success = await recalculateAllScaleResponses();
+                if (success) {
+                  alert("✅ Todas as escalas foram recalculadas com sucesso!");
+                } else {
+                  alert("❌ Erro ao recalcular escalas");
+                }
+              } catch (error) {
+                console.error("Erro:", error);
+                alert("❌ Erro ao recalcular escalas");
+              }
+            }}
+            style={{
+              backgroundColor: colors.warning,
+              borderRadius: 12,
+              paddingVertical: 16,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "white" }}>
+              🔄 Recalcular Todas as Escalas
+            </Text>
+          </TouchableOpacity>
+
           {/* Informação */}
           <View
             style={{
@@ -320,5 +351,3 @@ export default function SettingsScreen() {
     </ScreenContainer>
   );
 }
-
-import { Platform } from "react-native";

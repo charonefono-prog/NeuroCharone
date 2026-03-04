@@ -29,25 +29,27 @@ export function BeforeAfterComparison({
   const screenWidth = Dimensions.get('window').width;
 
   const metrics = useMemo(() => {
-    const allScores = sessions
+    // Ordenar sessões cronologicamente (NÃO por score!)
+    const sortedSessions = sessions
       .filter(s => s.symptomScore !== undefined)
-      .map(s => s.symptomScore || 0)
-      .sort((a, b) => a - b);
+      .sort((a, b) => new Date(a.sessionDate).getTime() - new Date(b.sessionDate).getTime());
 
-    const initialScore = allScores.length > 0 ? allScores[0] : 0;
-    const currentScore = allScores.length > 0 ? allScores[allScores.length - 1] : 0;
-    const improvement = initialScore - currentScore;
-    // Calcular percentagem de melhora
-    // Se score inicial eh 0, nao ha melhora possivel
-    // Caso contrario, calcular a reducao percentual
+    // Usar score inicial do paciente se disponível, senão primeira sessão
+    const initialScore = patient.initialSymptomScore !== undefined
+      ? patient.initialSymptomScore
+      : sortedSessions.length > 0 ? (sortedSessions[0].symptomScore || 0) : 0;
+    const currentScore = sortedSessions.length > 0
+      ? (sortedSessions[sortedSessions.length - 1].symptomScore || 0)
+      : initialScore;
+    
+    // Symptom scores são INVERSOS: score menor = melhor (0=sem sintomas, 10=muito intenso)
+    const improved = currentScore < initialScore;
+    const worsened = currentScore > initialScore;
+    const improvement = initialScore - currentScore; // positivo = melhora
+    
     let improvementPercentage = 0;
-    if (initialScore > 0) {
-      // Calcular percentual de reducao: (reducao / score inicial) * 100
-      improvementPercentage = (improvement / initialScore) * 100;
-      // Garantir que nao seja negativo (se score aumentou)
-      if (improvementPercentage < 0) {
-        improvementPercentage = 0;
-      }
+    if (initialScore > 0 && improved) {
+      improvementPercentage = Math.abs((improvement / initialScore) * 100);
     }
 
     const completedSessions = sessions.filter(s => new Date(s.sessionDate) < new Date()).length;
@@ -70,7 +72,7 @@ export function BeforeAfterComparison({
       treatmentDuration,
       regionsTargeted,
     };
-  }, [sessions, plans]);
+  }, [sessions, plans, patient]);
 
   const renderProgressBar = (label: string, initial: number, current: number, max: number = 10) => {
     const initialWidth = (initial / max) * 100;

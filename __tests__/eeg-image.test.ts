@@ -11,8 +11,8 @@ describe("EEG 10-20 System Image Integration", () => {
   it("should reference the EEG image in helmet-3d-selector component", () => {
     const componentPath = path.join(__dirname, "..", "components", "helmet-3d-selector.tsx");
     const content = fs.readFileSync(componentPath, "utf-8");
-    // Image is loaded via CDN URL
-    expect(content).toContain("manuscdn.com");
+    // Image is loaded via local require
+    expect(content).toContain("eeg-10-20-system");
     expect(content).toContain("Image");
   });
 

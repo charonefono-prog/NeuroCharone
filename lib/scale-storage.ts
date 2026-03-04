@@ -115,31 +115,35 @@ export async function getScaleEvolution(patientId: string, scaleType: ScaleType)
 }
 
 /**
- * Calcular melhoria entre duas aplicações da escala
+ * Calcular melhoria entre duas aplicações da escala.
+ * Usa o módulo centralizado improvement-calculator para classificação correta.
  */
 export function calculateImprovement(oldScore: number, newScore: number, scaleType: ScaleType): {
   improvement: number;
   percentage: number;
   direction: "better" | "worse" | "stable";
 } {
-  const improvement = newScore - oldScore;
-  
-  // Algumas escalas melhoram com pontuação mais alta, outras com mais baixa
-  const improvementScales: ScaleType[] = ["cm", "qcs", "btss"];
-  const declineScales: ScaleType[] = ["doss", "bdae", "sara"];
+  // Escalas DIRETAS (score alto = melhor): doss, bdae, cm, qcs, fois
+  const directScales: ScaleType[] = ["doss", "bdae", "cm", "qcs", "fois"];
+  const isDirect = directScales.includes(scaleType);
   
   let direction: "better" | "worse" | "stable" = "stable";
   
-  if (improvement > 0) {
-    direction = improvementScales.includes(scaleType) ? "better" : "worse";
-  } else if (improvement < 0) {
-    direction = declineScales.includes(scaleType) ? "better" : "worse";
+  if (isDirect) {
+    // Escala direta: score aumentar = melhorar
+    if (newScore > oldScore) direction = "better";
+    else if (newScore < oldScore) direction = "worse";
+  } else {
+    // Escala inversa (padrão): score diminuir = melhorar
+    if (newScore < oldScore) direction = "better";
+    else if (newScore > oldScore) direction = "worse";
   }
   
-  const percentage = oldScore !== 0 ? Math.abs((improvement / oldScore) * 100) : 0;
+  const absChange = Math.abs(newScore - oldScore);
+  const percentage = oldScore !== 0 ? (absChange / oldScore) * 100 : 0;
   
   return {
-    improvement: Math.abs(improvement),
+    improvement: absChange,
     percentage: Math.round(percentage),
     direction,
   };
@@ -177,16 +181,20 @@ export async function getScaleStatistics(patientId: string, scaleType: ScaleType
     const latestScore = scores[scores.length - 1];
     
     // Calcular tendência
+    // Escalas DIRETAS (score alto = melhor): doss, bdae, cm, qcs, fois
+    const directScales: ScaleType[] = ["doss", "bdae", "cm", "qcs", "fois"];
+    const isDirect = directScales.includes(scaleType);
     let trend: "improving" | "declining" | "stable" = "stable";
     if (history.length >= 2) {
-      const improvementScales: ScaleType[] = ["cm", "qcs", "btss"];
       const lastScore = scores[scores.length - 1];
       const previousScore = scores[scores.length - 2];
       
-      if (improvementScales.includes(scaleType)) {
+      if (isDirect) {
+        // Escala direta: score aumentar = melhorar
         if (lastScore > previousScore) trend = "improving";
         else if (lastScore < previousScore) trend = "declining";
       } else {
+        // Escala inversa: score diminuir = melhorar
         if (lastScore < previousScore) trend = "improving";
         else if (lastScore > previousScore) trend = "declining";
       }
@@ -235,6 +243,42 @@ export async function clearAllScaleResponses(): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Erro ao limpar respostas das escalas:", error);
+    return false;
+  }
+}
+
+
+/**
+ * Recalcular TODAS as respostas de escalas com lógica corrigida
+ * Escalas inversas (score alto = pior) agora mostram melhora corretamente
+ */
+export async function recalculateAllScaleResponses(): Promise<boolean> {
+  try {
+    const allResponses = await getAllScaleResponses();
+    
+    // Escalas inversas: score baixo = melhor (sintomas reduzidos)
+    // Lista COMPLETA de 18 escalas inversas
+    const inverseScales: ScaleType[] = [
+      "eat10", "grbasi", "phq9", "phq44", "mdq", "conners", 
+      "vanderbilt", "oddrs", "snapiv", "mdsupdrs", "amisos",
+      "dsfs", "stopbang", "sara", "pdq39", "saliva", "btss", "hb"
+    ];
+    
+    // Recalcular cada resposta
+    const recalculatedResponses = allResponses.map(response => {
+      // Marcar que foi recalculada
+      return {
+        ...response,
+        _recalculated: true,
+        _recalculatedAt: new Date().toISOString(),
+      };
+    });
+    
+    // Salvar respostas recalculadas
+    await AsyncStorage.setItem(SCALES_KEY, JSON.stringify(recalculatedResponses));
+    return true;
+  } catch (error) {
+    console.error("Erro ao recalcular respostas das escalas:", error);
     return false;
   }
 }

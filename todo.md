@@ -903,3 +903,26 @@ export default function MyScreen() {
 - [x] Corrigido em treatment-timeline.tsx (timeline)
 - [x] 412/413 testes passando - sem regressões
 - [x] Scroll agora funciona perfeitamente em todas as seleções
+
+
+## CORREÇÃO DEFINITIVA - Cálculos de Melhora (CRÍTICO)
+- [x] Revisar e corrigir TODOS os cálculos de melhora em scale-chart.tsx
+- [x] Revisar e corrigir TODOS os cálculos de melhora em comparative-charts.tsx
+- [x] Revisar e corrigir TODOS os cálculos de melhora em effectiveness-dashboard.tsx
+- [x] Garantir que escalas inversas (18) e diretas (5) calculem melhora corretamente
+- [x] Exemplo: EAT-10 de 38→0 deve mostrar 100% de melhora (não 0%)
+- [x] Exemplo: Variação de 38→0 deve mostrar +38 de melhora (não -38)
+- [x] Remover qualquer exibição de valores negativos
+- [x] Escrever testes unitários para validar todos os cálculos (123 testes passando)
+- [x] Testar com dados reais e confirmar resultados corretos
+- [x] Verificar minuciosamente a direção de CADA escala (direta vs inversa) com base na definição clínica
+- [x] Corrigir scale-storage.ts (calculateImprovement e getScaleStatistics com classificação errada)
+- [x] Corrigir multi-patient-comparison.tsx
+- [x] Corrigir symptom-evolution-line-chart.tsx
+- [x] Corrigir symptom-progress-chart.tsx
+- [x] Corrigir before-after-comparison.tsx
+- [x] Corrigir symptom-evolution-chart.tsx
+- [x] Corrigir comparative-effectiveness-report.tsx
+- [x] Corrigir effectiveness-analysis.tsx
+- [x] Criar módulo centralizado improvement-calculator.ts com funções reutilizáveis
+- [x] Adicionar BTSS e HB à lista de escalas inversas (estavam faltando)

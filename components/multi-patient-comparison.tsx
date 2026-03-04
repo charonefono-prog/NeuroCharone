@@ -2,6 +2,10 @@ import React, { useMemo } from "react";
 import { View, Text, ScrollView, Dimensions } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { ScaleResponse } from "@/lib/clinical-scales";
+import {
+  calculateImprovementPercentage,
+  getScoreDirection,
+} from "@/lib/improvement-calculator";
 
 export interface PatientComparisonData {
   patientName: string;
@@ -17,11 +21,13 @@ export interface MultiPatientComparisonProps {
 /**
  * Componente de comparação multi-paciente
  * Exibe evolução de múltiplos pacientes lado a lado
+ * 
+ * Usa o calculador centralizado para determinar melhora/piora
+ * respeitando a direção de cada escala (direta vs inversa).
  */
 export function MultiPatientComparison({ patientsData, scaleName }: MultiPatientComparisonProps) {
   const colors = useColors();
   const screenWidth = Dimensions.get("window").width;
-  const chartWidth = screenWidth - 48;
 
   // Filtrar e processar dados
   const comparisonData = useMemo(() => {
@@ -36,7 +42,11 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
 
       const firstScore = sortedResponses[0]?.totalScore || 0;
       const lastScore = sortedResponses[sortedResponses.length - 1]?.totalScore || 0;
-      const improvement = firstScore > 0 ? ((lastScore - firstScore) / firstScore) * 100 : 0;
+      const scaleType = sortedResponses[0]?.scaleType || "";
+
+      // Usar calculador centralizado
+      const improvement = calculateImprovementPercentage(scaleType, firstScore, lastScore);
+      const direction = getScoreDirection(scaleType, firstScore, lastScore);
 
       return {
         patientName: patient.patientName,
@@ -44,7 +54,9 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
         totalApplications: sortedResponses.length,
         firstScore,
         lastScore,
-        improvement,
+        scaleType,
+        improvement, // Sempre >= 0 (é porcentagem de melhora)
+        direction,   // "improvement" | "decline" | "stable"
         avgScore: sortedResponses.length > 0
           ? sortedResponses.reduce((sum, r) => sum + (r.totalScore || 0), 0) / sortedResponses.length
           : 0,
@@ -62,9 +74,14 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
     );
   }
 
-  // Encontrar valores mín/máx para normalização
-  const maxScore = Math.max(...comparisonData.map((d) => d.lastScore || 0), 100);
-  const maxImprovement = Math.max(...comparisonData.map((d) => Math.abs(d.improvement)), 50);
+  // Encontrar valores máx para normalização de barras
+  const maxScore = Math.max(...comparisonData.map((d) => Math.max(d.firstScore, d.lastScore)), 1);
+
+  // Calcular melhora média (apenas dos que melhoraram)
+  const improvedPatients = comparisonData.filter((d) => d.direction === "improvement");
+  const avgImprovement = improvedPatients.length > 0
+    ? improvedPatients.reduce((sum, d) => sum + d.improvement, 0) / improvedPatients.length
+    : 0;
 
   return (
     <View
@@ -80,7 +97,7 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
       {/* Header */}
       <View style={{ gap: 8 }}>
         <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
-          👥 Comparação de Pacientes
+          Comparação de Pacientes
         </Text>
         <Text style={{ fontSize: 12, color: colors.muted }}>
           {comparisonData.length} paciente(s) com dados disponíveis
@@ -120,9 +137,9 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
                 Final
               </Text>
             </View>
-            <View style={{ width: 60, alignItems: "center" }}>
+            <View style={{ width: 70, alignItems: "center" }}>
               <Text style={{ fontSize: 11, fontWeight: "700", color: colors.muted }}>
-                Melhora
+                Resultado
               </Text>
             </View>
             <View style={{ width: 60, alignItems: "center" }}>
@@ -133,74 +150,69 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
           </View>
 
           {/* Linhas da Tabela */}
-          {comparisonData.map((data, index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: "row",
-                gap: 12,
-                paddingVertical: 8,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-              }}
-            >
-              {/* Nome do Paciente */}
-              <View style={{ width: 120 }}>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: colors.foreground,
-                  }}
-                  numberOfLines={1}
-                >
-                  {data.patientName}
-                </Text>
-              </View>
+          {comparisonData.map((data, index) => {
+            const dirColor = data.direction === "improvement"
+              ? colors.success
+              : data.direction === "decline"
+              ? colors.error
+              : colors.muted;
 
-              {/* Total de Aplicações */}
-              <View style={{ width: 60, alignItems: "center" }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
-                  {data.totalApplications}
-                </Text>
-              </View>
+            return (
+              <View
+                key={index}
+                style={{
+                  flexDirection: "row",
+                  gap: 12,
+                  paddingVertical: 8,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <View style={{ width: 120 }}>
+                  <Text
+                    style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}
+                    numberOfLines={1}
+                  >
+                    {data.patientName}
+                  </Text>
+                </View>
 
-              {/* Score Inicial */}
-              <View style={{ width: 60, alignItems: "center" }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.warning }}>
-                  {data.firstScore.toFixed(0)}
-                </Text>
-              </View>
+                <View style={{ width: 60, alignItems: "center" }}>
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                    {data.totalApplications}
+                  </Text>
+                </View>
 
-              {/* Score Final */}
-              <View style={{ width: 60, alignItems: "center" }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.success }}>
-                  {data.lastScore.toFixed(0)}
-                </Text>
-              </View>
+                <View style={{ width: 60, alignItems: "center" }}>
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.warning }}>
+                    {data.firstScore.toFixed(0)}
+                  </Text>
+                </View>
 
-              {/* Melhora */}
-              <View style={{ width: 60, alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "700",
-                    color: data.improvement > 0 ? colors.success : colors.error,
-                  }}
-                >
-                  {data.improvement > 0 ? "+" : ""}
-                  {data.improvement.toFixed(1)}%
-                </Text>
-              </View>
+                <View style={{ width: 60, alignItems: "center" }}>
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: dirColor }}>
+                    {data.lastScore.toFixed(0)}
+                  </Text>
+                </View>
 
-              {/* Média */}
-              <View style={{ width: 60, alignItems: "center" }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
-                  {data.avgScore.toFixed(0)}
-                </Text>
+                <View style={{ width: 70, alignItems: "center" }}>
+                  <Text style={{ fontSize: 12, fontWeight: "700", color: dirColor }}>
+                    {data.direction === "improvement"
+                      ? `+${data.improvement.toFixed(1)}%`
+                      : data.direction === "decline"
+                      ? "Piora"
+                      : "Estável"}
+                  </Text>
+                </View>
+
+                <View style={{ width: 60, alignItems: "center" }}>
+                  <Text style={{ fontSize: 12, fontWeight: "600", color: colors.foreground }}>
+                    {data.avgScore.toFixed(0)}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
 
@@ -211,65 +223,73 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
         </Text>
 
         <View style={{ gap: 12 }}>
-          {comparisonData.map((data, index) => (
-            <View key={index} style={{ gap: 6 }}>
-              {/* Nome do Paciente */}
-              <Text style={{ fontSize: 11, fontWeight: "600", color: colors.foreground }}>
-                {data.patientName}
-              </Text>
+          {comparisonData.map((data, index) => {
+            const dirColor = data.direction === "improvement"
+              ? colors.success
+              : data.direction === "decline"
+              ? colors.error
+              : colors.muted;
 
-              {/* Barras de Evolução */}
-              <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-                {/* Barra Inicial */}
-                <View
-                  style={{
-                    height: 24,
-                    width: (data.firstScore / maxScore) * 150,
-                    backgroundColor: colors.warning,
-                    borderRadius: 4,
-                    justifyContent: "center",
-                    paddingHorizontal: 4,
-                  }}
-                >
-                  <Text style={{ fontSize: 10, color: "white", fontWeight: "600" }}>
-                    {data.firstScore.toFixed(0)}
-                  </Text>
-                </View>
-
-                {/* Seta */}
-                <Text style={{ fontSize: 14, color: colors.muted }}>→</Text>
-
-                {/* Barra Final */}
-                <View
-                  style={{
-                    height: 24,
-                    width: (data.lastScore / maxScore) * 150,
-                    backgroundColor: data.improvement > 0 ? colors.success : colors.error,
-                    borderRadius: 4,
-                    justifyContent: "center",
-                    paddingHorizontal: 4,
-                  }}
-                >
-                  <Text style={{ fontSize: 10, color: "white", fontWeight: "600" }}>
-                    {data.lastScore.toFixed(0)}
-                  </Text>
-                </View>
-
-                {/* Percentual de Melhora */}
-                <Text
-                  style={{
-                    fontSize: 11,
-                    fontWeight: "700",
-                    color: data.improvement > 0 ? colors.success : colors.error,
-                    minWidth: 50,
-                  }}
-                >
-                  {data.improvement > 0 ? "+" : ""}
-                  {data.improvement.toFixed(1)}%
+            return (
+              <View key={index} style={{ gap: 6 }}>
+                <Text style={{ fontSize: 11, fontWeight: "600", color: colors.foreground }}>
+                  {data.patientName}
                 </Text>
+
+                <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                  {/* Barra Inicial */}
+                  <View
+                    style={{
+                      height: 24,
+                      width: Math.max(20, (data.firstScore / maxScore) * 150),
+                      backgroundColor: colors.warning,
+                      borderRadius: 4,
+                      justifyContent: "center",
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    <Text style={{ fontSize: 10, color: "white", fontWeight: "600" }}>
+                      {data.firstScore.toFixed(0)}
+                    </Text>
+                  </View>
+
+                  <Text style={{ fontSize: 14, color: colors.muted }}>→</Text>
+
+                  {/* Barra Final */}
+                  <View
+                    style={{
+                      height: 24,
+                      width: Math.max(20, (data.lastScore / maxScore) * 150),
+                      backgroundColor: dirColor,
+                      borderRadius: 4,
+                      justifyContent: "center",
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    <Text style={{ fontSize: 10, color: "white", fontWeight: "600" }}>
+                      {data.lastScore.toFixed(0)}
+                    </Text>
+                  </View>
+
+                  {/* Resultado */}
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      fontWeight: "700",
+                      color: dirColor,
+                      minWidth: 50,
+                    }}
+                  >
+                    {data.direction === "improvement"
+                      ? `+${data.improvement.toFixed(1)}%`
+                      : data.direction === "decline"
+                      ? "Piora"
+                      : "Estável"}
+                  </Text>
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </View>
 
@@ -302,18 +322,22 @@ export function MultiPatientComparison({ patientsData, scaleName }: MultiPatient
           </View>
 
           <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ fontSize: 11, color: colors.muted }}>Pacientes com Melhora</Text>
+            <Text style={{ fontSize: 11, fontWeight: "600", color: colors.success }}>
+              {improvedPatients.length} de {comparisonData.length}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <Text style={{ fontSize: 11, color: colors.muted }}>Melhora Média</Text>
             <Text
               style={{
                 fontSize: 11,
                 fontWeight: "600",
-                color:
-                  comparisonData.reduce((sum, d) => sum + d.improvement, 0) / comparisonData.length > 0
-                    ? colors.success
-                    : colors.error,
+                color: avgImprovement > 0 ? colors.success : colors.muted,
               }}
             >
-              {(comparisonData.reduce((sum, d) => sum + d.improvement, 0) / comparisonData.length).toFixed(1)}%
+              {avgImprovement > 0 ? `+${avgImprovement.toFixed(1)}%` : "0%"}
             </Text>
           </View>
         </View>

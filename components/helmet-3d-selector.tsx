@@ -95,7 +95,7 @@ export function Helmet3DSelector({ selectedPoints, onPointsChange, title, select
         }}
       >
         <Image
-          source={{ uri: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663028848082/yhitZdwgiBNUsZVc.png" }}
+          source={require("@/assets/images/eeg-10-20-system.jpg")}
           style={{
             width: 320,
             height: 320,
