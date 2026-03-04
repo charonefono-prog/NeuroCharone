@@ -350,8 +350,36 @@ export function generateEffectivenessReportHTML(
           </div>
         </div>
         
-        <!-- Informações do Sistema -->
+        <!-- Informações do Profissional -->
         <div class="professional-info">
+          <div class="professional-info-row">
+            <span class="professional-info-label">Profissional:</span>
+            <span class="professional-info-value">${professional.firstName ? `${professional.title}. ${professional.firstName} ${professional.lastName}` : 'Não informado'}</span>
+          </div>
+          ${professional.councilNumber ? `
+          <div class="professional-info-row">
+            <span class="professional-info-label">Conselho:</span>
+            <span class="professional-info-value">${professional.councilNumber}</span>
+          </div>
+          ` : ''}
+          ${professional.registrationNumber ? `
+          <div class="professional-info-row">
+            <span class="professional-info-label">Registro:</span>
+            <span class="professional-info-value">${professional.registrationNumber}</span>
+          </div>
+          ` : ''}
+          ${professional.specialty ? `
+          <div class="professional-info-row">
+            <span class="professional-info-label">Especialidade:</span>
+            <span class="professional-info-value">${professional.specialty}</span>
+          </div>
+          ` : ''}
+          ${professional.electronicSignature ? `
+          <div class="professional-info-row">
+            <span class="professional-info-label">Assinatura Eletrônica:</span>
+            <span class="professional-info-value" style="font-family: monospace; color: #0a7ea4; font-weight: bold;">${professional.electronicSignature}</span>
+          </div>
+          ` : ''}
           <div class="professional-info-row">
             <span class="professional-info-label">Sistema:</span>
             <span class="professional-info-value">NeuroLaserMaps</span>

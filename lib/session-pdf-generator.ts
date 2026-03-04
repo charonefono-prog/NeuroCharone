@@ -6,20 +6,39 @@
 import { type Session } from "@/lib/local-storage";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { ProfessionalInfo } from "@/hooks/use-professional-info";
 
 export interface SessionPDFData {
   session: Session;
   patientName: string;
-  professional?: any;
+  professional?: ProfessionalInfo;
 }
 
 /**
  * Gera PDF da sessão e compartilha/salva o arquivo
  */
+/**
+ * Carrega dados do profissional do AsyncStorage
+ */
+async function loadProfessionalData(): Promise<ProfessionalInfo | null> {
+  try {
+    const stored = await AsyncStorage.getItem("professionalProfile");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateSessionPDF(session: Session, patientName: string): Promise<void> {
   try {
+    // Carregar dados do profissional automaticamente
+    const professional = await loadProfessionalData();
     // Gerar HTML do PDF
-    const htmlContent = generateSessionHTML(session, patientName, null);
+    const htmlContent = generateSessionHTML(session, patientName, professional);
 
     // Salvar arquivo temporário
     const fileName = `sessao_${patientName.replace(/\s+/g, "_")}_${new Date().getTime()}.html`;
@@ -301,13 +320,13 @@ function generateSessionHTML(session: Session, patientName: string, professional
                         Profissional Responsável
                     </div>
                     <div style="font-size: 14px; color: #0a7ea4; font-weight: 600;">
-                        ${professional?.firstName || "N/A"} ${professional?.lastName || ""}
+                        ${professional ? `${professional.title}. ${professional.firstName} ${professional.lastName}` : "N/A"}
                     </div>
                     <div style="font-size: 12px; color: #687076; margin-top: 5px;">
-                        ${professional?.council || "N/A"}
+                        ${professional?.councilNumber || professional?.registrationNumber || "N/A"}
                     </div>
-                    ${professional?.signature ? `
-                    <div class="signature-hash">${professional.signature}</div>
+                    ${professional?.electronicSignature ? `
+                    <div class="signature-hash">${professional.electronicSignature}</div>
                     ` : ""}
                     <div class="signature-line"></div>
                     <div class="signature-name">Assinatura</div>

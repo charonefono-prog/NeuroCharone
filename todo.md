@@ -940,3 +940,15 @@ export default function MyScreen() {
 - [x] Adicionar tabela de dados numéricos com Baseline/Follow-up
 - [x] Adicionar Resumo Estatístico com variação absoluta e percentual
 - [x] Indicar direção da escala (score menor/maior = melhor resultado clínico)
+
+
+## BUG - Conflito de Identificação do Profissional
+- [x] Investigar as duas áreas de registro do profissional que estão conflitando
+- [x] Corrigir exportação de documentos que mostra N/A em vez do nome do profissional
+- [x] Corrigir assinatura eletrônica nos documentos exportados
+- [x] Unificar sistema de identificação do profissional em uma única fonte de dados ("professionalProfile")
+- [x] Migração automática de dados legados (@professional_info → professionalProfile)
+- [x] Session PDF agora carrega dados do profissional automaticamente do AsyncStorage
+- [x] Effectiveness PDF agora mostra nome, conselho, registro e assinatura do profissional
+- [x] Tela de Configurações simplificada (redireciona ao Perfil para edição)
+- [x] Perfil sempre regenera assinatura eletrônica quando dados mudam

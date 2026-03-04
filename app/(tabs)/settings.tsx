@@ -1,45 +1,18 @@
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Platform, Alert } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
-import { useProfessionalInfo, type ProfessionalInfo } from "@/hooks/use-professional-info";
+import { useProfessionalInfo } from "@/hooks/use-professional-info";
 import * as Haptics from "expo-haptics";
 import { recalculateAllScaleResponses } from "@/lib/scale-storage";
+import { useRouter } from "expo-router";
 
 export default function SettingsScreen() {
   const colors = useColors();
-  const { professional, loading, saveProfessionalInfo } = useProfessionalInfo();
-  const [formData, setFormData] = useState<ProfessionalInfo | null>(null);
-  const [saving, setSaving] = useState(false);
+  const router = useRouter();
+  const { professional, loading } = useProfessionalInfo();
 
-  useEffect(() => {
-    if (professional) {
-      setFormData(professional);
-    }
-  }, [professional]);
-
-  const handleSave = async () => {
-    if (!formData) return;
-
-    try {
-      setSaving(true);
-      if (Platform.OS !== "web") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-
-      const success = await saveProfessionalInfo(formData);
-      if (success) {
-        alert("Dados do profissional salvos com sucesso!");
-      }
-    } catch (error) {
-      console.error("Erro ao salvar:", error);
-      alert("Erro ao salvar dados do profissional");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading || !formData) {
+  if (loading) {
     return (
       <ScreenContainer>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -49,6 +22,8 @@ export default function SettingsScreen() {
     );
   }
 
+  const hasProfile = professional.firstName.trim().length > 0;
+
   return (
     <ScreenContainer>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -56,247 +31,86 @@ export default function SettingsScreen() {
           {/* Header */}
           <View style={{ gap: 8 }}>
             <Text style={{ fontSize: 28, fontWeight: "700", color: colors.foreground }}>
-              ⚙️ Configurações
+              Configurações
             </Text>
             <Text style={{ fontSize: 14, color: colors.muted }}>
-              Dados do Profissional
+              Ferramentas e utilitários do sistema
             </Text>
           </View>
 
-          {/* Formulário */}
-          <View style={{ gap: 16 }}>
-            {/* Título */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                TÍTULO
-              </Text>
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                <TouchableOpacity
-                  onPress={() => setFormData({ ...formData, title: "Dr" })}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    borderRadius: 8,
-                    backgroundColor:
-                      formData.title === "Dr" ? colors.primary : colors.surface,
-                    borderWidth: 1,
-                    borderColor:
-                      formData.title === "Dr" ? colors.primary : colors.border,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: "600",
-                      color:
-                        formData.title === "Dr" ? "white" : colors.foreground,
-                    }}
-                  >
-                    Dr
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setFormData({ ...formData, title: "Dra" })}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    borderRadius: 8,
-                    backgroundColor:
-                      formData.title === "Dra" ? colors.primary : colors.surface,
-                    borderWidth: 1,
-                    borderColor:
-                      formData.title === "Dra" ? colors.primary : colors.border,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: "600",
-                      color:
-                        formData.title === "Dra" ? "white" : colors.foreground,
-                    }}
-                  >
-                    Dra
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Primeiro Nome */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                PRIMEIRO NOME
-              </Text>
-              <TextInput
-                value={formData.firstName}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, firstName: text })
-                }
-                placeholder="Ex: João"
-                placeholderTextColor={colors.muted}
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-            </View>
-
-            {/* Último Nome */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                ÚLTIMO NOME
-              </Text>
-              <TextInput
-                value={formData.lastName}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, lastName: text })
-                }
-                placeholder="Ex: Silva"
-                placeholderTextColor={colors.muted}
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-            </View>
-
-            {/* CRM */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                CRM / REGISTRO PROFISSIONAL
-              </Text>
-              <TextInput
-                value={formData.registrationNumber}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, registrationNumber: text })
-                }
-                placeholder="Ex: CRM 123456/SP"
-                placeholderTextColor={colors.muted}
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-            </View>
-
-            {/* Especialidade */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                ESPECIALIDADE
-              </Text>
-              <TextInput
-                value={formData.specialty}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, specialty: text })
-                }
-                placeholder="Ex: Fonoaudiologia"
-                placeholderTextColor={colors.muted}
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-            </View>
-
-            {/* Email */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                EMAIL (OPCIONAL)
-              </Text>
-              <TextInput
-                value={formData.email || ""}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, email: text })
-                }
-                placeholder="Ex: profissional@email.com"
-                placeholderTextColor={colors.muted}
-                keyboardType="email-address"
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-            </View>
-
-            {/* Telefone */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-                TELEFONE (OPCIONAL)
-              </Text>
-              <TextInput
-                value={formData.phone || ""}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, phone: text })
-                }
-                placeholder="Ex: (11) 98765-4321"
-                placeholderTextColor={colors.muted}
-                keyboardType="phone-pad"
-                style={{
-                  backgroundColor: colors.surface,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 8,
-                  paddingHorizontal: 12,
-                  paddingVertical: 12,
-                  color: colors.foreground,
-                  fontSize: 14,
-                }}
-              />
-            </View>
-          </View>
-
-          {/* Botão Salvar */}
-          <TouchableOpacity
-            onPress={handleSave}
-            disabled={saving}
+          {/* Card do Profissional - Resumo */}
+          <View
             style={{
-              backgroundColor: colors.primary,
+              backgroundColor: colors.surface,
               borderRadius: 12,
-              paddingVertical: 16,
-              alignItems: "center",
-              opacity: saving ? 0.6 : 1,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 16,
+              gap: 12,
             }}
           >
-            {saving ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={{ fontSize: 16, fontWeight: "600", color: "white" }}>
-                💾 Salvar Dados
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
+                Dados do Profissional
               </Text>
+              <TouchableOpacity
+                onPress={() => router.push("/(tabs)/profile")}
+                style={{
+                  backgroundColor: colors.primary + "15",
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 8,
+                }}
+              >
+                <Text style={{ fontSize: 12, fontWeight: "600", color: colors.primary }}>
+                  Editar no Perfil
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {hasProfile ? (
+              <View style={{ gap: 8 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <Text style={{ fontSize: 13, color: colors.muted }}>Nome:</Text>
+                  <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>
+                    {professional.title}. {professional.firstName} {professional.lastName}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <Text style={{ fontSize: 13, color: colors.muted }}>Conselho:</Text>
+                  <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>
+                    {professional.councilNumber || "Não informado"}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <Text style={{ fontSize: 13, color: colors.muted }}>Registro:</Text>
+                  <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground }}>
+                    {professional.registrationNumber || "Não informado"}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <Text style={{ fontSize: 13, color: colors.muted }}>Assinatura:</Text>
+                  <Text style={{ fontSize: 13, fontWeight: "600", color: professional.electronicSignature ? colors.success : colors.error }}>
+                    {professional.electronicSignature ? "Gerada" : "Não gerada"}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View
+                style={{
+                  backgroundColor: colors.warning + "15",
+                  borderRadius: 8,
+                  padding: 12,
+                  borderLeftWidth: 3,
+                  borderLeftColor: colors.warning,
+                }}
+              >
+                <Text style={{ fontSize: 13, color: colors.foreground, lineHeight: 20 }}>
+                  Preencha seus dados no Perfil para que apareçam nos documentos exportados e na assinatura eletrônica.
+                </Text>
+              </View>
             )}
-          </TouchableOpacity>
+          </View>
 
           {/* Botão Recalcular Escalas */}
           <TouchableOpacity
@@ -307,25 +121,46 @@ export default function SettingsScreen() {
                 }
                 const success = await recalculateAllScaleResponses();
                 if (success) {
-                  alert("✅ Todas as escalas foram recalculadas com sucesso!");
+                  Alert.alert("Sucesso", "Todas as escalas foram recalculadas com sucesso!");
                 } else {
-                  alert("❌ Erro ao recalcular escalas");
+                  Alert.alert("Erro", "Erro ao recalcular escalas");
                 }
               } catch (error) {
                 console.error("Erro:", error);
-                alert("❌ Erro ao recalcular escalas");
+                Alert.alert("Erro", "Erro ao recalcular escalas");
               }
             }}
             style={{
-              backgroundColor: colors.warning,
+              backgroundColor: colors.surface,
               borderRadius: 12,
-              paddingVertical: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 16,
+              flexDirection: "row",
               alignItems: "center",
+              gap: 12,
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "600", color: "white" }}>
-              🔄 Recalcular Todas as Escalas
-            </Text>
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: colors.warning + "20",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: 20 }}>🔄</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
+                Recalcular Todas as Escalas
+              </Text>
+              <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                Recalcula pontuações e interpretações de todas as escalas aplicadas
+              </Text>
+            </View>
           </TouchableOpacity>
 
           {/* Informação */}
@@ -340,10 +175,10 @@ export default function SettingsScreen() {
             }}
           >
             <Text style={{ fontSize: 12, fontWeight: "600", color: colors.muted }}>
-              ℹ️ INFORMAÇÃO
+              INFORMAÇÃO
             </Text>
             <Text style={{ fontSize: 13, color: colors.foreground, lineHeight: 20 }}>
-              Estes dados aparecerão em todos os PDFs exportados. Configure-os uma única vez.
+              Os dados do profissional são gerenciados na aba "Perfil". Eles aparecem automaticamente em todos os PDFs exportados, relatórios e na assinatura eletrônica dos documentos.
             </Text>
           </View>
         </View>

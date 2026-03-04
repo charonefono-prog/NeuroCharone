@@ -81,20 +81,21 @@ export default function ProfileScreen() {
       }
 
       let profileToSave = { ...editingProfile };
-      if (!profileToSave.electronicSignature) {
-        const signature = generateProfessionalSignature(
-          editingProfile.title,
-          editingProfile.firstName,
-          editingProfile.lastName,
-          editingProfile.registrationNumber,
-          editingProfile.councilNumber,
-          editingProfile.email
-        );
-        profileToSave.electronicSignature = signature.signatureHash;
-        profileToSave.signatureDate = signature.signatureDate;
-      }
+      // Sempre regenerar assinatura quando dados mudam
+      const signature = generateProfessionalSignature(
+        editingProfile.title,
+        editingProfile.firstName,
+        editingProfile.lastName,
+        editingProfile.registrationNumber,
+        editingProfile.councilNumber,
+        editingProfile.email
+      );
+      profileToSave.electronicSignature = signature.signatureHash;
+      profileToSave.signatureDate = signature.signatureDate;
 
       await AsyncStorage.setItem("professionalProfile", JSON.stringify(profileToSave));
+      // Remover chave legada para evitar conflito
+      await AsyncStorage.removeItem("@professional_info");
       setProfile(profileToSave);
       setEditingProfile(profileToSave);
       setIsEditing(false);

@@ -6,6 +6,7 @@
 import { ScaleResponse } from "./clinical-scales";
 import { getScale } from "./clinical-scales";
 import { generateQRCodeSVG } from "./qr-code-generator";
+import type { ProfessionalInfo } from "@/hooks/use-professional-info";
 
 /**
  * Gera número de protocolo único
@@ -43,17 +44,7 @@ function getQRCodeBase64(text: string, size: number = 100): string {
   }
 }
 
-interface ProfessionalInfo {
-  title: "Dr" | "Dra";
-  firstName: string;
-  lastName: string;
-  registrationNumber: string;
-  councilNumber?: string;
-  specialty: string;
-  email?: string;
-  phone?: string;
-  electronicSignature?: string;
-}
+// ProfessionalInfo is imported from @/hooks/use-professional-info
 
 interface PatientInfo {
   id: string;
