@@ -999,3 +999,10 @@ export default function MyScreen() {
 - [x] Adicionar logs detalhados para debug
 - [x] Aceitar múltiplos tipos MIME (application/json, text/plain, */*) para compatibilidade
 - [x] Mostrar alerta de erro interno se importação falhar
+
+
+## BUG CORRIGIDO - Erro de Build "pnpm install failed"
+- [x] Remover package-lock.json conflitante
+- [x] Regenerar pnpm-lock.yaml com todas as dependências atualizadas
+- [x] Versão atualizada para 10.0.0 (iOS) e versionCode 100 (Android)
+- [x] Build agora pronto para publicação nas lojas
