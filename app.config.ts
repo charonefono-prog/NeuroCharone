@@ -56,7 +56,8 @@ const config: ExpoConfig = {
 
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "space.manus.neuromodulation.mapper.t20260118155822",
+    buildNumber: "4",
+    bundleIdentifier: "space.manus.neuromodulation.mapper.t2026011815582",
     "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
