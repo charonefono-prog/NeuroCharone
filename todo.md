@@ -1006,3 +1006,13 @@ export default function MyScreen() {
 - [x] Regenerar pnpm-lock.yaml com todas as dependências atualizadas
 - [x] Versão atualizada para 10.0.0 (iOS) e versionCode 100 (Android)
 - [x] Build agora pronto para publicação nas lojas
+
+
+## FIX - Android AAB assinado com keystore errada
+- [x] Configurar EAS credentials com nova-chave-upload.jks do usuário
+- [x] Rebuild Android AAB com a keystore correta (SHA1 esperado: ED:51:54:B1:CA:43:E6:56:68:97:41:44:FE:36:B4:8D:3F:51:FC:0B)
+- [x] Verificar SHA1 do AAB gerado antes de entregar
+
+## FIX - iOS Build: lightningcss.darwin-arm64.node missing
+- [x] Fix lightningcss native module not found on EAS macOS ARM64 build server
+- [x] Rebuild iOS IPA successfully

@@ -24,7 +24,8 @@
     "electron-build:win": "electron-builder --win",
     "electron-build:mac": "electron-builder --mac",
     "electron-build:linux": "electron-builder --linux",
-    "electron-build:all": "electron-builder -mwl"
+    "electron-build:all": "electron-builder -mwl",
+    "postinstall": "node scripts/install-lightningcss-darwin.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
