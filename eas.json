@@ -1,30 +1,39 @@
 {
   "cli": {
     "version": ">= 5.0.0",
-    "appVersionSource": "local"
+    "appVersionSource": "local",
+    "requireCommit": false
   },
   "build": {
     "preview": {
       "android": {
         "buildType": "apk",
-        "credentialsSource": "local"
+        "credentialsSource": "local",
+        "env": {
+          "npm_config_legacy_peer_deps": "true"
+        }
       },
       "ios": {
         "simulator": true,
         "env": {
-          "INSTALL_LIGHTNINGCSS_DARWIN": "true"
+          "INSTALL_LIGHTNINGCSS_DARWIN": "true",
+          "npm_config_legacy_peer_deps": "true"
         }
       }
     },
     "production": {
       "android": {
         "buildType": "aab",
-        "credentialsSource": "remote"
+        "credentialsSource": "remote",
+        "env": {
+          "npm_config_legacy_peer_deps": "true"
+        }
       },
       "ios": {
         "credentialsSource": "remote",
         "env": {
-          "INSTALL_LIGHTNINGCSS_DARWIN": "true"
+          "INSTALL_LIGHTNINGCSS_DARWIN": "true",
+          "npm_config_legacy_peer_deps": "true"
         }
       }
     }
