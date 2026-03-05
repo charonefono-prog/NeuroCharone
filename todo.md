@@ -990,3 +990,12 @@ export default function MyScreen() {
 - [x] Mostrar data do último backup
 - [x] Funcional em iOS e Android (expo-document-picker + expo-sharing)
 - [x] 535 testes passando
+
+
+## BUG - Importação de Backup não efetiva dados
+- [x] Investigar por que o resumo aparece mas os dados não são salvos no AsyncStorage
+- [x] Corrigir leitura do arquivo JSON via expo-document-picker (3 abordagens de fallback)
+- [x] Garantir que importBackupData grava corretamente no AsyncStorage (writeJson com verificação)
+- [x] Adicionar logs detalhados para debug
+- [x] Aceitar múltiplos tipos MIME (application/json, text/plain, */*) para compatibilidade
+- [x] Mostrar alerta de erro interno se importação falhar

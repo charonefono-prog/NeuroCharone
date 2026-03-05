@@ -376,6 +376,16 @@ export async function importBackupData(
     profileRestored: false,
   };
 
+  console.log("[BackupSystem] Iniciando importação...");
+  console.log("[BackupSystem] Resolução de conflitos:", conflictResolution);
+  console.log("[BackupSystem] Dados do backup:", {
+    patients: backupData.data.patients?.length || 0,
+    plans: backupData.data.plans?.length || 0,
+    sessions: backupData.data.sessions?.length || 0,
+    scales: backupData.data.scaleResponses?.length || 0,
+    profile: !!backupData.data.professionalProfile,
+  });
+
   try {
     const readJson = async (key: string): Promise<any[]> => {
       try {
@@ -383,6 +393,18 @@ export async function importBackupData(
         return raw ? JSON.parse(raw) : [];
       } catch {
         return [];
+      }
+    };
+
+    const writeJson = async (key: string, data: any): Promise<void> => {
+      const json = JSON.stringify(data);
+      await AsyncStorage.setItem(key, json);
+      // Verificar se gravou corretamente
+      const verify = await AsyncStorage.getItem(key);
+      if (!verify) {
+        console.error(`[BackupSystem] FALHA ao gravar chave: ${key}`);
+      } else {
+        console.log(`[BackupSystem] Gravado ${key}: ${JSON.parse(verify).length || 'ok'} itens`);
       }
     };
 
@@ -396,7 +418,7 @@ export async function importBackupData(
     if (shouldOverwrite) {
       summary.patientsUpdated = (backupData.data.patients || []).filter((p: any) => existingPatientIds.has(p.id)).length;
     }
-    await AsyncStorage.setItem(STORAGE_KEYS.patients, JSON.stringify(mergedPatients));
+    await writeJson(STORAGE_KEYS.patients, mergedPatients);
 
     // ─── Planos ───
     const existingPlans = await readJson(STORAGE_KEYS.plans);
@@ -406,7 +428,7 @@ export async function importBackupData(
     if (shouldOverwrite) {
       summary.plansUpdated = (backupData.data.plans || []).filter((p: any) => existingPlanIds.has(p.id)).length;
     }
-    await AsyncStorage.setItem(STORAGE_KEYS.plans, JSON.stringify(mergedPlans));
+    await writeJson(STORAGE_KEYS.plans, mergedPlans);
 
     // ─── Sessões ───
     const existingSessions = await readJson(STORAGE_KEYS.sessions);
@@ -416,7 +438,7 @@ export async function importBackupData(
     if (shouldOverwrite) {
       summary.sessionsUpdated = (backupData.data.sessions || []).filter((s: any) => existingSessionIds.has(s.id)).length;
     }
-    await AsyncStorage.setItem(STORAGE_KEYS.sessions, JSON.stringify(mergedSessions));
+    await writeJson(STORAGE_KEYS.sessions, mergedSessions);
 
     // ─── Respostas de Escalas ───
     const existingScales = await readJson(STORAGE_KEYS.scaleResponses);
@@ -426,34 +448,34 @@ export async function importBackupData(
     if (shouldOverwrite) {
       summary.scaleResponsesUpdated = (backupData.data.scaleResponses || []).filter((s: any) => existingScaleIds.has(s.id)).length;
     }
-    await AsyncStorage.setItem(STORAGE_KEYS.scaleResponses, JSON.stringify(mergedScales));
+    await writeJson(STORAGE_KEYS.scaleResponses, mergedScales);
 
     // ─── Templates de Planos ───
     const existingTemplates = await readJson(STORAGE_KEYS.planTemplates);
     const existingTemplateIds = new Set(existingTemplates.map((t: any) => t.id));
     const mergedTemplates = mergeArraysById(existingTemplates, backupData.data.planTemplates || [], conflictResolution, existingTemplateIds);
     summary.planTemplatesAdded = mergedTemplates.length - existingTemplates.length;
-    await AsyncStorage.setItem(STORAGE_KEYS.planTemplates, JSON.stringify(mergedTemplates));
+    await writeJson(STORAGE_KEYS.planTemplates, mergedTemplates);
 
     // ─── Ciclos Terapêuticos ───
     const existingCycles = await readJson(STORAGE_KEYS.therapeuticCycles);
     const existingCycleIds = new Set(existingCycles.map((c: any) => c.id));
     const mergedCycles = mergeArraysById(existingCycles, backupData.data.therapeuticCycles || [], conflictResolution, existingCycleIds);
     summary.therapeuticCyclesAdded = mergedCycles.length - existingCycles.length;
-    await AsyncStorage.setItem(STORAGE_KEYS.therapeuticCycles, JSON.stringify(mergedCycles));
+    await writeJson(STORAGE_KEYS.therapeuticCycles, mergedCycles);
 
     // ─── Metas de Progresso ───
     const existingGoals = await readJson(STORAGE_KEYS.progressGoals);
     const existingGoalIds = new Set(existingGoals.map((g: any) => g.id));
     const mergedGoals = mergeArraysById(existingGoals, backupData.data.progressGoals || [], conflictResolution, existingGoalIds);
     summary.progressGoalsAdded = mergedGoals.length - existingGoals.length;
-    await AsyncStorage.setItem(STORAGE_KEYS.progressGoals, JSON.stringify(mergedGoals));
+    await writeJson(STORAGE_KEYS.progressGoals, mergedGoals);
 
     // ─── Alertas de Progresso ───
     const existingAlerts = await readJson(STORAGE_KEYS.progressAlerts);
     const existingAlertIds = new Set(existingAlerts.map((a: any) => a.id));
     const mergedAlerts = mergeArraysById(existingAlerts, backupData.data.progressAlerts || [], conflictResolution, existingAlertIds);
-    await AsyncStorage.setItem(STORAGE_KEYS.progressAlerts, JSON.stringify(mergedAlerts));
+    await writeJson(STORAGE_KEYS.progressAlerts, mergedAlerts);
 
     // ─── Logs de Auditoria (sempre adicionar, não conflitar) ───
     const existingLogs = await readJson(STORAGE_KEYS.auditLogs);
@@ -462,7 +484,7 @@ export async function importBackupData(
       (l: any) => !existingLogIds.has(l.id || l.timestamp)
     );
     const mergedLogs = [...existingLogs, ...newLogs];
-    await AsyncStorage.setItem(STORAGE_KEYS.auditLogs, JSON.stringify(mergedLogs));
+    await writeJson(STORAGE_KEYS.auditLogs, mergedLogs);
 
     // ─── Perfil Profissional (sobrescrever se backup tem e resolução permite) ───
     if (backupData.data.professionalProfile) {
@@ -506,9 +528,11 @@ export async function importBackupData(
       );
     }
 
+    console.log("[BackupSystem] Importação concluída com sucesso!", summary);
     return { success: true, summary };
   } catch (error) {
     console.error("[BackupSystem] Erro ao importar:", error);
+    Alert.alert("Erro Interno", `Erro durante importação: ${error instanceof Error ? error.message : String(error)}`);
     return {
       success: false,
       summary,
@@ -539,7 +563,7 @@ export interface ImportSummary {
 export async function pickBackupFile(): Promise<BackupData | null> {
   try {
     const result = await DocumentPicker.getDocumentAsync({
-      type: "application/json",
+      type: ["application/json", "text/plain", "*/*"],
       copyToCacheDirectory: true,
     });
 
@@ -548,18 +572,65 @@ export async function pickBackupFile(): Promise<BackupData | null> {
     }
 
     const asset = result.assets[0];
-    let content: string;
+    console.log("[BackupSystem] Arquivo selecionado:", asset.name, "URI:", asset.uri?.substring(0, 100));
+
+    let content: string = "";
 
     if (Platform.OS === "web") {
       // Web: ler via fetch
       const response = await fetch(asset.uri);
       content = await response.text();
     } else {
-      // Mobile: ler via FileSystem
-      content = await FileSystem.readAsStringAsync(asset.uri);
+      // Mobile: tentar múltiplas abordagens de leitura
+      try {
+        // Abordagem 1: leitura direta do URI
+        content = await FileSystem.readAsStringAsync(asset.uri, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+      } catch (readError1) {
+        console.log("[BackupSystem] Leitura direta falhou, tentando cópia para cache...");
+        try {
+          // Abordagem 2: copiar para cache e ler de lá
+          const cacheUri = `${FileSystem.cacheDirectory}backup_import_${Date.now()}.json`;
+          await FileSystem.copyAsync({ from: asset.uri, to: cacheUri });
+          content = await FileSystem.readAsStringAsync(cacheUri, {
+            encoding: FileSystem.EncodingType.UTF8,
+          });
+          // Limpar arquivo temporário
+          await FileSystem.deleteAsync(cacheUri, { idempotent: true }).catch(() => {});
+        } catch (readError2) {
+          console.log("[BackupSystem] Cópia para cache falhou, tentando fetch...");
+          try {
+            // Abordagem 3: fetch como fallback
+            const response = await fetch(asset.uri);
+            content = await response.text();
+          } catch (readError3) {
+            console.error("[BackupSystem] Todas as abordagens de leitura falharam:", readError3);
+            Alert.alert(
+              "Erro de Leitura",
+              "Não foi possível ler o arquivo. Tente salvar o arquivo em uma pasta diferente (ex: Downloads) e tentar novamente."
+            );
+            return null;
+          }
+        }
+      }
     }
 
-    const parsed = JSON.parse(content);
+    if (!content || content.trim().length === 0) {
+      Alert.alert("Arquivo Vazio", "O arquivo selecionado está vazio.");
+      return null;
+    }
+
+    console.log("[BackupSystem] Conteúdo lido, tamanho:", content.length, "caracteres");
+
+    let parsed: any;
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      console.error("[BackupSystem] Erro ao parsear JSON:", parseError);
+      Alert.alert("Arquivo Inválido", "O arquivo não contém JSON válido. Verifique se selecionou o arquivo correto.");
+      return null;
+    }
 
     // Validar
     const validation = validateBackup(parsed);
@@ -567,6 +638,8 @@ export async function pickBackupFile(): Promise<BackupData | null> {
       Alert.alert("Arquivo Inválido", validation.error || "O arquivo selecionado não é um backup válido do NeuroLaserMap.");
       return null;
     }
+
+    console.log("[BackupSystem] Backup validado, versão:", parsed.version);
 
     // Migrar v1 se necessário
     if (parsed.version?.startsWith("1.")) {
