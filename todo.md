@@ -1016,3 +1016,12 @@ export default function MyScreen() {
 ## FIX - iOS Build: lightningcss.darwin-arm64.node missing
 - [x] Fix lightningcss native module not found on EAS macOS ARM64 build server
 - [x] Rebuild iOS IPA successfully
+
+## BUG - Tela de Escalas: imagem sobrepondo
+- [ ] Corrigir imagem de baixo se sobressaindo/sobrepondo na tela de Escalas
+
+## FIX - iOS Bundle ID mismatch no App Store Connect
+- [x] Identificar Bundle ID correto registrado no App Store Connect
+- [x] Corrigir Bundle ID no app.config.ts
+- [x] Rebuild iOS IPA com Bundle ID correto
+- [x] Reconfigurar provisioning profile para novo Bundle ID (reutilizado L63YU489L8)
