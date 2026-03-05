@@ -970,3 +970,8 @@ export default function MyScreen() {
 - [x] Processar imagem fornecida pelo usuário como novo ícone (cérebro com rede neural em fundo azul)
 - [x] Copiar para icon.png, splash-icon.png, favicon.png, android-icon-foreground.png
 - [x] Atualizar logoUrl no app.config.ts
+
+
+## Imagem de Branding na Home
+- [x] Processar e salvar imagem de branding no projeto (branding-hero.jpg)
+- [x] Integrar na tela Home como hero compacto (120x120 com bordas arredondadas)

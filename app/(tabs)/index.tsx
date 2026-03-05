@@ -1,8 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform, useWindowDimensions } from "react-native";
+import { Image } from "expo-image";
 import { useRouter, useFocusEffect } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useEffect, useState, useCallback } from "react";
 import { getPatients, getSessions, getPlans, initializeSampleData, type Patient, type Session, type TherapeuticPlan } from "@/lib/local-storage";
 import { initializeDefaultTemplates } from "@/lib/plan-templates";
@@ -127,13 +129,22 @@ export default function HomeScreen() {
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, gap: 24 }}>
-          {/* Header */}
-          <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
+          {/* Hero Branding */}
+          <View style={{ alignItems: "center", gap: 4 }}>
+            <Image
+              source={require("@/assets/images/branding-hero.jpg")}
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: 24,
+              }}
+              contentFit="contain"
+            />
+            <Text style={{ fontSize: 22, fontWeight: "700", color: colors.foreground, textAlign: "center" }}>
               NeuroLaserMap
             </Text>
-            <Text style={{ fontSize: 14, color: colors.muted }}>
-              Bem-vindo ao sistema de mapeamento de neuromodulação
+            <Text style={{ fontSize: 13, color: colors.muted, textAlign: "center" }}>
+              Sistema de Mapeamento de Neuromodulação
             </Text>
           </View>
 
