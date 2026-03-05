@@ -964,3 +964,9 @@ export default function MyScreen() {
 - [x] Criar componente reutilizável ZoomableImage
 - [x] Integrar ZoomableImage no helmet-3d-selector.tsx
 - [x] Indicador de nível de zoom atual (1.0x a 5.0x)
+
+
+## Novo Ícone do App
+- [x] Processar imagem fornecida pelo usuário como novo ícone (cérebro com rede neural em fundo azul)
+- [x] Copiar para icon.png, splash-icon.png, favicon.png, android-icon-foreground.png
+- [x] Atualizar logoUrl no app.config.ts
