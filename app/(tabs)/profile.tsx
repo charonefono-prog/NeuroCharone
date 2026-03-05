@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { shareBackup, suggestBackupIfNeeded } from "@/lib/backup-system";
+import { exportFullBackup, hasRecentBackup } from "@/lib/backup-system";
 import { useThemeContext } from "@/lib/theme-provider";
 import { getReminderAdvance, setReminderAdvance, requestNotificationPermissions } from "@/lib/notifications";
 import { useEffect, useState } from "react";
@@ -52,7 +52,19 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadProfile();
-    suggestBackupIfNeeded();
+    // Check if backup is needed
+    hasRecentBackup().then((recent) => {
+      if (!recent) {
+        Alert.alert(
+          "Backup Recomendado",
+          "Você não fez backup dos seus dados nos últimos 7 dias. Deseja fazer um backup agora?",
+          [
+            { text: "Mais tarde", style: "cancel" },
+            { text: "Fazer Backup", onPress: () => exportFullBackup() },
+          ]
+        );
+      }
+    });
     loadReminderSettings();
   }, []);
 
@@ -139,7 +151,7 @@ export default function ProfileScreen() {
         {
           text: "Exportar",
           onPress: async () => {
-            const success = await shareBackup();
+            const success = await exportFullBackup();
             if (success) {
               Alert.alert("Sucesso", "Backup criado e compartilhado com sucesso!");
             }

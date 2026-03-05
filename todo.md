@@ -975,3 +975,18 @@ export default function MyScreen() {
 ## Imagem de Branding na Home
 - [x] Processar e salvar imagem de branding no projeto (branding-hero.jpg)
 - [x] Integrar na tela Home como hero compacto (120x120 com bordas arredondadas)
+
+
+## Sistema de Backup/Restauração JSON Completo
+- [x] Reescrever backup-system.ts com 16 chaves AsyncStorage (TODOS os dados do app)
+- [x] Exportar: pacientes, sessões, escalas, planos, perfil, templates, ciclos, metas, logs, notificações
+- [x] Importar com validação de arquivo JSON
+- [x] Suportar backup v1 (antigo) com migração automática para v2
+- [x] Detectar conflitos (paciente/plano/sessão já existente)
+- [x] Modal de resumo do backup antes de importar
+- [x] Opções de resolução: Sobrescrever Todos / Manter Dados Atuais
+- [x] Resumo final da importação com contagem de itens adicionados/atualizados
+- [x] Integrar botões na tela de Configurações com design profissional
+- [x] Mostrar data do último backup
+- [x] Funcional em iOS e Android (expo-document-picker + expo-sharing)
+- [x] 535 testes passando
