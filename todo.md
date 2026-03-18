@@ -1025,3 +1025,8 @@ export default function MyScreen() {
 - [x] Corrigir Bundle ID no app.config.ts
 - [x] Rebuild iOS IPA com Bundle ID correto
 - [x] Reconfigurar provisioning profile para novo Bundle ID (reutilizado L63YU489L8)
+
+## FIX - Web App não abre (Not Found)
+- [x] Investigar por que o link público mostra "Not Found"
+- [x] Corrigir configuração de build/deploy web
+- [ ] Republicar e testar link público (aguardando Publish do usuário)
