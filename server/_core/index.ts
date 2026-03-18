@@ -87,15 +87,16 @@ async function startServer() {
     }
   });
 
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
+  const port = parseInt(process.env.PORT || "3000");
 
-  if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
-  }
+  // Startup diagnostics
+  const fs = require("fs");
+  console.log(`[api] cwd: ${process.cwd()}`);
+  console.log(`[api] webDistPath: ${webDistPath}`);
+  console.log(`[api] web-dist/index.html exists: ${fs.existsSync(path.join(webDistPath, "index.html"))}`);
 
-  server.listen(port, () => {
-    console.log(`[api] server listening on port ${port}`);
+  server.listen(port, "0.0.0.0", () => {
+    console.log(`[api] server listening on 0.0.0.0:${port}`);
   });
 }
 
