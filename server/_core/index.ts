@@ -3,6 +3,7 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import path from "path";
+import { existsSync } from "fs";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
@@ -90,10 +91,9 @@ async function startServer() {
   const port = parseInt(process.env.PORT || "3000");
 
   // Startup diagnostics
-  const fs = require("fs");
   console.log(`[api] cwd: ${process.cwd()}`);
   console.log(`[api] webDistPath: ${webDistPath}`);
-  console.log(`[api] web-dist/index.html exists: ${fs.existsSync(path.join(webDistPath, "index.html"))}`);
+  console.log(`[api] web-dist/index.html exists: ${existsSync(path.join(webDistPath, "index.html"))}`);
 
   server.listen(port, "0.0.0.0", () => {
     console.log(`[api] server listening on 0.0.0.0:${port}`);
