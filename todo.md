@@ -1029,4 +1029,5 @@ export default function MyScreen() {
 ## FIX - Web App não abre (Not Found)
 - [x] Investigar por que o link público mostra "Not Found"
 - [x] Corrigir configuração de build/deploy web
+- [x] Corrigir build script para exportar web em web-dist/ separado do server dist/
 - [ ] Republicar e testar link público (aguardando Publish do usuário)

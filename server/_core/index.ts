@@ -57,9 +57,9 @@ async function startServer() {
 
   registerOAuthRoutes(app);
 
-  // Serve static files from dist/ (Expo web export) first, then project root
-  const distPath = path.join(process.cwd(), "dist");
-  app.use(express.static(distPath));
+  // Serve static files from web-dist/ (Expo web export) first, then project root
+  const webDistPath = path.join(process.cwd(), "web-dist");
+  app.use(express.static(webDistPath));
   app.use(express.static(path.join(process.cwd())));
 
   app.get("/api/health", (_req, res) => {
@@ -74,14 +74,14 @@ async function startServer() {
     }),
   );
 
-  // SPA fallback: serve dist/index.html for any non-API, non-file route
+  // SPA fallback: serve web-dist/index.html for any non-API, non-file route
   app.get("*", (req, res, next) => {
     // Skip API routes
     if (req.path.startsWith("/api/")) return next();
     const fs = require("fs");
-    const distIndex = path.join(distPath, "index.html");
-    if (fs.existsSync(distIndex)) {
-      res.sendFile(distIndex);
+    const webDistIndex = path.join(webDistPath, "index.html");
+    if (fs.existsSync(webDistIndex)) {
+      res.sendFile(webDistIndex);
     } else {
       res.sendFile(path.join(process.cwd(), "index.html"));
     }
