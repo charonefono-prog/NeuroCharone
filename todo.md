@@ -1031,3 +1031,20 @@ export default function MyScreen() {
 - [x] Corrigir configuração de build/deploy web
 - [x] Corrigir build script para exportar web em web-dist/ separado do server dist/
 - [ ] Republicar e testar link público (aguardando Publish do usuário)
+
+## PWA Authentication System (NEW - Priority)
+- [x] Create user authentication database schema (accessControl table with email, password hash, approval status)
+- [x] Implement user registration API endpoint with email/password validation
+- [x] Implement user login API endpoint with JWT token generation
+- [x] Implement logout API endpoint
+- [x] Implement token verification utilities
+- [ ] Integrate Google Sign-In authentication
+- [ ] Integrate Apple Sign-In authentication
+- [x] Create login screen UI (already existed)
+- [ ] Create registration screen UI (needs update for new auth)
+- [x] Create admin user management panel
+- [x] Implement user approval/rejection functionality
+- [ ] Implement route protection middleware for PWA
+- [x] Add session management with JWT tokens
+- [ ] Test authentication flows end-to-end
+- [ ] Deploy PWA with authentication enabled

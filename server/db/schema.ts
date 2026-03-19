@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, int, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 // Tabela de usuários (profissionais de saúde)
 export const users = mysqlTable("users", {
@@ -11,6 +11,11 @@ export const users = mysqlTable("users", {
   professionalId: varchar("professional_id", { length: 100 }), // CRM, CREFONO, etc
   phone: varchar("phone", { length: 50 }),
   photoUrl: text("photo_url"),
+  role: mysqlEnum("role", ["user", "admin"]).notNull().default("user"),
+  // Status: pending (aguardando aprovação), active (aprovado), blocked (bloqueado)
+  status: mysqlEnum("status", ["pending", "active", "blocked"]).notNull().default("pending"),
+  approvedAt: timestamp("approved_at"), // Data de aprovação
+  approvedBy: int("approved_by"), // ID do admin que aprovou
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
@@ -65,8 +70,16 @@ export const sessions = mysqlTable("sessions", {
 });
 
 // Relações
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   patients: many(patients),
+  approvalsGiven: many(users, {
+    relationName: "approvals",
+  }),
+  approver: one(users, {
+    fields: [users.approvedBy],
+    references: [users.id],
+    relationName: "approvals",
+  }),
 }));
 
 export const patientsRelations = relations(patients, ({ one, many }) => ({
@@ -100,12 +113,9 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 // Tipos TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
-
 export type Patient = typeof patients.$inferSelect;
 export type NewPatient = typeof patients.$inferInsert;
-
 export type TherapeuticPlan = typeof therapeuticPlans.$inferSelect;
 export type NewTherapeuticPlan = typeof therapeuticPlans.$inferInsert;
-
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
