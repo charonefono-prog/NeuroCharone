@@ -2,9 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthUser {
+  id?: number;
   email: string;
-  name: string;
-  accessLevel: "user" | "professional" | "admin";
+  fullName?: string;
+  name?: string;
+  role?: "user" | "admin";
+  accessLevel?: "user" | "professional" | "admin";
 }
 
 interface AuthContextType {
@@ -27,11 +30,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const restoreSession = async () => {
       try {
         const storedUser = await AsyncStorage.getItem("auth_user");
-        if (storedUser) {
+        const storedToken = await AsyncStorage.getItem("auth_token");
+        
+        // Only restore session if both user and token exist
+        if (storedUser && storedToken) {
           setUser(JSON.parse(storedUser));
+        } else {
+          // Clear invalid session
+          await AsyncStorage.removeItem("auth_user");
+          await AsyncStorage.removeItem("auth_token");
         }
       } catch (error) {
         console.error("Failed to restore session:", error);
+        // Clear on error
+        await AsyncStorage.removeItem("auth_user");
+        await AsyncStorage.removeItem("auth_token");
       } finally {
         setIsLoading(false);
       }
@@ -43,8 +56,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Call backend login endpoint
-      const response = await fetch("/api/registration.login", {
+      // Call backend login endpoint using new auth API
+      const response = await fetch("/api/auth.login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -53,12 +66,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.reason || "Login failed");
+        throw new Error(data.message || "Login failed");
       }
 
+      // Store token and user data
       const userData = data.user;
       setUser(userData);
       await AsyncStorage.setItem("auth_user", JSON.stringify(userData));
+      await AsyncStorage.setItem("auth_token", data.token);
     } finally {
       setIsLoading(false);
     }
@@ -67,8 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, name: string, password: string) => {
     setIsLoading(true);
     try {
-      // Call backend register endpoint
-      const response = await fetch("/api/registration.register", {
+      // Call backend register endpoint using new auth API
+      const response = await fetch("/api/auth.register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
@@ -93,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setUser(null);
       await AsyncStorage.removeItem("auth_user");
+      await AsyncStorage.removeItem("auth_token");
     } finally {
       setIsLoading(false);
     }
