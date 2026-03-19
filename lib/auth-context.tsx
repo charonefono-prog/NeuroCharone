@@ -56,8 +56,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Call backend login endpoint using new auth API
-      const response = await fetch("/api/auth.login", {
+      // Call backend login endpoint using PWA-only auth API
+      const response = await fetch("/api/pwaAuth.login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -82,8 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, name: string, password: string) => {
     setIsLoading(true);
     try {
-      // Call backend register endpoint using new auth API
-      const response = await fetch("/api/auth.register", {
+      // Call backend register endpoint using PWA-only auth API
+      const response = await fetch("/api/pwaAuth.register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),

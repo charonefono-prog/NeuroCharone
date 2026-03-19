@@ -14,9 +14,9 @@ export default function AdminPanel() {
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const getPendingQuery = trpc.auth.getPendingUsers.useQuery();
-  const approveMutation = trpc.auth.approveUser.useMutation();
-  const rejectMutation = trpc.auth.rejectUser.useMutation();
+  const getPendingQuery = trpc.pwaAuth.getPendingUsers.useQuery();
+  const approveMutation = trpc.pwaAuth.approveUser.useMutation();
+  const rejectMutation = trpc.pwaAuth.rejectUser.useMutation();
 
   useEffect(() => {
     if (getPendingQuery.data) {

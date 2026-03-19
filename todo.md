@@ -1048,3 +1048,12 @@ export default function MyScreen() {
 - [x] Add session management with JWT tokens
 - [ ] Test authentication flows end-to-end
 - [ ] Deploy PWA with authentication enabled
+
+
+## PWA Auth Separation (NEW - Prevent Conflicts)
+- [x] Create PWA-only auth router separate from shared backend (pwa-auth.ts)
+- [x] Create PWA-only user management table (uses existing accessControl table)
+- [x] Update PWA auth endpoints to use isolated database (/api/pwaAuth.*)
+- [x] Ensure iOS/Android are not affected by PWA auth changes (separate router)
+- [ ] Test PWA login independently
+- [x] Document architecture separation (pwaAuth router is separate from auth router)
