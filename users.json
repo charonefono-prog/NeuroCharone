@@ -15,5 +15,14 @@
     "role": "user",
     "status": "pending",
     "createdAt": "2026-03-20T20:04:32.436Z"
+  },
+  {
+    "id": "1774037147271",
+    "email": "edineuzasm@hotmail.com",
+    "name": "Edineuza Marqued",
+    "password": "010611Ce@",
+    "role": "user",
+    "status": "pending",
+    "createdAt": "2026-03-20T20:05:47.271Z"
   }
 ]

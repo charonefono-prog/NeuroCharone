@@ -10,6 +10,7 @@ interface User {
   name: string
   status: 'pending' | 'approved' | 'blocked'
   createdAt: string
+  isPWAUser?: boolean
 }
 
 export default function AdminScreen() {
@@ -37,12 +38,37 @@ export default function AdminScreen() {
       })
 
       const data = await response.json()
+      let allUsers: User[] = []
 
       if (data.success) {
-        setUsers(data.users || [])
+        allUsers = data.users || []
       } else {
         Alert.alert('Erro', data.reason || 'Falha ao carregar usuários')
       }
+
+      // Fetch PWA pending users
+      try {
+        const pwaResponse = await fetch('/api/pwaAuth.pending-users', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        const pwaData = await pwaResponse.json()
+        if (pwaData.success && pwaData.users) {
+          const pwaUsers = pwaData.users.map((u: any) => ({
+            id: u.id,
+            email: u.email,
+            name: u.name,
+            status: 'pending' as const,
+            createdAt: u.createdAt,
+            isPWAUser: true,
+          }))
+          allUsers = [...allUsers, ...pwaUsers]
+        }
+      } catch (pwaError) {
+        console.log('PWA users not available')
+      }
+
+      setUsers(allUsers)
     } catch (error) {
       Alert.alert('Erro', 'Falha ao conectar com o servidor')
       console.error(error)
@@ -69,6 +95,51 @@ export default function AdminScreen() {
     }
 
     setFilteredUsers(filtered)
+  }
+
+
+  const approvePWAUser = async (email: string) => {
+    try {
+      const response = await fetch('/api/pwaAuth.approve-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setUsers(users.filter((u) => u.email !== email))
+        Alert.alert('Sucesso', `Usuário PWA ${email} aprovado`)
+      } else {
+        Alert.alert('Erro', data.message || 'Falha ao aprovar usuário')
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao conectar com o servidor')
+      console.error(error)
+    }
+  }
+
+  const rejectPWAUser = async (email: string) => {
+    try {
+      const response = await fetch('/api/pwaAuth.reject-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setUsers(users.filter((u) => u.email !== email))
+        Alert.alert('Sucesso', `Usuário PWA ${email} rejeitado`)
+      } else {
+        Alert.alert('Erro', data.message || 'Falha ao rejeitar usuário')
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao conectar com o servidor')
+      console.error(error)
+    }
   }
 
   const updateUserStatus = async (userId: string, newStatus: 'approved' | 'blocked') => {
@@ -229,7 +300,12 @@ export default function AdminScreen() {
               <View key={user.id} className="bg-surface p-4 rounded-lg border border-border">
                 {/* User Info */}
                 <View className="mb-3">
-                  <Text className="text-lg font-semibold text-foreground">{user.name}</Text>
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-lg font-semibold text-foreground">{user.name}</Text>
+                    {user.isPWAUser && (
+                      <Text className="text-xs bg-primary px-2 py-1 rounded text-white font-semibold">PWA</Text>
+                    )}
+                  </View>
                   <Text className="text-sm text-muted">{user.email}</Text>
                   <View className="flex-row items-center gap-2 mt-2">
                     <View
@@ -245,13 +321,13 @@ export default function AdminScreen() {
                   {user.status === 'pending' && (
                     <>
                       <Pressable
-                        onPress={() => updateUserStatus(user.id, 'approved')}
+                        onPress={() => user.isPWAUser ? approvePWAUser(user.email) : updateUserStatus(user.id, 'approved')}
                         className="flex-1 bg-success py-2 px-3 rounded-lg"
                       >
                         <Text className="text-white text-xs font-semibold text-center">Aprovar</Text>
                       </Pressable>
                       <Pressable
-                        onPress={() => updateUserStatus(user.id, 'blocked')}
+                        onPress={() => user.isPWAUser ? rejectPWAUser(user.email) : updateUserStatus(user.id, 'blocked')}
                         className="flex-1 bg-error py-2 px-3 rounded-lg"
                       >
                         <Text className="text-white text-xs font-semibold text-center">Rejeitar</Text>

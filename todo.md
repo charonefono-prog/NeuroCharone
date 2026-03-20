@@ -1057,3 +1057,11 @@ export default function MyScreen() {
 - [x] Ensure iOS/Android are not affected by PWA auth changes (separate router)
 - [ ] Test PWA login independently
 - [x] Document architecture separation (pwaAuth router is separate from auth router)
+
+
+## PWA Admin Integration (NEW - Priority)
+- [ ] Update admin tab to fetch PWA pending users from API
+- [ ] Add PWA users to admin tab's user list with visual distinction
+- [ ] Implement approve/reject functionality for PWA users
+- [ ] Remove separate /admin page
+- [ ] Test admin tab with PWA user management
