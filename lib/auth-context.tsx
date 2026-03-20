@@ -57,7 +57,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       // Call backend login endpoint using PWA-only auth API
-      const response = await fetch("/api/pwaAuth.login", {
+      const { apiFetch } = await import('./api-config');
+      const response = await apiFetch("/api/pwaAuth.login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -83,7 +84,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       // Call backend register endpoint using PWA-only auth API
-      const response = await fetch("/api/pwaAuth.register", {
+      const { apiFetch } = await import('./api-config');
+      const response = await apiFetch("/api/pwaAuth.register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),

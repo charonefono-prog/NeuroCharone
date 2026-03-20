@@ -39,7 +39,8 @@ export default function AdminScreen() {
   const fetchUsers = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('/api/access-control.getAll', {
+      const { apiFetch } = await import('@/lib/api-config');
+      const response = await apiFetch('/api/access-control.getAll', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
@@ -55,7 +56,7 @@ export default function AdminScreen() {
 
       // Fetch PWA pending users
       try {
-        const pwaResponse = await fetch('/api/pwaAuth.pending-users', {
+        const pwaResponse = await apiFetch('/api/pwaAuth.pending-users', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         })
