@@ -523,11 +523,6 @@ app.get("/admin", (req, res) => {
           <h2>Cadastros Pendentes de Aprovação</h2>
           <div id="pendingUsers"></div>
         </div>
-        
-        <div class="card">
-          <h2>Usuários Aprovados</h2>
-          <div id="approvedUsers"></div>
-        </div>
       </div>
       
       <script>
@@ -535,32 +530,29 @@ app.get("/admin", (req, res) => {
           try {
             const response = await fetch('/api/pwaAuth.pending-users');
             const data = await response.json();
-            
             const pendingDiv = document.getElementById('pendingUsers');
-            const approvedDiv = document.getElementById('approvedUsers');
             
             if (data.users && data.users.length > 0) {
-              pendingDiv.innerHTML = data.users.map(user => \`
-                <div class="user-item">
-                  <div class="user-info">
-                    <div class="user-name">${user.name}</div>
-                    <div class="user-email">${user.email}</div>
-                    <div class="user-date">Cadastrado em: ${new Date(user.createdAt).toLocaleDateString('pt-BR')}</div>
-                  </div>
-                  <div class="user-actions">
-                    <button class="btn btn-approve" onclick="approveUser('${user.email}')">Aprovar</button>
-                    <button class="btn btn-reject" onclick="rejectUser('${user.email}')">Rejeitar</button>
-                  </div>
-                </div>
-              \`).join('');
+              let html = '';
+              for (let i = 0; i < data.users.length; i++) {
+                const u = data.users[i];
+                const date = new Date(u.createdAt).toLocaleDateString('pt-BR');
+                html += '<div class="user-item">';
+                html += '<div class="user-info">';
+                html += '<div class="user-name">' + u.name + '</div>';
+                html += '<div class="user-email">' + u.email + '</div>';
+                html += '<div class="user-date">Cadastrado em: ' + date + '</div>';
+                html += '</div>';
+                html += '<div class="user-actions">';
+                html += '<button class="btn btn-approve" onclick="approveUser(\'' + u.email + '\')">Aprovar</button>';
+                html += '<button class="btn btn-reject" onclick="rejectUser(\'' + u.email + '\')">Rejeitar</button>';
+                html += '</div>';
+                html += '</div>';
+              }
+              pendingDiv.innerHTML = html;
             } else {
               pendingDiv.innerHTML = '<div class="empty">Nenhum cadastro pendente</div>';
             }
-            
-            // Load approved users
-            const approvedResponse = await fetch('/api/pwaAuth.approved-users');
-            const approvedData = approvedResponse.json().catch(() => ({ users: [] }));
-            approvedDiv.innerHTML = '<div class="empty">Funcionalidade em desenvolvimento</div>';
           } catch (err) {
             showError('Erro ao carregar usuários: ' + err.message);
           }
@@ -568,16 +560,13 @@ app.get("/admin", (req, res) => {
         
         async function approveUser(email) {
           if (!confirm('Tem certeza que deseja aprovar este usuário?')) return;
-          
           try {
             const response = await fetch('/api/pwaAuth.approve-user', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email })
             });
-            
             const data = await response.json();
-            
             if (data.success) {
               showSuccess('Usuário aprovado com sucesso!');
               loadUsers();
@@ -591,16 +580,13 @@ app.get("/admin", (req, res) => {
         
         async function rejectUser(email) {
           if (!confirm('Tem certeza que deseja rejeitar este usuário?')) return;
-          
           try {
             const response = await fetch('/api/pwaAuth.reject-user', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email })
             });
-            
             const data = await response.json();
-            
             if (data.success) {
               showSuccess('Usuário rejeitado!');
               loadUsers();
@@ -632,9 +618,7 @@ app.get("/admin", (req, res) => {
           setTimeout(() => { successDiv.style.display = 'none'; }, 3000);
         }
         
-        // Load users on page load
         loadUsers();
-        // Refresh every 30 seconds
         setInterval(loadUsers, 30000);
       </script>
     </body>
