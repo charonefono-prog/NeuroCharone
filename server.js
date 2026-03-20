@@ -3,7 +3,7 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,16 +34,45 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Mock database for users (in-memory)
-const users = new Map();
-users.set("charonejr@gmail.com", {
-  id: "1",
-  email: "charonejr@gmail.com",
-  name: "Carlos Charone",
-  password: "12345",
-  role: "admin",
-  status: "active",
-});
+// Database file for users
+const DB_FILE = './users.json';
+
+function loadUsers() {
+  try {
+    if (existsSync(DB_FILE)) {
+      const data = readFileSync(DB_FILE, 'utf-8');
+      const usersArray = JSON.parse(data);
+      const map = new Map();
+      usersArray.forEach(u => map.set(u.email, u));
+      return map;
+    }
+  } catch (err) {
+    console.error('Error loading users:', err);
+  }
+  
+  // Default admin user
+  const map = new Map();
+  map.set("charonejr@gmail.com", {
+    id: "1",
+    email: "charonejr@gmail.com",
+    name: "Carlos Charone",
+    password: "12345",
+    role: "admin",
+    status: "active",
+  });
+  return map;
+}
+
+function saveUsers(usersMap) {
+  try {
+    const usersArray = Array.from(usersMap.values());
+    writeFileSync(DB_FILE, JSON.stringify(usersArray, null, 2));
+  } catch (err) {
+    console.error('Error saving users:', err);
+  }
+}
+
+const users = loadUsers();
 
 // Helper function to create token
 function createToken(user) {
@@ -109,6 +138,7 @@ app.post("/api/pwaAuth.register", (req, res) => {
   };
 
   users.set(email, newUser);
+  saveUsers(users);
 
   res.json({
     success: true,
@@ -158,6 +188,7 @@ app.post("/api/pwaAuth.approve-user", (req, res) => {
 
   user.status = "active";
   users.set(email, user);
+  saveUsers(users);
 
   res.json({
     success: true,
@@ -180,6 +211,7 @@ app.post("/api/pwaAuth.reject-user", (req, res) => {
   }
 
   users.delete(email);
+  saveUsers(users);
 
   res.json({
     success: true,
@@ -530,6 +562,7 @@ app.get("/admin", (req, res) => {
           try {
             const response = await fetch('/api/pwaAuth.pending-users');
             const data = await response.json();
+            console.log('Pending users:', data);
             const pendingDiv = document.getElementById('pendingUsers');
             
             if (data.users && data.users.length > 0) {
@@ -618,7 +651,12 @@ app.get("/admin", (req, res) => {
           setTimeout(() => { successDiv.style.display = 'none'; }, 3000);
         }
         
-        loadUsers();
+        // Load users when page loads
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadUsers);
+        } else {
+          loadUsers();
+        }
         setInterval(loadUsers, 30000);
       </script>
     </body>

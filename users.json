@@ -1,0 +1,19 @@
+[
+  {
+    "id": "1",
+    "email": "charonejr@gmail.com",
+    "name": "Carlos Charone",
+    "password": "12345",
+    "role": "admin",
+    "status": "active"
+  },
+  {
+    "id": "1774037072436",
+    "email": "carlos@test.com",
+    "name": "Carlos Test",
+    "password": "test123",
+    "role": "user",
+    "status": "pending",
+    "createdAt": "2026-03-20T20:04:32.436Z"
+  }
+]
