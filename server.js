@@ -158,6 +158,28 @@ app.post("/api/pwaAuth.logout", (req, res) => {
   res.json({ success: true, message: "Logout realizado com sucesso" });
 });
 
+// Logout page (GET) - clears session and redirects to login
+app.get("/logout", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Logout</title>
+    </head>
+    <body>
+      <script>
+        // Clear localStorage
+        localStorage.clear();
+        sessionStorage.clear();
+        // Redirect to login
+        window.location.href = '/login';
+      </script>
+      <p>Saindo...</p>
+    </body>
+    </html>
+  `);
+});
+
 // Get pending users (admin only)
 app.get("/api/pwaAuth.pending-users", (req, res) => {
   const pendingUsers = Array.from(users.values()).filter((u) => u.status === "pending");
