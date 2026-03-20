@@ -1103,3 +1103,9 @@ export default function MyScreen() {
 - [x] Test tRPC procedures end-to-end (11 tests passing)
 - [ ] Remove HTTP endpoints for PWA auth
 - [x] Update documentation with tRPC examples (PWA_TRPC_REFERENCE.md)
+
+
+## Testing PWA Authentication tRPC (COMPLETED)
+- [x] Test complete authentication flow in browser (TESTING_GUIDE.md)
+- [x] Create automated test script for PWA auth (5 E2E tests passing)
+- [x] Add test data with multiple pending users (script: add-test-users.mjs)
