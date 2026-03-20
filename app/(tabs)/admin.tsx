@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-native'
 import { ScreenContainer } from '@/components/screen-container'
 import { useColors } from '@/hooks/use-colors'
@@ -24,6 +25,12 @@ export default function AdminScreen() {
   useEffect(() => {
     fetchUsers()
   }, [])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUsers()
+    }, [])
+  )
 
   useEffect(() => {
     filterUsers()
