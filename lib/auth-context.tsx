@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { trpc } from "./trpc";
 
 interface AuthUser {
   id?: number;
@@ -24,6 +25,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // tRPC mutations
+  const loginMutation = trpc.pwaAuthTrpc.login.useMutation();
+  const registerMutation = trpc.pwaAuthTrpc.register.useMutation();
+  const logoutMutation = trpc.pwaAuthTrpc.logout.useMutation();
 
   // Restore session on mount
   useEffect(() => {
@@ -56,25 +62,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Call backend login endpoint using PWA-only auth API
-      const { apiFetch } = await import('./api-config');
-      const response = await apiFetch("/api/pwaAuth.login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      // Call tRPC login procedure
+      const result = await loginMutation.mutateAsync({ email, password });
 
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.message || "Login failed");
+      if (!result.success) {
+        throw new Error("Login failed");
       }
 
       // Store token and user data
-      const userData = data.user;
+      const userData = result.user;
       setUser(userData);
       await AsyncStorage.setItem("auth_user", JSON.stringify(userData));
-      await AsyncStorage.setItem("auth_token", data.token);
+      await AsyncStorage.setItem("auth_token", result.token);
     } finally {
       setIsLoading(false);
     }
@@ -83,18 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, name: string, password: string) => {
     setIsLoading(true);
     try {
-      // Call backend register endpoint using PWA-only auth API
-      const { apiFetch } = await import('./api-config');
-      const response = await apiFetch("/api/pwaAuth.register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, password }),
-      });
+      // Call tRPC register procedure
+      const result = await registerMutation.mutateAsync({ email, name, password });
 
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.message || "Registration failed");
+      if (!result.success) {
+        throw new Error("Registration failed");
       }
 
       // After registration, user needs approval
@@ -108,6 +100,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     try {
+      // Call tRPC logout procedure
+      await logoutMutation.mutateAsync();
+      
       setUser(null);
       await AsyncStorage.removeItem("auth_user");
       await AsyncStorage.removeItem("auth_token");

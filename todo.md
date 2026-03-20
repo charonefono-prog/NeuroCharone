@@ -1093,3 +1093,13 @@ export default function MyScreen() {
 - [ ] Implement session timeout
 - [ ] Add IP whitelist for admin access
 - [ ] Create audit log for user actions
+
+
+## tRPC Migration for PWA Authentication (COMPLETED)
+- [x] Create tRPC procedures for PWA auth (register, login, logout)
+- [x] Create tRPC procedures for admin (approve, reject, pending-users)
+- [x] Update admin tab to use tRPC instead of HTTP
+- [x] Update auth-context to use tRPC instead of HTTP
+- [x] Test tRPC procedures end-to-end (11 tests passing)
+- [ ] Remove HTTP endpoints for PWA auth
+- [x] Update documentation with tRPC examples (PWA_TRPC_REFERENCE.md)

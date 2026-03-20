@@ -4,6 +4,7 @@ import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-nativ
 import { ScreenContainer } from '@/components/screen-container'
 import { useColors } from '@/hooks/use-colors'
 import { cn } from '@/lib/utils'
+import { trpc } from '@/lib/trpc'
 
 interface User {
   id: string
@@ -22,6 +23,9 @@ export default function AdminScreen() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'blocked'>('all')
   const [isLoading, setIsLoading] = useState(false)
 
+  // tRPC queries
+  const pendingUsersQuery = trpc.pwaAuthTrpc.getPendingUsers.useQuery()
+
   useEffect(() => {
     fetchUsers()
   }, [])
@@ -29,7 +33,9 @@ export default function AdminScreen() {
   useFocusEffect(
     React.useCallback(() => {
       fetchUsers()
-    }, [])
+      // Refetch pending users when tab is focused
+      pendingUsersQuery.refetch()
+    }, [pendingUsersQuery])
   )
 
   useEffect(() => {
@@ -54,15 +60,11 @@ export default function AdminScreen() {
         Alert.alert('Erro', data.reason || 'Falha ao carregar usuários')
       }
 
-      // Fetch PWA pending users
+      // Fetch PWA pending users via tRPC
       try {
-        const pwaResponse = await apiFetch('/api/pwaAuth.pending-users', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        const pwaData = await pwaResponse.json()
-        if (pwaData.success && pwaData.users) {
-          const pwaUsers = pwaData.users.map((u: any) => ({
+        const pwaUsers = await pendingUsersQuery.refetch()
+        if (pwaUsers.data) {
+          const mappedPwaUsers = pwaUsers.data.map((u: any) => ({
             id: u.id,
             email: u.email,
             name: u.name,
@@ -70,10 +72,10 @@ export default function AdminScreen() {
             createdAt: u.createdAt,
             isPWAUser: true,
           }))
-          allUsers = [...allUsers, ...pwaUsers]
+          allUsers = [...allUsers, ...mappedPwaUsers]
         }
       } catch (pwaError) {
-        console.log('PWA users not available')
+        console.log('PWA users not available:', pwaError)
       }
 
       setUsers(allUsers)
@@ -105,47 +107,32 @@ export default function AdminScreen() {
     setFilteredUsers(filtered)
   }
 
+  // tRPC mutations
+  const approveMutation = trpc.pwaAuthTrpc.approveUser.useMutation()
+  const rejectMutation = trpc.pwaAuthTrpc.rejectUser.useMutation()
 
   const approvePWAUser = async (email: string) => {
     try {
-      const response = await fetch('/api/pwaAuth.approve-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        setUsers(users.filter((u) => u.email !== email))
-        Alert.alert('Sucesso', `Usuário PWA ${email} aprovado`)
-      } else {
-        Alert.alert('Erro', data.message || 'Falha ao aprovar usuário')
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao conectar com o servidor')
+      await approveMutation.mutateAsync({ email })
+      setUsers(users.filter((u) => u.email !== email))
+      Alert.alert('Sucesso', `Usuário PWA ${email} aprovado`)
+      // Refetch to update list
+      await fetchUsers()
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Falha ao aprovar usuário')
       console.error(error)
     }
   }
 
   const rejectPWAUser = async (email: string) => {
     try {
-      const response = await fetch('/api/pwaAuth.reject-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        setUsers(users.filter((u) => u.email !== email))
-        Alert.alert('Sucesso', `Usuário PWA ${email} rejeitado`)
-      } else {
-        Alert.alert('Erro', data.message || 'Falha ao rejeitar usuário')
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao conectar com o servidor')
+      await rejectMutation.mutateAsync({ email })
+      setUsers(users.filter((u) => u.email !== email))
+      Alert.alert('Sucesso', `Usuário PWA ${email} rejeitado`)
+      // Refetch to update list
+      await fetchUsers()
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Falha ao rejeitar usuário')
       console.error(error)
     }
   }
@@ -324,7 +311,7 @@ export default function AdminScreen() {
                   </View>
                 </View>
 
-                {/* Actions */}
+                {/* Action Buttons */}
                 <View className="flex-row gap-2">
                   {user.status === 'pending' && (
                     <>
