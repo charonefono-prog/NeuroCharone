@@ -3,7 +3,7 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,9 +34,545 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+// Mock database for users (in-memory)
+const users = new Map();
+users.set("admin@neurolasermap.com", {
+  id: "1",
+  email: "admin@neurolasermap.com",
+  name: "Admin",
+  password: "admin123456",
+  role: "admin",
+  status: "active",
+});
+
+// Helper function to create token
+function createToken(user) {
+  const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64");
+  const payload = Buffer.from(JSON.stringify({ email: user.email, id: user.id, role: user.role })).toString("base64");
+  const signature = Buffer.from("signature").toString("base64");
+  return `${header}.${payload}.${signature}`;
+}
+
+// ============ PWA Authentication APIs ============
+
+// Login endpoint
+app.post("/api/pwaAuth.login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.json({ success: false, message: "Email e senha são obrigatórios" });
+  }
+
+  const user = users.get(email);
+
+  if (!user || user.password !== password) {
+    return res.json({ success: false, message: "Email ou senha inválidos" });
+  }
+
+  if (user.status !== "active") {
+    return res.json({ success: false, message: "Sua conta ainda não foi aprovada" });
+  }
+
+  const token = createToken(user);
+  res.json({
+    success: true,
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
+  });
+});
+
+// Register endpoint
+app.post("/api/pwaAuth.register", (req, res) => {
+  const { email, name, password } = req.body;
+
+  if (!email || !name || !password) {
+    return res.json({ success: false, message: "Todos os campos são obrigatórios" });
+  }
+
+  if (users.has(email)) {
+    return res.json({ success: false, message: "Email já cadastrado" });
+  }
+
+  const newUser = {
+    id: Date.now().toString(),
+    email,
+    name,
+    password,
+    role: "user",
+    status: "pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  users.set(email, newUser);
+
+  res.json({
+    success: true,
+    message: "Cadastro realizado! Aguarde a aprovação do administrador.",
+    user: {
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      role: newUser.role,
+      status: newUser.status,
+    },
+  });
+});
+
+// Logout endpoint
+app.post("/api/pwaAuth.logout", (req, res) => {
+  res.json({ success: true, message: "Logout realizado com sucesso" });
+});
+
+// Get pending users (admin only)
+app.get("/api/pwaAuth.pending-users", (req, res) => {
+  const pendingUsers = Array.from(users.values()).filter((u) => u.status === "pending");
+  res.json({
+    success: true,
+    users: pendingUsers.map((u) => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      createdAt: u.createdAt,
+    })),
+  });
+});
+
+// Approve user (admin only)
+app.post("/api/pwaAuth.approve-user", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.json({ success: false, message: "Email é obrigatório" });
+  }
+
+  const user = users.get(email);
+
+  if (!user) {
+    return res.json({ success: false, message: "Usuário não encontrado" });
+  }
+
+  user.status = "active";
+  users.set(email, user);
+
+  res.json({
+    success: true,
+    message: `Usuário ${email} aprovado com sucesso`,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      status: user.status,
+    },
+  });
+});
+
+// Reject user (admin only)
+app.post("/api/pwaAuth.reject-user", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.json({ success: false, message: "Email é obrigatório" });
+  }
+
+  users.delete(email);
+
+  res.json({
+    success: true,
+    message: `Usuário ${email} rejeitado`,
+  });
+});
+
 // Health check
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, timestamp: Date.now() });
+});
+
+// PWA login page
+app.get("/login", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>NeuroLaserMap - Login</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: #f5f5f5;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 20px;
+        }
+        .container {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          padding: 40px;
+          max-width: 400px;
+          width: 100%;
+        }
+        h1 {
+          font-size: 32px;
+          color: #11181c;
+          text-align: center;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          text-align: center;
+          color: #687076;
+          font-size: 14px;
+          margin-bottom: 32px;
+        }
+        .form-group {
+          margin-bottom: 16px;
+        }
+        label {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: #11181c;
+          margin-bottom: 8px;
+        }
+        input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 14px;
+          background: #f5f5f5;
+        }
+        input:focus {
+          outline: none;
+          border-color: #0a7ea4;
+          background: white;
+        }
+        button {
+          width: 100%;
+          padding: 12px;
+          background: #0a7ea4;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 24px;
+        }
+        button:hover {
+          background: #0a6a8a;
+        }
+        button:active {
+          opacity: 0.8;
+        }
+        .error {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #dc2626;
+          padding: 12px;
+          border-radius: 8px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          display: none;
+        }
+        .register-link {
+          text-align: center;
+          margin-top: 16px;
+          font-size: 14px;
+          color: #687076;
+        }
+        .register-link a {
+          color: #0a7ea4;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        .info-box {
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          color: #1e40af;
+          padding: 12px;
+          border-radius: 8px;
+          margin-top: 24px;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>NeuroLaserMap</h1>
+        <p class="subtitle">Mapeamento de Neuromodulação</p>
+        
+        <div class="error" id="error"></div>
+        
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+          </div>
+          
+          <button type="submit">Entrar</button>
+        </form>
+        
+        <div class="register-link">
+          Não tem conta? <a href="/register">Cadastre-se</a>
+        </div>
+        
+        <div class="info-box">
+          <strong>Credenciais de Teste:</strong><br>
+          Email: admin@neurolasermap.com<br>
+          Senha: admin123456
+        </div>
+      </div>
+      
+      <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          const errorDiv = document.getElementById('error');
+          
+          try {
+            const response = await fetch('/api/pwaAuth.login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              localStorage.setItem('auth_token', data.token);
+              localStorage.setItem('auth_user', JSON.stringify(data.user));
+              window.location.href = '/';
+            } else {
+              errorDiv.textContent = data.message || 'Falha ao fazer login';
+              errorDiv.style.display = 'block';
+            }
+          } catch (err) {
+            errorDiv.textContent = 'Erro ao conectar com o servidor';
+            errorDiv.style.display = 'block';
+          }
+        });
+      </script>
+    </body>
+    </html>
+  `);
+});
+
+// PWA register page
+app.get("/register", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>NeuroLaserMap - Cadastro</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: #f5f5f5;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 20px;
+        }
+        .container {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          padding: 40px;
+          max-width: 400px;
+          width: 100%;
+        }
+        h1 {
+          font-size: 32px;
+          color: #11181c;
+          text-align: center;
+          margin-bottom: 8px;
+        }
+        .subtitle {
+          text-align: center;
+          color: #687076;
+          font-size: 14px;
+          margin-bottom: 32px;
+        }
+        .form-group {
+          margin-bottom: 16px;
+        }
+        label {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: #11181c;
+          margin-bottom: 8px;
+        }
+        input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 14px;
+          background: #f5f5f5;
+        }
+        input:focus {
+          outline: none;
+          border-color: #0a7ea4;
+          background: white;
+        }
+        button {
+          width: 100%;
+          padding: 12px;
+          background: #0a7ea4;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 24px;
+        }
+        button:hover {
+          background: #0a6a8a;
+        }
+        button:active {
+          opacity: 0.8;
+        }
+        .error {
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          color: #dc2626;
+          padding: 12px;
+          border-radius: 8px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          display: none;
+        }
+        .login-link {
+          text-align: center;
+          margin-top: 16px;
+          font-size: 14px;
+          color: #687076;
+        }
+        .login-link a {
+          color: #0a7ea4;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        .info-box {
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          color: #1e40af;
+          padding: 12px;
+          border-radius: 8px;
+          margin-top: 24px;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>NeuroLaserMap</h1>
+        <p class="subtitle">Criar Conta</p>
+        
+        <div class="error" id="error"></div>
+        
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="name">Nome Completo</label>
+            <input type="text" id="name" name="name" placeholder="Seu nome" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirmPassword">Confirmar Senha</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
+          </div>
+          
+          <button type="submit">Cadastrar</button>
+        </form>
+        
+        <div class="login-link">
+          Já tem conta? <a href="/login">Faça login</a>
+        </div>
+        
+        <div class="info-box">
+          Após o cadastro, sua conta será analisada pelo administrador. Você receberá um email de confirmação quando for aprovado.
+        </div>
+      </div>
+      
+      <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const name = document.getElementById('name').value;
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+          const errorDiv = document.getElementById('error');
+          
+          if (password !== confirmPassword) {
+            errorDiv.textContent = 'As senhas não correspondem';
+            errorDiv.style.display = 'block';
+            return;
+          }
+          
+          if (password.length < 6) {
+            errorDiv.textContent = 'A senha deve ter pelo menos 6 caracteres';
+            errorDiv.style.display = 'block';
+            return;
+          }
+          
+          try {
+            const response = await fetch('/api/pwaAuth.register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              alert('Cadastro realizado! Aguarde a aprovação do administrador.');
+              window.location.href = '/login';
+            } else {
+              errorDiv.textContent = data.message || 'Falha ao registrar';
+              errorDiv.style.display = 'block';
+            }
+          } catch (err) {
+            errorDiv.textContent = 'Erro ao conectar com o servidor';
+            errorDiv.style.display = 'block';
+          }
+        });
+      </script>
+    </body>
+    </html>
+  `);
 });
 
 // Serve static files from web-dist/

@@ -87,16 +87,30 @@ function RootLayoutContent() {
     };
   }, [initialInsets, initialFrame]);
 
-  const { isAuthenticated, isLoading } = useAuth();
+  const isWeb = Platform.OS === "web";
+  
+  // Only call useAuth on web (PWA) where AuthProvider is available
+  let isAuthenticated = false;
+  let isLoading = false;
+  
+  if (isWeb) {
+    const auth = useAuth();
+    isAuthenticated = auth.isAuthenticated;
+    isLoading = auth.isLoading;
+  }
 
-  // Show loading while checking auth state
-  if (isLoading) {
+  // Show loading while checking auth state (only on web/PWA)
+  if (isWeb && isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
         <Text style={{ color: "#0a7ea4", fontSize: 18 }}>Loading...</Text>
       </View>
     );
   }
+
+  // For PWA (web), show login if not authenticated
+  // For iOS/Android, always show the main app
+  const shouldShowLogin = isWeb && !isAuthenticated;
 
   const content = (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -106,10 +120,10 @@ function RootLayoutContent() {
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
           <Stack screenOptions={{ headerShown: false }}>
-            {!isAuthenticated ? (
+            {shouldShowLogin ? (
               <>
-                <Stack.Screen name="login" />
-                <Stack.Screen name="register" />
+                <Stack.Screen name="web-login" />
+                <Stack.Screen name="web-register" />
               </>
             ) : (
               <>
@@ -148,9 +162,16 @@ function RootLayoutContent() {
 }
 
 export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <RootLayoutContent />
-    </AuthProvider>
-  );
+  // Only use AuthProvider on web (PWA)
+  // iOS/Android bypass authentication
+  if (Platform.OS === "web") {
+    return (
+      <AuthProvider>
+        <RootLayoutContent />
+      </AuthProvider>
+    );
+  }
+
+  // For iOS/Android, skip AuthProvider and go directly to app
+  return <RootLayoutContent />;
 }
