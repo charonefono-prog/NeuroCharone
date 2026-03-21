@@ -1,5 +1,5 @@
-[
-  {
+{
+  "charonejr@gmail.com": {
     "id": "1",
     "email": "charonejr@gmail.com",
     "name": "Carlos Charone",
@@ -7,7 +7,7 @@
     "role": "admin",
     "status": "active"
   },
-  {
+  "carlos@test.com": {
     "id": "1774037072436",
     "email": "carlos@test.com",
     "name": "Carlos Test",
@@ -16,7 +16,7 @@
     "status": "pending",
     "createdAt": "2026-03-20T20:04:32.436Z"
   },
-  {
+  "edineuzasm@hotmail.com": {
     "id": "1774037147271",
     "email": "edineuzasm@hotmail.com",
     "name": "Edineuza Marqued",
@@ -24,5 +24,41 @@
     "role": "user",
     "status": "pending",
     "createdAt": "2026-03-20T20:05:47.271Z"
+  },
+  "maria.silva@example.com": {
+    "id": "17740488238630.2694214163282378",
+    "name": "Maria Silva",
+    "email": "maria.silva@example.com",
+    "password": "$2b$10$8E6m9noqqnlX1nUmM.Fdf.Io95d6PR/ThRK9UpjN0cNNxttzsrGIK",
+    "status": "pending",
+    "createdAt": "2026-03-20T23:20:23.863Z",
+    "approvedAt": null
+  },
+  "joao.santos@example.com": {
+    "id": "17740488239240.17059829954039896",
+    "name": "João Santos",
+    "email": "joao.santos@example.com",
+    "password": "$2b$10$dguukBL1qFTkMexdJQM18.WeSKLSId8cR6p60JSqZ3dJOBxutZG46",
+    "status": "pending",
+    "createdAt": "2026-03-20T23:20:23.924Z",
+    "approvedAt": null
+  },
+  "ana.costa@example.com": {
+    "id": "17740488239850.6689511258533676",
+    "name": "Ana Costa",
+    "email": "ana.costa@example.com",
+    "password": "$2b$10$b133Sc/9CM78fgc0L2nTs.NGEKH9twpxhXOOy9ES7qTS6ByNPDRVe",
+    "status": "active",
+    "createdAt": "2026-03-20T23:20:23.985Z",
+    "approvedAt": "2026-03-20T23:20:23.796Z"
+  },
+  "pedro.oliveira@example.com": {
+    "id": "17740488240460.15184589019038763",
+    "name": "Pedro Oliveira",
+    "email": "pedro.oliveira@example.com",
+    "password": "$2b$10$moJ/PqeoLgFFDUC9KUrh6Ot9hqjt0fVtLdwd1HY8lwWUVQinUQ5G6",
+    "status": "rejected",
+    "createdAt": "2026-03-20T23:20:24.046Z",
+    "approvedAt": null
   }
-]
+}

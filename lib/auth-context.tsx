@@ -70,7 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Store token and user data
-      const userData = result.user;
+      const userData: AuthUser = {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name,
+        accessLevel: (result.user.accessLevel === "admin" || result.user.accessLevel === "professional" || result.user.accessLevel === "user") ? result.user.accessLevel : "user",
+      };
       setUser(userData);
       await AsyncStorage.setItem("auth_user", JSON.stringify(userData));
       await AsyncStorage.setItem("auth_token", result.token);

@@ -111,9 +111,9 @@ export default function AdminScreen() {
   const approveMutation = trpc.pwaAuthTrpc.approveUser.useMutation()
   const rejectMutation = trpc.pwaAuthTrpc.rejectUser.useMutation()
 
-  const approvePWAUser = async (email: string) => {
+  const approvePWAUser = async (userId: string, email: string) => {
     try {
-      await approveMutation.mutateAsync({ email })
+      await approveMutation.mutateAsync({ userId: parseInt(userId) })
       setUsers(users.filter((u) => u.email !== email))
       Alert.alert('Sucesso', `Usuário PWA ${email} aprovado`)
       // Refetch to update list
@@ -124,9 +124,9 @@ export default function AdminScreen() {
     }
   }
 
-  const rejectPWAUser = async (email: string) => {
+  const rejectPWAUser = async (userId: string, email: string) => {
     try {
-      await rejectMutation.mutateAsync({ email })
+      await rejectMutation.mutateAsync({ userId: parseInt(userId), reason: 'Rejected by admin' })
       setUsers(users.filter((u) => u.email !== email))
       Alert.alert('Sucesso', `Usuário PWA ${email} rejeitado`)
       // Refetch to update list
@@ -316,13 +316,13 @@ export default function AdminScreen() {
                   {user.status === 'pending' && (
                     <>
                       <Pressable
-                        onPress={() => user.isPWAUser ? approvePWAUser(user.email) : updateUserStatus(user.id, 'approved')}
+                        onPress={() => user.isPWAUser ? approvePWAUser(user.id, user.email) : updateUserStatus(user.id, 'approved')}
                         className="flex-1 bg-success py-2 px-3 rounded-lg"
                       >
                         <Text className="text-white text-xs font-semibold text-center">Aprovar</Text>
                       </Pressable>
                       <Pressable
-                        onPress={() => user.isPWAUser ? rejectPWAUser(user.email) : updateUserStatus(user.id, 'blocked')}
+                        onPress={() => user.isPWAUser ? rejectPWAUser(user.id, user.email) : updateUserStatus(user.id, 'blocked')}
                         className="flex-1 bg-error py-2 px-3 rounded-lg"
                       >
                         <Text className="text-white text-xs font-semibold text-center">Rejeitar</Text>

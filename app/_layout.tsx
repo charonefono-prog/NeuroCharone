@@ -42,10 +42,11 @@ function RootLayoutContent() {
   }, []);
 
   // Register Service Worker for PWA (only on web)
-  if (Platform.OS === "web") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useServiceWorker();
-  }
+  useEffect(() => {
+    if (Platform.OS === "web") {
+      useServiceWorker();
+    }
+  }, []);
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
     setInsets(metrics.insets);
@@ -89,15 +90,10 @@ function RootLayoutContent() {
 
   const isWeb = Platform.OS === "web";
   
-  // Only call useAuth on web (PWA) where AuthProvider is available
-  let isAuthenticated = false;
-  let isLoading = false;
-  
-  if (isWeb) {
-    const auth = useAuth();
-    isAuthenticated = auth.isAuthenticated;
-    isLoading = auth.isLoading;
-  }
+  // Always call useAuth (it's only available on web via AuthProvider in RootLayout)
+  const auth = useAuth();
+  const isAuthenticated = auth.isAuthenticated;
+  const isLoading = auth.isLoading;
 
   // Show loading while checking auth state (only on web/PWA)
   if (isWeb && isLoading) {
