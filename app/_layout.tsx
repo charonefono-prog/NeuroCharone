@@ -42,11 +42,10 @@ function RootLayoutContent() {
   }, []);
 
   // Register Service Worker for PWA (only on web)
-  useEffect(() => {
-    if (Platform.OS === "web") {
-      useServiceWorker();
-    }
-  }, []);
+  if (Platform.OS === "web") {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useServiceWorker();
+  }
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
     setInsets(metrics.insets);
@@ -88,25 +87,16 @@ function RootLayoutContent() {
     };
   }, [initialInsets, initialFrame]);
 
-  const isWeb = Platform.OS === "web";
-  
-  // Always call useAuth (it's only available on web via AuthProvider in RootLayout)
-  const auth = useAuth();
-  const isAuthenticated = auth.isAuthenticated;
-  const isLoading = auth.isLoading;
+  const { isAuthenticated, isLoading } = useAuth();
 
-  // Show loading while checking auth state (only on web/PWA)
-  if (isWeb && isLoading) {
+  // Show loading while checking auth state
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
         <Text style={{ color: "#0a7ea4", fontSize: 18 }}>Loading...</Text>
       </View>
     );
   }
-
-  // For PWA (web), show login if not authenticated
-  // For iOS/Android, always show the main app
-  const shouldShowLogin = isWeb && !isAuthenticated;
 
   const content = (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -116,10 +106,10 @@ function RootLayoutContent() {
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
           <Stack screenOptions={{ headerShown: false }}>
-            {shouldShowLogin ? (
+            {!isAuthenticated ? (
               <>
-                <Stack.Screen name="web-login" />
-                <Stack.Screen name="web-register" />
+                <Stack.Screen name="login" />
+                <Stack.Screen name="register" />
               </>
             ) : (
               <>
@@ -158,16 +148,9 @@ function RootLayoutContent() {
 }
 
 export default function RootLayout() {
-  // Only use AuthProvider on web (PWA)
-  // iOS/Android bypass authentication
-  if (Platform.OS === "web") {
-    return (
-      <AuthProvider>
-        <RootLayoutContent />
-      </AuthProvider>
-    );
-  }
-
-  // For iOS/Android, skip AuthProvider and go directly to app
-  return <RootLayoutContent />;
+  return (
+    <AuthProvider>
+      <RootLayoutContent />
+    </AuthProvider>
+  );
 }

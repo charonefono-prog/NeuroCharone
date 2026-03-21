@@ -7,16 +7,20 @@ import { therapeuticPlansRouter } from "./routers/therapeutic-plans";
 import { sessionsRouter } from "./routers/sessions";
 import { accessControlRouter } from "./routers/access-control";
 import { registrationRouter } from "./routers/registration";
-import { authRouter } from "./routers/auth";
-import { pwaAuthRouter } from "./routers/pwa-auth";
-import { pwaAuthRouter as pwaAuthTrpcRouter } from "./routers/pwa-auth-trpc";
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
-  auth: authRouter,
-  pwaAuth: pwaAuthRouter, // PWA-only authentication (HTTP endpoints)
-  pwaAuthTrpc: pwaAuthTrpcRouter, // PWA-only authentication (tRPC procedures)
+  auth: router({
+    me: publicProcedure.query((opts) => opts.ctx.user),
+    logout: publicProcedure.mutation(({ ctx }) => {
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      return {
+        success: true,
+      } as const;
+    }),
+  }),
 
   // Feature routers
   patients: patientsRouter,

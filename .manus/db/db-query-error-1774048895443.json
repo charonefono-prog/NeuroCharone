@@ -1,8 +1,0 @@
-{
-  "query": "SELECT id, email, name, is_approved FROM access_control WHERE is_approved = 0;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3uRLT9dvpRVtv1Z.59e047063c03 --database mUCtWCKwF3aoCHWs5odRP4 --execute SELECT id, email, name, is_approved FROM access_control WHERE is_approved = 0;",
-  "returncode": 1,
-  "logs": [
-    "ERROR 1054 (42S22) at line 1: Unknown column 'is_approved' in 'where clause'"
-  ]
-}

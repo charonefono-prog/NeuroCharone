@@ -1,9 +1,0 @@
-{
-  "query": "INSERT INTO access_control (email, name, isApproved, accessLevel, passwordHash, createdAt, updatedAt) VALUES ('edineuzasm@hotmail.com', 'Edineuzasm', 0, 'user', '$2b$10$abc123', NOW(), NOW()); INSERT INTO access_control (email, name, isApproved, accessLevel, passwordHash, createdAt, updatedAt) VALUES ('maria.silva@example.com', 'Maria Silva', 0, 'user', '$2b$10$abc123', NOW(), NOW()); INSERT INTO access_control (email, name, isApproved, accessLevel, passwordHash, createdAt, updatedAt) VALUES ('joao.santos@example.com', 'João Santos', 0, 'user', '$2b$10$abc123', NOW(), NOW());",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3uRLT9dvpRVtv1Z.59e047063c03 --database mUCtWCKwF3aoCHWs5odRP4 --execute INSERT INTO access_control (email, name, isApproved, accessLevel, passwordHash, createdAt, updatedAt) VALUES ('edineuzasm@hotmail.com', 'Edineuzasm', 0, 'user', '$2b$10$abc123', NOW(), NOW()); INSERT INTO access_control (email, name, isApproved, accessLevel, passwordHash, createdAt, updatedAt) VALUES ('maria.silva@example.com', 'Maria Silva', 0, 'user', '$2b$10$abc123', NOW(), NOW()); INSERT INTO access_control (email, name, isApproved, accessLevel, passwordHash, createdAt, updatedAt) VALUES ('joao.santos@example.com', 'João Santos', 0, 'user', '$2b$10$abc123', NOW(), NOW());",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 87
-}

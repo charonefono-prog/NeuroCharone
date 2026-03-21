@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useFocusEffect } from '@react-navigation/native'
+import { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-native'
 import { ScreenContainer } from '@/components/screen-container'
 import { useColors } from '@/hooks/use-colors'
 import { cn } from '@/lib/utils'
-import { trpc } from '@/lib/trpc'
 
 interface User {
   id: string
@@ -12,7 +10,6 @@ interface User {
   name: string
   status: 'pending' | 'approved' | 'blocked'
   createdAt: string
-  isPWAUser?: boolean
 }
 
 export default function AdminScreen() {
@@ -23,20 +20,9 @@ export default function AdminScreen() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'blocked'>('all')
   const [isLoading, setIsLoading] = useState(false)
 
-  // tRPC queries
-  const pendingUsersQuery = trpc.pwaAuthTrpc.getPendingUsers.useQuery()
-
   useEffect(() => {
     fetchUsers()
   }, [])
-
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchUsers()
-      // Refetch pending users when tab is focused
-      pendingUsersQuery.refetch()
-    }, [pendingUsersQuery])
-  )
 
   useEffect(() => {
     filterUsers()
@@ -45,40 +31,18 @@ export default function AdminScreen() {
   const fetchUsers = async () => {
     setIsLoading(true)
     try {
-      const { apiFetch } = await import('@/lib/api-config');
-      const response = await apiFetch('/api/access-control.getAll', {
+      const response = await fetch('/api/access-control.getAll', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
 
       const data = await response.json()
-      let allUsers: User[] = []
 
       if (data.success) {
-        allUsers = data.users || []
+        setUsers(data.users || [])
       } else {
         Alert.alert('Erro', data.reason || 'Falha ao carregar usuários')
       }
-
-      // Fetch PWA pending users via tRPC
-      try {
-        const pwaUsers = await pendingUsersQuery.refetch()
-        if (pwaUsers.data) {
-          const mappedPwaUsers = pwaUsers.data.map((u: any) => ({
-            id: u.id,
-            email: u.email,
-            name: u.name,
-            status: 'pending' as const,
-            createdAt: u.createdAt,
-            isPWAUser: true,
-          }))
-          allUsers = [...allUsers, ...mappedPwaUsers]
-        }
-      } catch (pwaError) {
-        console.log('PWA users not available:', pwaError)
-      }
-
-      setUsers(allUsers)
     } catch (error) {
       Alert.alert('Erro', 'Falha ao conectar com o servidor')
       console.error(error)
@@ -105,36 +69,6 @@ export default function AdminScreen() {
     }
 
     setFilteredUsers(filtered)
-  }
-
-  // tRPC mutations
-  const approveMutation = trpc.pwaAuthTrpc.approveUser.useMutation()
-  const rejectMutation = trpc.pwaAuthTrpc.rejectUser.useMutation()
-
-  const approvePWAUser = async (userId: string, email: string) => {
-    try {
-      await approveMutation.mutateAsync({ userId: parseInt(userId) })
-      setUsers(users.filter((u) => u.email !== email))
-      Alert.alert('Sucesso', `Usuário PWA ${email} aprovado`)
-      // Refetch to update list
-      await fetchUsers()
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Falha ao aprovar usuário')
-      console.error(error)
-    }
-  }
-
-  const rejectPWAUser = async (userId: string, email: string) => {
-    try {
-      await rejectMutation.mutateAsync({ userId: parseInt(userId), reason: 'Rejected by admin' })
-      setUsers(users.filter((u) => u.email !== email))
-      Alert.alert('Sucesso', `Usuário PWA ${email} rejeitado`)
-      // Refetch to update list
-      await fetchUsers()
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Falha ao rejeitar usuário')
-      console.error(error)
-    }
   }
 
   const updateUserStatus = async (userId: string, newStatus: 'approved' | 'blocked') => {
@@ -295,12 +229,7 @@ export default function AdminScreen() {
               <View key={user.id} className="bg-surface p-4 rounded-lg border border-border">
                 {/* User Info */}
                 <View className="mb-3">
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-lg font-semibold text-foreground">{user.name}</Text>
-                    {user.isPWAUser && (
-                      <Text className="text-xs bg-primary px-2 py-1 rounded text-white font-semibold">PWA</Text>
-                    )}
-                  </View>
+                  <Text className="text-lg font-semibold text-foreground">{user.name}</Text>
                   <Text className="text-sm text-muted">{user.email}</Text>
                   <View className="flex-row items-center gap-2 mt-2">
                     <View
@@ -311,18 +240,18 @@ export default function AdminScreen() {
                   </View>
                 </View>
 
-                {/* Action Buttons */}
+                {/* Actions */}
                 <View className="flex-row gap-2">
                   {user.status === 'pending' && (
                     <>
                       <Pressable
-                        onPress={() => user.isPWAUser ? approvePWAUser(user.id, user.email) : updateUserStatus(user.id, 'approved')}
+                        onPress={() => updateUserStatus(user.id, 'approved')}
                         className="flex-1 bg-success py-2 px-3 rounded-lg"
                       >
                         <Text className="text-white text-xs font-semibold text-center">Aprovar</Text>
                       </Pressable>
                       <Pressable
-                        onPress={() => user.isPWAUser ? rejectPWAUser(user.id, user.email) : updateUserStatus(user.id, 'blocked')}
+                        onPress={() => updateUserStatus(user.id, 'blocked')}
                         className="flex-1 bg-error py-2 px-3 rounded-lg"
                       >
                         <Text className="text-white text-xs font-semibold text-center">Rejeitar</Text>

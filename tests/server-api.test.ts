@@ -19,7 +19,7 @@ describe('Server API and Endpoints', () => {
     });
 
     it('should have auth router', () => {
-      expect(routersContent).toContain('auth:');
+      expect(routersContent).toContain('auth: router');
     });
 
     it('should have patients router', () => {
@@ -42,8 +42,16 @@ describe('Server API and Endpoints', () => {
   describe('Auth Endpoints', () => {
     const routersContent = fs.readFileSync(routersPath, 'utf-8');
 
-    it('should have register endpoint', () => {
-      expect(routersContent).toContain('register');
+    it('should have auth.me endpoint', () => {
+      expect(routersContent).toMatch(/auth.*me.*query/s);
+    });
+
+    it('should have auth.logout endpoint', () => {
+      expect(routersContent).toMatch(/auth.*logout.*mutation/s);
+    });
+
+    it('should use publicProcedure for auth endpoints', () => {
+      expect(routersContent).toContain('publicProcedure');
     });
   });
 
