@@ -58,6 +58,135 @@ async function startServer() {
 
   registerOAuthRoutes(app);
 
+  // PWA API Routes
+  const pwaUsers: Record<string, any> = {};
+  let userIdCounter = 1;
+
+  // Initialize admin user
+  pwaUsers['0'] = {
+    id: '0',
+    name: 'Admin',
+    email: 'admin@example.com',
+    password: 'admin123',
+    status: 'approved',
+    role: 'admin',
+    createdAt: new Date().toISOString()
+  };
+  userIdCounter = 1;
+
+  // Helper function to generate JWT token
+  function generateToken(user: any) {
+    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64');
+    const payload = Buffer.from(JSON.stringify({ id: user.id, email: user.email, role: user.role, status: user.status })).toString('base64');
+    const signature = Buffer.from('signature').toString('base64');
+    return `${header}.${payload}.${signature}`;
+  }
+
+  // Helper function to verify token
+  function verifyToken(token: string) {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+      return payload;
+    } catch {
+      return null;
+    }
+  }
+
+  // Register
+  app.post('/api/pwa/register', (req, res) => {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
+    }
+    if (Object.values(pwaUsers).some((u: any) => u.email === email)) {
+      return res.status(400).json({ error: 'Email já registrado' });
+    }
+    const user = {
+      id: String(userIdCounter++),
+      name,
+      email,
+      password, // In production, use bcrypt
+      status: 'pending',
+      role: 'user',
+      createdAt: new Date().toISOString()
+    };
+    pwaUsers[user.id] = user;
+    res.json({ message: 'Usuário registrado com sucesso. Aguarde aprovação.' });
+  });
+
+  // Login
+  app.post('/api/pwa/login', (req, res) => {
+    const { email, password } = req.body;
+    const user = Object.values(pwaUsers).find((u: any) => u.email === email && u.password === password);
+    if (!user) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+    if ((user as any).status === 'pending') {
+      return res.status(403).json({ error: 'Sua conta está aguardando aprovação' });
+    }
+    if ((user as any).status === 'blocked') {
+      return res.status(403).json({ error: 'Sua conta foi bloqueada' });
+    }
+    const token = generateToken(user);
+    res.json({ token, user: { id: (user as any).id, name: (user as any).name, email: (user as any).email, role: (user as any).role, status: (user as any).status } });
+  });
+
+  // Get Users (Admin only)
+  app.get('/api/pwa/users', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    const payload = verifyToken(token || '');
+    if (!payload || payload.role !== 'admin') {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+    const users = Object.values(pwaUsers).map((u: any) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      status: u.status,
+      createdAt: u.createdAt
+    }));
+    res.json(users);
+  });
+
+  // Approve User (Admin only)
+  app.post('/api/pwa/approve', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    const payload = verifyToken(token || '');
+    if (!payload || payload.role !== 'admin') {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+    const { userId } = req.body;
+    if (pwaUsers[userId]) {
+      (pwaUsers[userId] as any).status = 'approved';
+      res.json({ message: 'Usuário aprovado' });
+    } else {
+      res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+  });
+
+  // Reject User (Admin only)
+  app.post('/api/pwa/reject', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    const payload = verifyToken(token || '');
+    if (!payload || payload.role !== 'admin') {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+    const { userId } = req.body;
+    if (pwaUsers[userId]) {
+      (pwaUsers[userId] as any).status = 'blocked';
+      res.json({ message: 'Usuário rejeitado' });
+    } else {
+      res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+  });
+
+  // Serve PWA
+  app.get('/pwa', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'pwa', 'index.html'));
+  });
+
   // Serve static files from web-dist/ (Expo web export) first, then project root
   const webDistPath = path.join(process.cwd(), "web-dist");
   app.use(express.static(webDistPath));
