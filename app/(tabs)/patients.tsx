@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Platform, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -9,7 +9,6 @@ import { AdvancedFiltersModal, type AdvancedFilters } from "@/components/advance
 import { filterPatients, countActiveFilters, getDefaultFilters, type PatientWithData } from "@/lib/patient-filters";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import { Platform, Alert } from "react-native";
 import { exportPatientsToCSV } from "@/lib/csv-export";
 
 export default function PatientsScreen() {
@@ -321,7 +320,7 @@ export default function PatientsScreen() {
               zIndex: 999,
             }}
           >
-            <IconSymbol name="house.fill" size={28} color="#FFFFFF" />
+            <Text style={{ fontSize: 32, color: "#FFFFFF", fontWeight: "300", marginTop: -2 }}>+</Text>
           </TouchableOpacity>
 
           {/* Lista de Pacientes */}
