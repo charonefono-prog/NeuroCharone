@@ -187,6 +187,11 @@ async function startServer() {
     res.sendFile(path.join(process.cwd(), 'pwa', 'index.html'));
   });
 
+  // Serve Web Dashboard
+  app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'web-dashboard', 'index.html'));
+  });
+
   // Serve static files from web-dist/ (Expo web export) first, then project root
   const webDistPath = path.join(process.cwd(), "web-dist");
   app.use(express.static(webDistPath));
@@ -208,6 +213,10 @@ async function startServer() {
   app.get("*", (req, res, next) => {
     // Skip API routes
     if (req.path.startsWith("/api/")) return next();
+    if (req.path.startsWith("/dashboard")) {
+      res.sendFile(path.join(process.cwd(), 'web-dashboard', 'index.html'));
+      return;
+    }
     const fs = require("fs");
     const webDistIndex = path.join(webDistPath, "index.html");
     if (fs.existsSync(webDistIndex)) {
@@ -226,6 +235,7 @@ async function startServer() {
 
   server.listen(port, "0.0.0.0", () => {
     console.log(`[api] server listening on 0.0.0.0:${port}`);
+    console.log(`[api] Web Dashboard: http://localhost:${port}/dashboard`);
   });
 }
 
