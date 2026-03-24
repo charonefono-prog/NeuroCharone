@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
-import { Platform, View, Text } from "react-native";
+import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import {
@@ -16,11 +16,8 @@ import {
 } from "react-native-safe-area-context";
 import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 
-
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
-import { useServiceWorker } from "@/hooks/use-service-worker";
-import { AuthProvider, useAuth } from "@/lib/auth-context";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -29,7 +26,7 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-function RootLayoutContent() {
+export default function RootLayout() {
   const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
   const initialFrame = initialWindowMetrics?.frame ?? DEFAULT_WEB_FRAME;
 
@@ -40,12 +37,6 @@ function RootLayoutContent() {
   useEffect(() => {
     initManusRuntime();
   }, []);
-
-  // Register Service Worker for PWA (only on web)
-  if (Platform.OS === "web") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useServiceWorker();
-  }
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
     setInsets(metrics.insets);
@@ -87,17 +78,6 @@ function RootLayoutContent() {
     };
   }, [initialInsets, initialFrame]);
 
-  const { isAuthenticated, isLoading } = useAuth();
-
-  // Show loading while checking auth state
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
-        <Text style={{ color: "#0a7ea4", fontSize: 18 }}>Loading...</Text>
-      </View>
-    );
-  }
-
   const content = (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
@@ -106,17 +86,8 @@ function RootLayoutContent() {
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
           <Stack screenOptions={{ headerShown: false }}>
-            {!isAuthenticated ? (
-              <>
-                <Stack.Screen name="login" />
-                <Stack.Screen name="register" />
-              </>
-            ) : (
-              <>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="oauth/callback" />
-              </>
-            )}
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="oauth/callback" />
           </Stack>
           <StatusBar style="auto" />
         </QueryClientProvider>
@@ -144,13 +115,5 @@ function RootLayoutContent() {
     <ThemeProvider>
       <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
     </ThemeProvider>
-  );
-}
-
-export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <RootLayoutContent />
-    </AuthProvider>
   );
 }
