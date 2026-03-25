@@ -3,7 +3,6 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import path from "path";
-import { existsSync } from "fs";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
@@ -58,9 +57,7 @@ async function startServer() {
 
   registerOAuthRoutes(app);
 
-  // Serve static files from web-dist/ (Expo web export) first, then project root
-  const webDistPath = path.join(process.cwd(), "web-dist");
-  app.use(express.static(webDistPath));
+  // Serve static HTML files
   app.use(express.static(path.join(process.cwd())));
 
   app.get("/api/health", (_req, res) => {
@@ -75,28 +72,20 @@ async function startServer() {
     }),
   );
 
-  // SPA fallback: serve web-dist/index.html for any non-API, non-file route
-  app.get("*", (req, res, next) => {
-    // Skip API routes
-    if (req.path.startsWith("/api/")) return next();
-    const fs = require("fs");
-    const webDistIndex = path.join(webDistPath, "index.html");
-    if (fs.existsSync(webDistIndex)) {
-      res.sendFile(webDistIndex);
-    } else {
-      res.sendFile(path.join(process.cwd(), "index.html"));
-    }
+  // Serve index.html for root path
+  app.get("/", (_req, res) => {
+    res.sendFile(path.join(process.cwd(), "index.html"));
   });
 
-  const port = parseInt(process.env.PORT || "3000");
+  const preferredPort = parseInt(process.env.PORT || "3000");
+  const port = await findAvailablePort(preferredPort);
 
-  // Startup diagnostics
-  console.log(`[api] cwd: ${process.cwd()}`);
-  console.log(`[api] webDistPath: ${webDistPath}`);
-  console.log(`[api] web-dist/index.html exists: ${existsSync(path.join(webDistPath, "index.html"))}`);
+  if (port !== preferredPort) {
+    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
+  }
 
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`[api] server listening on 0.0.0.0:${port}`);
+  server.listen(port, () => {
+    console.log(`[api] server listening on port ${port}`);
   });
 }
 
