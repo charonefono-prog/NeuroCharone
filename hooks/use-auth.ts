@@ -80,6 +80,20 @@ export function useAuth(options?: UseAuthOptions) {
     }
   }, []);
 
+  const startOAuthLogin = useCallback(() => {
+    if (Platform.OS === "web") {
+      // Web: redirect to OAuth login
+      const oauthUrl = `${process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000"}/auth/oauth/login`;
+      window.location.href = oauthUrl;
+    } else {
+      // Native: use deep linking
+      const oauthUrl = `${process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000"}/auth/oauth/login?redirect=neuromodulation_mapper://oauth/callback`;
+      import("expo-web-browser").then(({ openBrowserAsync }) => {
+        openBrowserAsync(oauthUrl);
+      });
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await Api.logout();
@@ -139,5 +153,6 @@ export function useAuth(options?: UseAuthOptions) {
     isAuthenticated,
     refresh: fetchUser,
     logout,
+    startOAuthLogin,
   };
 }
