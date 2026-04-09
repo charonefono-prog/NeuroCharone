@@ -1061,3 +1061,9 @@ export default function MyScreen() {
 - [x] Dados de exemplo (4 pacientes, 2 sessões, 23 escalas)
 - [x] Tema claro/escuro com toggle manual
 - [x] Persistência em localStorage
+
+## BUG - PWA retorna Not Found no deploy
+- [x] Diagnosticar por que /pwa/app/ retorna Not Found no domínio publicado
+- [x] Corrigir servidor para servir PWA corretamente no deploy (PROJECT_ROOT robusto)
+- [x] Rebuild produção (pnpm build)
+- [ ] Salvar checkpoint e testar no domínio publicado
