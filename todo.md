@@ -1141,4 +1141,11 @@ export default function MyScreen() {
 - [x] Adicionar botão de logout no Perfil
 - [x] Re-exportar Expo web com EXPO_BASE_URL="/api/webapp"
 - [x] Atualizar dist-web no servidor
-- [ ] Testar no domínio publicado
+- [x] Testar no domínio publicado (login funciona perfeitamente em dev)
+
+
+## Sistema de Auth PWA-Only (Nova Abordagem) - DESCONTINUADO
+- [x] Removido em favor de unificar em AuthProvider com localStorage no web
+- [ ] Integrar proteção de rotas na PWA
+- [ ] Re-exportar PWA web com novo sistema
+- [ ] Testar login/logout em produção

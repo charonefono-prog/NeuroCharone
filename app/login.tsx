@@ -1,22 +1,64 @@
-import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, Platform } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, Platform, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useAuth } from "@/lib/auth-context";
+import { useColors } from "@/hooks/use-colors";
+import { WebButton } from "@/components/web-button";
 
 export default function LoginScreen() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
+  const colors = useColors();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [needsApproval, setNeedsApproval] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validateEmail = (value: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (value && !emailRegex.test(value)) {
+      setEmailError("Email inválido");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const validatePassword = (value: string) => {
+    if (value && value.length < 6) {
+      setPasswordError("Senha deve ter pelo menos 6 caracteres");
+    } else {
+      setPasswordError("");
+    }
+  };
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Preencha todos os campos");
-      return;
+    // Clear previous errors
+    setError("");
+    setEmailError("");
+    setPasswordError("");
+
+    // Validate inputs
+    let hasError = false;
+    if (!email) {
+      setEmailError("Email é obrigatório");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Email inválido");
+      hasError = true;
     }
+
+    if (!password) {
+      setPasswordError("Senha é obrigatória");
+      hasError = true;
+    } else if (password.length < 6) {
+      setPasswordError("Senha deve ter pelo menos 6 caracteres");
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     try {
       setError("");
@@ -83,45 +125,75 @@ export default function LoginScreen() {
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Email</Text>
             <TextInput
-              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
+              style={{
+                borderWidth: 1,
+                borderColor: emailError ? colors.error : colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: colors.surface,
+                color: colors.foreground,
+                fontSize: 16,
+              }}
               placeholder="seu@email.com"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               keyboardType="email-address"
               autoCapitalize="none"
               editable={!isLoading}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(value) => {
+                setEmail(value);
+                validateEmail(value);
+              }}
               returnKeyType="next"
             />
+            {emailError ? (
+              <Text style={{ color: colors.error, fontSize: 12 }}>{emailError}</Text>
+            ) : null}
           </View>
 
           {/* Password Input */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Senha</Text>
             <TextInput
-              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
+              style={{
+                borderWidth: 1,
+                borderColor: passwordError ? colors.error : colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: colors.surface,
+                color: colors.foreground,
+                fontSize: 16,
+              }}
               placeholder="••••••••"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               secureTextEntry
               editable={!isLoading}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(value) => {
+                setPassword(value);
+                validatePassword(value);
+              }}
               returnKeyType="done"
               onSubmitEditing={handleLogin}
             />
+            {passwordError ? (
+              <Text style={{ color: colors.error, fontSize: 12 }}>{passwordError}</Text>
+            ) : null}
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity
-            className="bg-primary rounded-lg py-3.5 items-center active:opacity-80"
+          <WebButton
             onPress={handleLogin}
-            disabled={isLoading}
-            style={isLoading ? { opacity: 0.6 } : undefined}
+            disabled={isLoading || !!emailError || !!passwordError}
           >
-            <Text className="text-white font-semibold text-base">
-              {isLoading ? "Entrando..." : "Entrar"}
-            </Text>
-          </TouchableOpacity>
+            {isLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              "Entrar"
+            )}
+          </WebButton>
 
           {/* Register Link */}
           <View className="flex-row justify-center gap-1">

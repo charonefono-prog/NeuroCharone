@@ -2,32 +2,32 @@
   "name": "NeuroLaserMap - Gerenciador de Neuromodulação",
   "short_name": "NeuroLaserMap",
   "description": "Aplicativo profissional para gerenciamento de sessões de neuromodulação com mapeamento visual",
-  "start_url": "/api/webapp/",
-  "scope": "/api/webapp/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#0a7ea4",
   "icons": [
     {
-      "src": "/api/webapp/favicon.ico",
+      "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "/api/webapp/logo192.png",
+      "src": "logo192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/api/webapp/logo512.png",
+      "src": "logo512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/api/webapp/logo192.png",
+      "src": "logo192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
@@ -42,7 +42,7 @@
       "url": "/?action=new-patient",
       "icons": [
         {
-          "src": "/api/webapp/logo192.png",
+          "src": "logo192.png",
           "sizes": "192x192"
         }
       ]
@@ -54,7 +54,7 @@
       "url": "/?action=patients",
       "icons": [
         {
-          "src": "/api/webapp/logo192.png",
+          "src": "logo192.png",
           "sizes": "192x192"
         }
       ]

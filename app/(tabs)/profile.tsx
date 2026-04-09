@@ -829,20 +829,26 @@ export default function ProfileScreen() {
                 if (Platform.OS !== "web") {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }
-                Alert.alert(
-                  "Sair",
-                  "Deseja realmente sair da sua conta?",
-                  [
-                    { text: "Cancelar", style: "cancel" },
-                    {
-                      text: "Sair",
-                      style: "destructive",
-                      onPress: async () => {
-                        await logout();
-                      },
-                    },
-                  ]
-                );
+                
+                // Use native confirm on web, Alert on mobile
+                const shouldLogout = Platform.OS === "web" 
+                  ? window.confirm("Deseja realmente sair da sua conta?")
+                  : await new Promise(resolve => {
+                      Alert.alert(
+                        "Sair",
+                        "Deseja realmente sair da sua conta?",
+                        [
+                          { text: "Cancelar", onPress: () => resolve(false) },
+                          { text: "Sair", onPress: () => resolve(true), style: "destructive" },
+                        ]
+                      );
+                    });
+                
+                if (shouldLogout) {
+                  console.log("[PROFILE] Logging out...");
+                  await logout();
+                  console.log("[PROFILE] Logout complete");
+                }
               }}
               style={{
                 backgroundColor: colors.error + "15",

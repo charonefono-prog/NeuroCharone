@@ -22,10 +22,33 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Decode JWT to check expiration
+function isTokenExpired(token: string): boolean {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return true;
+    
+    const payload = JSON.parse(atob(parts[1]));
+    const exp = payload.exp;
+    if (!exp) return false; // No expiration
+    
+    // Check if expired (add 60s buffer)
+    return Date.now() >= (exp * 1000) - 60000;
+  } catch (e) {
+    console.error("Failed to decode token:", e);
+    return true;
+  }
+}
+
 // Get the API base URL depending on the platform
 function getApiBaseUrl(): string {
   if (Platform.OS === "web") {
-    // On web, use relative URL (works both in dev and production)
+    // On web, check if we're in development (Metro dev server)
+    // In dev, use absolute URL to the backend server
+    // In production, use relative URL
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      return 'http://localhost:3000';
+    }
     return "";
   }
   // On native, use the server URL from environment
@@ -36,7 +59,41 @@ function getApiBaseUrl(): string {
 
 const API_BASE = getApiBaseUrl();
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// Helper to get/set auth data with localStorage fallback
+const getAuthStorage = async (key: string): Promise<string | null> => {
+  if (Platform.OS === "web") {
+    return window.localStorage.getItem(key);
+  }
+  return AsyncStorage.getItem(key);
+};
+
+const setAuthStorage = async (key: string, value: string): Promise<void> => {
+  if (Platform.OS === "web") {
+    window.localStorage.setItem(key, value);
+  } else {
+    await AsyncStorage.setItem(key, value);
+  }
+};
+
+const removeAuthStorage = async (key: string): Promise<void> => {
+  if (Platform.OS === "web") {
+    window.localStorage.removeItem(key);
+  } else {
+    await AsyncStorage.removeItem(key);
+  }
+};
+
+// Helper to fetch with timeout
+const fetchWithTimeout = (url: string, options: RequestInit = {}, timeoutMs: number = 5000): Promise<Response> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  return fetch(url, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(timeoutId));
+};
+
+export function AuthProvider({ children }: { children: React.ReactNode | React.ReactNode[] }) {
+  console.log("[AUTH] AuthProvider mounted");
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,44 +101,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Restore session on mount
   useEffect(() => {
     const restoreSession = async () => {
+      console.log("[AUTH] Starting session restore...");
       try {
-        const storedToken = await AsyncStorage.getItem("pwa_auth_token");
-        const storedUser = await AsyncStorage.getItem("pwa_auth_user");
+        const storedToken = await getAuthStorage("pwa_auth_token");
+        const storedUser = await getAuthStorage("pwa_auth_user");
+        console.log("[AUTH] Stored token:", storedToken ? "exists" : "null");
+        console.log("[AUTH] Stored user:", storedUser ? "exists" : "null");
+        
         if (storedToken && storedUser) {
-          // Verify token is still valid
-          const response = await fetch(`${API_BASE}/api/pwa-auth/me`, {
-            headers: { Authorization: `Bearer ${storedToken}` },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            const userData: AuthUser = {
-              email: data.user.email,
-              name: data.user.name,
-              accessLevel: data.user.accessLevel,
-              isApproved: data.user.isApproved,
-            };
-            setUser(userData);
-            setToken(storedToken);
-          } else {
-            // Token expired or invalid
-            await AsyncStorage.removeItem("pwa_auth_token");
-            await AsyncStorage.removeItem("pwa_auth_user");
+          // Verify token is still valid by calling /me endpoint
+          try {
+            const response = await fetchWithTimeout(`${API_BASE}/api/pwa-auth/me`, {
+              method: "GET",
+              headers: { 
+                "Authorization": `Bearer ${storedToken}`,
+                "Content-Type": "application/json"
+              },
+            }, 5000);
+            
+            if (response.ok) {
+              const data = await response.json();
+              const userData: AuthUser = {
+                email: data.user.email,
+                name: data.user.name,
+                accessLevel: data.user.accessLevel,
+                isApproved: data.user.isApproved,
+              };
+              console.log("[AUTH] Token valid, user:", userData.email, "approved:", userData.isApproved);
+              setUser(userData);
+              setToken(storedToken);
+            } else {
+              // Token expired or invalid (401, 403, etc)
+              console.warn("[AUTH] Token validation failed:", response.status);
+              await removeAuthStorage("pwa_auth_token");
+              await removeAuthStorage("pwa_auth_user");
+              setUser(null);
+              setToken(null);
+            }
+          } catch (validationError) {
+            // Network error or timeout during validation - clear auth to be safe
+            console.error("[AUTH] Token validation error:", validationError);
+            await removeAuthStorage("pwa_auth_token");
+            await removeAuthStorage("pwa_auth_user");
+            setUser(null);
+            setToken(null);
           }
+        } else {
+          console.log("[AUTH] No stored token/user, user is unauthenticated");
         }
       } catch (error) {
-        console.error("Failed to restore session:", error);
-        // If network error, still try to use stored user for offline access
+        console.error("[AUTH] Failed to restore session:", error);
+        // Clear auth data on any error
         try {
-          const storedUser = await AsyncStorage.getItem("pwa_auth_user");
-          const storedToken = await AsyncStorage.getItem("pwa_auth_token");
-          if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
-            setToken(storedToken);
-          }
+          await removeAuthStorage("pwa_auth_token");
+          await removeAuthStorage("pwa_auth_user");
         } catch (_) {
           // ignore
         }
       } finally {
+        console.log("[AUTH] Session restore complete. isAuthenticated:", user !== null && user.isApproved === true);
         setIsLoading(false);
       }
     };
@@ -90,13 +168,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string): Promise<{ needsApproval?: boolean }> => {
+    console.log('[AUTH] Attempting login with email:', email);
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/pwa-auth/login`, {
+      console.log('[AUTH] Calling API:', `${API_BASE}/api/pwa-auth/login`);
+      const response = await fetchWithTimeout(`${API_BASE}/api/pwa-auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      });
+      }, 8000);
 
       const data = await response.json();
 
@@ -116,8 +196,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUser(userData);
       setToken(data.token);
-      await AsyncStorage.setItem("pwa_auth_token", data.token);
-      await AsyncStorage.setItem("pwa_auth_user", JSON.stringify(userData));
+      await setAuthStorage("pwa_auth_token", data.token);
+      await setAuthStorage("pwa_auth_user", JSON.stringify(userData));
 
       return {};
     } finally {
@@ -128,11 +208,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, name: string, password: string): Promise<{ needsApproval?: boolean }> => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/pwa-auth/register`, {
+      const response = await fetchWithTimeout(`${API_BASE}/api/pwa-auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
-      });
+      }, 8000);
 
       const data = await response.json();
 
@@ -165,15 +245,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     try {
+      // Clear auth state first
       setUser(null);
       setToken(null);
-      await AsyncStorage.removeItem("pwa_auth_token");
-      await AsyncStorage.removeItem("pwa_auth_user");
+      // Then clear storage
+      await removeAuthStorage("pwa_auth_token");
+      await removeAuthStorage("pwa_auth_user");
+      // Optional: Call logout endpoint to invalidate token server-side
+      try {
+        if (token) {
+          await fetchWithTimeout(`${API_BASE}/api/pwa-auth/logout`, {
+            method: "POST",
+            headers: { 
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          }, 3000);
+        }
+      } catch (_) {
+        // Ignore logout endpoint errors
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const isAuthenticated = user !== null && user.isApproved === true;
+  console.log("[AUTH] Context value updated. user:", user?.email, "isAuthenticated:", isAuthenticated);
+  
   const value: AuthContextType = {
     user,
     token,
@@ -181,7 +280,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     register,
     logout,
-    isAuthenticated: user !== null && user.isApproved,
+    isAuthenticated,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

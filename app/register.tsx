@@ -1,34 +1,68 @@
-import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, Platform } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, Platform, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useAuth } from "@/lib/auth-context";
+import { useColors } from "@/hooks/use-colors";
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { register, isLoading } = useAuth();
+  const colors = useColors();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [needsApproval, setNeedsApproval] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Preencha todos os campos");
-      return;
+    // Clear previous errors
+    setError("");
+    setNameError("");
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    // Validate inputs
+    let hasError = false;
+    if (!name) {
+      setNameError("Nome é obrigatório");
+      hasError = true;
+    } else if (name.length < 3) {
+      setNameError("Nome deve ter pelo menos 3 caracteres");
+      hasError = true;
     }
 
-    if (password !== confirmPassword) {
-      setError("As senhas não coincidem");
-      return;
+    if (!email) {
+      setEmailError("Email é obrigatório");
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Email inválido");
+      hasError = true;
     }
 
-    if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
-      return;
+    if (!password) {
+      setPasswordError("Senha é obrigatória");
+      hasError = true;
+    } else if (password.length < 6) {
+      setPasswordError("Senha deve ter pelo menos 6 caracteres");
+      hasError = true;
     }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError("Confirmação de senha é obrigatória");
+      hasError = true;
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError("As senhas não coincidem");
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     try {
       setError("");
@@ -98,23 +132,44 @@ export default function RegisterScreen() {
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Nome Completo</Text>
             <TextInput
-              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
+              style={{
+                borderWidth: 1,
+                borderColor: nameError ? colors.error : colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: colors.surface,
+                color: colors.foreground,
+                fontSize: 16,
+              }}
               placeholder="Dr. João Silva"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               editable={!isLoading}
               value={name}
               onChangeText={setName}
               returnKeyType="next"
             />
+            {nameError ? (
+              <Text style={{ color: colors.error, fontSize: 12 }}>{nameError}</Text>
+            ) : null}
           </View>
 
           {/* Email Input */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Email</Text>
             <TextInput
-              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
+              style={{
+                borderWidth: 1,
+                borderColor: emailError ? colors.error : colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: colors.surface,
+                color: colors.foreground,
+                fontSize: 16,
+              }}
               placeholder="seu@email.com"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               keyboardType="email-address"
               autoCapitalize="none"
               editable={!isLoading}
@@ -122,30 +177,54 @@ export default function RegisterScreen() {
               onChangeText={setEmail}
               returnKeyType="next"
             />
+            {emailError ? (
+              <Text style={{ color: colors.error, fontSize: 12 }}>{emailError}</Text>
+            ) : null}
           </View>
 
           {/* Password Input */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Senha</Text>
             <TextInput
-              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
+              style={{
+                borderWidth: 1,
+                borderColor: passwordError ? colors.error : colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: colors.surface,
+                color: colors.foreground,
+                fontSize: 16,
+              }}
               placeholder="Mínimo 6 caracteres"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               secureTextEntry
               editable={!isLoading}
               value={password}
               onChangeText={setPassword}
               returnKeyType="next"
             />
+            {passwordError ? (
+              <Text style={{ color: colors.error, fontSize: 12 }}>{passwordError}</Text>
+            ) : null}
           </View>
 
           {/* Confirm Password Input */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Confirmar Senha</Text>
             <TextInput
-              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
+              style={{
+                borderWidth: 1,
+                borderColor: confirmPasswordError ? colors.error : colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                backgroundColor: colors.surface,
+                color: colors.foreground,
+                fontSize: 16,
+              }}
               placeholder="Repita a senha"
-              placeholderTextColor="#9BA1A6"
+              placeholderTextColor={colors.muted}
               secureTextEntry
               editable={!isLoading}
               value={confirmPassword}
@@ -153,18 +232,32 @@ export default function RegisterScreen() {
               returnKeyType="done"
               onSubmitEditing={handleRegister}
             />
+            {confirmPasswordError ? (
+              <Text style={{ color: colors.error, fontSize: 12 }}>{confirmPasswordError}</Text>
+            ) : null}
           </View>
 
           {/* Register Button */}
           <TouchableOpacity
-            className="bg-primary rounded-lg py-3.5 items-center active:opacity-80 mt-2"
+            style={{
+              backgroundColor: colors.primary,
+              borderRadius: 8,
+              paddingVertical: 14,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 8,
+              opacity: isLoading || nameError || emailError || passwordError || confirmPasswordError ? 0.6 : 1,
+            }}
             onPress={handleRegister}
-            disabled={isLoading}
-            style={isLoading ? { opacity: 0.6 } : undefined}
+            disabled={isLoading || !!nameError || !!emailError || !!passwordError || !!confirmPasswordError}
           >
-            <Text className="text-white font-semibold text-base">
-              {isLoading ? "Cadastrando..." : "Cadastrar"}
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>
+                Cadastrar
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* Login Link */}
