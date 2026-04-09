@@ -1043,3 +1043,21 @@ export default function MyScreen() {
 - [x] Exportar dados
 - [x] Tema claro/escuro com botão manual
 - [x] Touch-screen otimizado
+
+## PWA App - Clone EXATO do App Mobile Original
+- [x] Capturar todas as telas do app original (9 abas)
+- [x] Ler código fonte de todas as telas
+- [x] Recriar PWA como clone exato (cores, fontes, layout, figuras, funcionalidades)
+- [x] Testar todas as telas e funcionalidades
+- [x] Home: Dashboard com estatísticas, ações rápidas, estatísticas avançadas
+- [x] Escalas: 23 escalas clínicas com botão Aplicar Escala e busca
+- [x] Ciclos: Gerenciamento de ciclos terapêuticos com criação de novo ciclo
+- [x] Pacientes: Lista com busca, filtros (Todos/Ativos/Pausados/Concluídos), FAB adicionar
+- [x] Nova Sessão: Histórico de sessões com FAB para nova sessão
+- [x] Perfil: Informações profissionais, tema escuro, estatísticas
+- [x] Config: Exportar/Importar dados, backup, segurança, recalcular
+- [x] Efetividade: Métricas gerais, gráfico evolução, relatório por paciente
+- [x] Admin: Capacete de neuromodulação SVG, sistema EEG 10-20, mapa de pontos interativo
+- [x] Dados de exemplo (4 pacientes, 2 sessões, 23 escalas)
+- [x] Tema claro/escuro com toggle manual
+- [x] Persistência em localStorage
