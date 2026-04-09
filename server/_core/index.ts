@@ -12,24 +12,17 @@ import { createContext } from "./context";
 
 // Resolve project root reliably in both dev (tsx) and production (esbuild ESM)
 function resolveProjectRoot(): string {
-  // In production, dist/index.js runs from project root via `node dist/index.js`
-  // process.cwd() should be the project root in both cases
   const cwd = process.cwd();
-  // Check if pwa folder exists at cwd
   if (fs.existsSync(path.join(cwd, "pwa"))) {
     return cwd;
   }
-  // Fallback: try one level up from dist/
   const parentDir = path.resolve(cwd, "..");
   if (fs.existsSync(path.join(parentDir, "pwa"))) {
     return parentDir;
   }
-  // Fallback: try __dirname equivalent
   try {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    // In dev: server/_core/index.ts -> go up 2 levels
-    // In prod: dist/index.js -> go up 1 level
     for (let i = 1; i <= 3; i++) {
       const candidate = path.resolve(__dirname, ...Array(i).fill(".."));
       if (fs.existsSync(path.join(candidate, "pwa"))) {
@@ -37,7 +30,6 @@ function resolveProjectRoot(): string {
       }
     }
   } catch {}
-  // Last resort
   return cwd;
 }
 
@@ -66,7 +58,7 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  // Enable CORS for all routes - reflect the request origin to support credentials
+  // Enable CORS for all routes
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin) {
@@ -78,8 +70,6 @@ async function startServer() {
       "Origin, X-Requested-With, Content-Type, Accept, Authorization",
     );
     res.header("Access-Control-Allow-Credentials", "true");
-
-    // Handle preflight requests
     if (req.method === "OPTIONS") {
       res.sendStatus(200);
       return;
@@ -90,16 +80,60 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+  // ============================================================
+  // PWA ROUTES - MUST be registered FIRST before any other routes
+  // to ensure they are matched before static middleware or OAuth
+  // ============================================================
+
+  // Serve PWA static assets (CSS, JS, images, manifest.json)
+  app.use("/pwa", express.static(path.join(PROJECT_ROOT, "pwa"), {
+    index: "index.html",
+    fallthrough: true,
+  }));
+
+  // PWA App - explicit routes for all URL patterns
+  app.get("/pwa/app", (_req, res) => {
+    const filePath = path.join(PROJECT_ROOT, "pwa", "app", "index.html");
+    console.log(`[pwa] Serving /pwa/app -> ${filePath} (exists: ${fs.existsSync(filePath)})`);
+    res.sendFile(filePath);
+  });
+  app.get("/pwa/app/", (_req, res) => {
+    const filePath = path.join(PROJECT_ROOT, "pwa", "app", "index.html");
+    res.sendFile(filePath);
+  });
+  app.get("/pwa/app/*", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
+  });
+
+  // PWA Admin - explicit routes for all URL patterns
+  app.get("/pwa/admin", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+  });
+  app.get("/pwa/admin/", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+  });
+  app.get("/pwa/admin/*", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+  });
+
+  // ============================================================
+  // OAuth routes
+  // ============================================================
   registerOAuthRoutes(app);
 
-  // Serve static HTML files
+  // ============================================================
+  // Static files from project root
+  // ============================================================
   app.use(express.static(PROJECT_ROOT));
 
+  // ============================================================
+  // API routes
+  // ============================================================
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true, timestamp: Date.now() });
   });
 
-  // Debug endpoint to check file system in production
+  // Debug endpoint
   app.get("/api/debug-pwa", (_req, res) => {
     const info: Record<string, unknown> = {
       projectRoot: PROJECT_ROOT,
@@ -120,6 +154,11 @@ async function startServer() {
         info.pwaContents = fs.readdirSync(path.join(PROJECT_ROOT, "pwa"));
       }
     } catch (e: any) { info.pwaError = e.message; }
+    try {
+      if (fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app"))) {
+        info.pwaAppContents = fs.readdirSync(path.join(PROJECT_ROOT, "pwa", "app"));
+      }
+    } catch (e: any) { info.pwaAppError = e.message; }
     res.json(info);
   });
 
@@ -131,28 +170,21 @@ async function startServer() {
     }),
   );
 
-  // Serve PWA static files first (so CSS/JS/images are served directly)
-  app.use("/pwa", express.static(path.join(PROJECT_ROOT, "pwa")));
-
-  // Serve PWA Admin (SPA fallback)
-  app.get("/pwa/admin", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-  app.get("/pwa/admin/*", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-
-  // Serve PWA App (SPA fallback)
-  app.get("/pwa/app", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-  app.get("/pwa/app/*", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-
   // Serve index.html for root path
   app.get("/", (_req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, "index.html"));
+  });
+
+  // Catch-all: if nothing matched and it's a /pwa route, try to serve the PWA
+  app.use("/pwa/*", (req, res) => {
+    const reqPath = req.path;
+    if (reqPath.startsWith("/pwa/app")) {
+      res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
+    } else if (reqPath.startsWith("/pwa/admin")) {
+      res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+    } else {
+      res.status(404).send("Not Found");
+    }
   });
 
   // Log project root for debugging
