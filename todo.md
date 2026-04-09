@@ -1025,3 +1025,21 @@ export default function MyScreen() {
 - [x] Corrigir Bundle ID no app.config.ts
 - [x] Rebuild iOS IPA com Bundle ID correto
 - [x] Reconfigurar provisioning profile para novo Bundle ID (reutilizado L63YU489L8)
+
+## PWA Admin (Gerenciamento de Acesso) - COMPLETED
+- [x] Criar PWA com login/registro de usuários
+- [x] Painel admin para aprovar/bloquear usuários
+- [x] Listar usuários por status (pendentes, aprovados, bloqueados)
+- [x] Configurar API no servidor para gerenciamento de usuários
+
+## PWA NeuroLaserMap (Versão Web para Usuários) - COMPLETED
+- [x] Criar PWA com dashboard de pacientes
+- [x] Tela de lista de pacientes com busca e filtros
+- [x] Tela de adicionar/editar paciente
+- [x] Tela de sessões
+- [x] Tela de escalas
+- [x] Tela de ciclos
+- [x] Tela de efetividade/relatórios
+- [x] Exportar dados
+- [x] Tema claro/escuro com botão manual
+- [x] Touch-screen otimizado

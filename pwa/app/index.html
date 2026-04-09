@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#667eea">
+  <title>NeuroLaserMap</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --primary:#667eea; --primary-dark:#5568d3; --bg:#f5f7fa; --surface:#ffffff;
+      --text:#1a1a2e; --text-muted:#6b7280; --border:#e5e7eb;
+      --success:#22c55e; --warning:#f59e0b; --error:#ef4444;
+      --shadow:0 2px 8px rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] {
+      --primary:#818cf8; --primary-dark:#6366f1; --bg:#0f172a; --surface:#1e293b;
+      --text:#f1f5f9; --text-muted:#94a3b8; --border:#334155;
+      --success:#4ade80; --warning:#fbbf24; --error:#f87171;
+      --shadow:0 2px 8px rgba(0,0,0,0.3);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;padding-bottom:70px;}
+
+    /* Header */
+    .header{background:var(--primary);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .header h1{font-size:18px;font-weight:700;}
+    .header-actions{display:flex;gap:10px;}
+    .icon-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+    .icon-btn:active{transform:scale(0.9);}
+
+    /* Tab Bar */
+    .tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0);}
+    .tab-item{flex:1;padding:8px 4px;text-align:center;cursor:pointer;font-size:10px;color:var(--text-muted);border:none;background:none;}
+    .tab-item.active{color:var(--primary);}
+    .tab-item .tab-icon{font-size:20px;display:block;margin-bottom:2px;}
+    .tab-item:active{opacity:0.7;}
+
+    /* Pages */
+    .page{display:none;padding:16px;}
+    .page.active{display:block;}
+
+    /* Cards */
+    .card{background:var(--surface);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+    .card-title{font-size:15px;font-weight:600;margin-bottom:8px;}
+    .card-text{font-size:13px;color:var(--text-muted);line-height:1.5;}
+
+    /* Stats Grid */
+    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+    .stat{background:var(--surface);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow);}
+    .stat .num{font-size:24px;font-weight:700;}
+    .stat .lbl{font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .stat.s1 .num{color:var(--primary);}
+    .stat.s2 .num{color:var(--success);}
+    .stat.s3 .num{color:var(--warning);}
+    .stat.s4 .num{color:var(--error);}
+
+    /* List */
+    .list-item{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .list-item:active{opacity:0.8;transform:scale(0.99);}
+    .list-avatar{width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;}
+    .list-info{flex:1;}
+    .list-name{font-size:14px;font-weight:600;}
+    .list-sub{font-size:12px;color:var(--text-muted);}
+    .list-badge{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:600;}
+    .badge-active{background:#dcfce7;color:#16a34a;}
+    .badge-paused{background:#fef3c7;color:#b45309;}
+    .badge-completed{background:#e0e7ff;color:#4338ca;}
+
+    /* Search */
+    .search-bar{display:flex;gap:8px;margin-bottom:14px;}
+    .search-bar input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;}
+    .search-bar input:focus{border-color:var(--primary);}
+    .filter-btn{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:14px;cursor:pointer;}
+    .filter-btn:active{background:var(--bg);}
+
+    /* Section Title */
+    .section-title{font-size:16px;font-weight:700;margin-bottom:12px;}
+    .section-sub{font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+
+    /* Form */
+    .form-group{margin-bottom:14px;}
+    .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:4px;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);}
+    .form-group textarea{resize:vertical;min-height:80px;}
+    .btn{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;}
+    .btn-primary{background:var(--primary);color:#fff;}
+    .btn-primary:active{background:var(--primary-dark);transform:scale(0.98);}
+    .btn-secondary{background:var(--bg);color:var(--text);border:1.5px solid var(--border);}
+    .btn-danger{background:var(--error);color:#fff;}
+
+    /* FAB */
+    .fab{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(102,126,234,0.4);z-index:90;display:flex;align-items:center;justify-content:center;}
+    .fab:active{transform:scale(0.92);}
+
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;align-items:flex-end;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:var(--surface);border-radius:16px 16px 0 0;width:100%;max-width:500px;padding:20px;max-height:85vh;overflow-y:auto;}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .modal-header h3{font-size:18px;font-weight:700;}
+    .modal-close{background:none;border:none;font-size:20px;color:var(--text-muted);cursor:pointer;padding:4px;}
+
+    /* Detail View */
+    .detail-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+    .detail-avatar{width:60px;height:60px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;}
+    .detail-name{font-size:20px;font-weight:700;}
+    .detail-sub{font-size:13px;color:var(--text-muted);}
+    .detail-section{margin-bottom:16px;}
+    .detail-section h4{font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
+    .detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+    .detail-row .label{font-size:13px;color:var(--text-muted);}
+    .detail-row .value{font-size:13px;font-weight:500;}
+
+    /* Empty */
+    .empty{text-align:center;padding:40px 20px;color:var(--text-muted);}
+    .empty-icon{font-size:48px;margin-bottom:12px;}
+
+    /* Toast */
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:12px 24px;border-radius:10px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+    .toast.show{opacity:1;}
+
+    /* Quick Actions */
+    .quick-actions{display:flex;gap:8px;margin-bottom:16px;}
+    .quick-btn{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;font-size:12px;font-weight:500;color:var(--text);}
+    .quick-btn:active{background:var(--bg);transform:scale(0.97);}
+    .quick-btn .qicon{font-size:20px;display:block;margin-bottom:4px;}
+
+    /* Loading */
+    .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* Scales */
+    .scale-slider{width:100%;margin:8px 0;}
+    .scale-value{text-align:center;font-size:24px;font-weight:700;color:var(--primary);}
+    .scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1 id="headerTitle">NeuroLaserMap</h1>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Tema">🌓</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="pageHome" class="page active">
+    <div class="stats-grid">
+      <div class="stat s1"><div class="num" id="totalPatients">0</div><div class="lbl">Pacientes</div></div>
+      <div class="stat s2"><div class="num" id="activePatients">0</div><div class="lbl">Ativos</div></div>
+      <div class="stat s3"><div class="num" id="todaySessions">0</div><div class="lbl">Sessões Hoje</div></div>
+      <div class="stat s4"><div class="num" id="weekSessions">0</div><div class="lbl">Esta Semana</div></div>
+    </div>
+    <div class="section-title">Ações Rápidas</div>
+    <div class="quick-actions">
+      <div class="quick-btn" onclick="switchPage('patients')"><span class="qicon">👥</span>Pacientes</div>
+      <div class="quick-btn" onclick="switchPage('sessions')"><span class="qicon">📋</span>Sessões</div>
+      <div class="quick-btn" onclick="switchPage('scales')"><span class="qicon">📊</span>Escalas</div>
+      <div class="quick-btn" onclick="switchPage('effectiveness')"><span class="qicon">📈</span>Efetividade</div>
+    </div>
+    <div class="section-title">Pacientes Recentes</div>
+    <div id="recentPatients"></div>
+  </div>
+
+  <!-- PACIENTES -->
+  <div id="pagePatients" class="page">
+    <div class="search-bar">
+      <input type="text" id="patientSearch" placeholder="Buscar paciente..." oninput="filterPatients()">
+      <button class="filter-btn" id="statusFilter" onclick="cycleFilter()">Todos</button>
+    </div>
+    <div id="patientList"></div>
+  </div>
+
+  <!-- SESSÕES -->
+  <div id="pageSessions" class="page">
+    <div class="section-title">Sessões de Tratamento</div>
+    <div class="section-sub">Selecione um paciente para ver as sessões</div>
+    <div id="sessionPatientList"></div>
+  </div>
+
+  <!-- ESCALAS -->
+  <div id="pageScales" class="page">
+    <div class="section-title">Escalas de Avaliação</div>
+    <div class="section-sub">Selecione um paciente para registrar escalas</div>
+    <div id="scalePatientList"></div>
+  </div>
+
+  <!-- CICLOS -->
+  <div id="pageCycles" class="page">
+    <div class="section-title">Ciclos de Tratamento</div>
+    <div class="section-sub">Planos terapêuticos dos pacientes</div>
+    <div id="cyclePatientList"></div>
+  </div>
+
+  <!-- EFETIVIDADE -->
+  <div id="pageEffectiveness" class="page">
+    <div class="section-title">Relatórios de Efetividade</div>
+    <div class="section-sub">Acompanhe o progresso dos tratamentos</div>
+    <div id="effectivenessContent">
+      <div class="card">
+        <div class="card-title">Resumo Geral</div>
+        <div class="card-text" id="effectivenessSummary">Carregando dados...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERFIL -->
+  <div id="pageProfile" class="page">
+    <div class="section-title">Perfil</div>
+    <div class="card">
+      <div class="detail-header">
+        <div class="detail-avatar">👤</div>
+        <div>
+          <div class="detail-name" id="profileName">Profissional</div>
+          <div class="detail-sub" id="profileEmail">email@exemplo.com</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Aparência</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+        <span style="font-size:14px;">Tema Escuro</span>
+        <button class="btn-secondary" style="width:auto;padding:8px 16px;font-size:13px;" onclick="toggleTheme()">Alternar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Sobre</div>
+      <div class="card-text">NeuroLaserMap v10.0.0<br>Desenvolvido por Carlos Charone<br>Fonoaudiólogo CRFa 9-10025-5</div>
+    </div>
+  </div>
+
+  <!-- CONFIGURAÇÕES -->
+  <div id="pageSettings" class="page">
+    <div class="section-title">Configurações</div>
+    <div class="card">
+      <div class="card-title">Exportar Dados</div>
+      <div class="card-text" style="margin-bottom:12px;">Exporte todos os dados dos pacientes em formato Excel.</div>
+      <button class="btn btn-primary" onclick="exportData()">📥 Exportar Excel</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Limpar Cache</div>
+      <div class="card-text" style="margin-bottom:12px;">Limpe os dados em cache do navegador.</div>
+      <button class="btn btn-secondary" onclick="clearCache()">🗑️ Limpar Cache</button>
+    </div>
+  </div>
+
+  <!-- Patient Detail Modal -->
+  <div id="patientDetailModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="detailPatientName">Paciente</h3>
+        <button class="modal-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div id="patientDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- Add Patient Modal -->
+  <div id="addPatientModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Novo Paciente</h3>
+        <button class="modal-close" onclick="closeAddPatient()">✕</button>
+      </div>
+      <div class="form-group"><label>Nome Completo *</label><input type="text" id="newName" placeholder="Nome do paciente"></div>
+      <div class="form-group"><label>Data de Nascimento *</label><input type="date" id="newBirthDate"></div>
+      <div class="form-group"><label>Telefone</label><input type="tel" id="newPhone" placeholder="(00) 00000-0000"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="newEmail" placeholder="email@exemplo.com"></div>
+      <div class="form-group"><label>Diagnóstico</label><textarea id="newDiagnosis" placeholder="Diagnóstico do paciente"></textarea></div>
+      <div class="form-group"><label>Observações Médicas</label><textarea id="newNotes" placeholder="Observações adicionais"></textarea></div>
+      <button class="btn btn-primary" onclick="saveNewPatient()">Salvar Paciente</button>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" id="fabBtn" onclick="openAddPatient()">+</button>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div class="tab-item active" data-page="home" onclick="switchPage('home')"><span class="tab-icon">🏠</span>Home</div>
+    <div class="tab-item" data-page="patients" onclick="switchPage('patients')"><span class="tab-icon">👥</span>Pacientes</div>
+    <div class="tab-item" data-page="sessions" onclick="switchPage('sessions')"><span class="tab-icon">📋</span>Sessões</div>
+    <div class="tab-item" data-page="scales" onclick="switchPage('scales')"><span class="tab-icon">📊</span>Escalas</div>
+    <div class="tab-item" data-page="cycles" onclick="switchPage('cycles')"><span class="tab-icon">🔄</span>Ciclos</div>
+    <div class="tab-item" data-page="effectiveness" onclick="switchPage('effectiveness')"><span class="tab-icon">📈</span>Efetividade</div>
+    <div class="tab-item" data-page="profile" onclick="switchPage('profile')"><span class="tab-icon">👤</span>Perfil</div>
+    <div class="tab-item" data-page="settings" onclick="switchPage('settings')"><span class="tab-icon">⚙️</span>Config</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ===== DATA STORE (localStorage) =====
+    const STORE_KEY = 'nlm_patients';
+    const STORE_SESSIONS = 'nlm_sessions';
+    const STORE_SCALES = 'nlm_scales';
+
+    function getPatients() {
+      return JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+    }
+    function savePatients(list) {
+      localStorage.setItem(STORE_KEY, JSON.stringify(list));
+    }
+    function getSessions() {
+      return JSON.parse(localStorage.getItem(STORE_SESSIONS) || '[]');
+    }
+    function saveSessions(list) {
+      localStorage.setItem(STORE_SESSIONS, JSON.stringify(list));
+    }
+    function getScales() {
+      return JSON.parse(localStorage.getItem(STORE_SCALES) || '[]');
+    }
+    function saveScales(list) {
+      localStorage.setItem(STORE_SCALES, JSON.stringify(list));
+    }
+
+    // Seed demo data if empty
+    if (getPatients().length === 0) {
+      savePatients([
+        {id:1,fullName:'Maria Silva',birthDate:'1985-03-15',phone:'(11)99999-1111',email:'maria@email.com',diagnosis:'Disfagia orofaríngea',status:'active',createdAt:new Date().toISOString()},
+        {id:2,fullName:'João Santos',birthDate:'1972-08-22',phone:'(11)99999-2222',email:'joao@email.com',diagnosis:'Paralisia facial periférica',status:'active',createdAt:new Date().toISOString()},
+        {id:3,fullName:'Ana Costa',birthDate:'1990-01-10',phone:'(11)99999-3333',email:'ana@email.com',diagnosis:'Afasia de Broca',status:'paused',createdAt:new Date().toISOString()},
+        {id:4,fullName:'Pedro Oliveira',birthDate:'1968-11-05',phone:'(11)99999-4444',email:'pedro@email.com',diagnosis:'Disartria espástica',status:'active',createdAt:new Date().toISOString()},
+      ]);
+    }
+
+    // ===== THEME =====
+    function initTheme() {
+      if (localStorage.getItem('nlm-theme') === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    }
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('nlm-theme','light'); }
+      else { document.documentElement.setAttribute('data-theme','dark'); localStorage.setItem('nlm-theme','dark'); }
+    }
+    initTheme();
+
+    // ===== TOAST =====
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ===== NAVIGATION =====
+    let currentPage = 'home';
+    function switchPage(page) {
+      currentPage = page;
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab-item[data-page="${page}"]`).classList.add('active');
+
+      const titles = {home:'NeuroLaserMap',patients:'Pacientes',sessions:'Sessões',scales:'Escalas',cycles:'Ciclos',effectiveness:'Efetividade',profile:'Perfil',settings:'Configurações'};
+      document.getElementById('headerTitle').textContent = titles[page] || 'NeuroLaserMap';
+
+      // Show FAB only on patients page
+      document.getElementById('fabBtn').style.display = (page === 'patients' || page === 'home') ? 'flex' : 'none';
+
+      // Refresh data
+      if (page === 'home') renderHome();
+      if (page === 'patients') renderPatients();
+      if (page === 'sessions') renderSessionPatients();
+      if (page === 'scales') renderScalePatients();
+      if (page === 'cycles') renderCyclePatients();
+      if (page === 'effectiveness') renderEffectiveness();
+    }
+
+    // ===== HOME =====
+    function renderHome() {
+      const pts = getPatients();
+      const sess = getSessions();
+      const today = new Date().toISOString().split('T')[0];
+      const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
+
+      document.getElementById('totalPatients').textContent = pts.length;
+      document.getElementById('activePatients').textContent = pts.filter(p => p.status === 'active').length;
+      document.getElementById('todaySessions').textContent = sess.filter(s => s.date === today).length;
+      document.getElementById('weekSessions').textContent = sess.filter(s => s.date >= weekAgo).length;
+
+      const recent = pts.slice(0, 3);
+      document.getElementById('recentPatients').innerHTML = recent.length === 0
+        ? '<div class="empty"><div class="empty-icon">👥</div><p>Nenhum paciente cadastrado</p></div>'
+        : recent.map(p => patientListItem(p)).join('');
+    }
+
+    // ===== PATIENTS =====
+    let filterStatus = 'all';
+    function renderPatients() {
+      const pts = getPatients();
+      const search = (document.getElementById('patientSearch')?.value || '').toLowerCase();
+      let filtered = pts;
+      if (search) filtered = filtered.filter(p => p.fullName.toLowerCase().includes(search));
+      if (filterStatus !== 'all') filtered = filtered.filter(p => p.status === filterStatus);
+
+      document.getElementById('patientList').innerHTML = filtered.length === 0
+        ? '<div class="empty"><div class="empty-icon">👥</div><p>Nenhum paciente encontrado</p></div>'
+        : filtered.map(p => patientListItem(p)).join('');
+    }
+    function filterPatients() { renderPatients(); }
+    function cycleFilter() {
+      const states = ['all','active','paused','completed'];
+      const labels = ['Todos','Ativos','Pausados','Concluídos'];
+      const idx = (states.indexOf(filterStatus) + 1) % states.length;
+      filterStatus = states[idx];
+      document.getElementById('statusFilter').textContent = labels[idx];
+      renderPatients();
+    }
+
+    function patientListItem(p) {
+      const initials = p.fullName.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+      const badgeClass = {active:'badge-active',paused:'badge-paused',completed:'badge-completed'}[p.status] || '';
+      const badgeLabel = {active:'Ativo',paused:'Pausado',completed:'Concluído'}[p.status] || '';
+      return `<div class="list-item" onclick="openPatientDetail(${p.id})">
+        <div class="list-avatar">${initials}</div>
+        <div class="list-info">
+          <div class="list-name">${p.fullName}</div>
+          <div class="list-sub">${p.diagnosis || 'Sem diagnóstico'}</div>
+        </div>
+        <span class="list-badge ${badgeClass}">${badgeLabel}</span>
+      </div>`;
+    }
+
+    // ===== PATIENT DETAIL =====
+    function openPatientDetail(id) {
+      const p = getPatients().find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('detailPatientName').textContent = p.fullName;
+      const age = p.birthDate ? Math.floor((Date.now() - new Date(p.birthDate).getTime()) / (365.25*24*60*60*1000)) : '-';
+      document.getElementById('patientDetailContent').innerHTML = `
+        <div class="detail-header">
+          <div class="detail-avatar">${p.fullName.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}</div>
+          <div>
+            <div class="detail-name">${p.fullName}</div>
+            <div class="detail-sub">${p.diagnosis || 'Sem diagnóstico'}</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h4>Informações</h4>
+          <div class="detail-row"><span class="label">Idade</span><span class="value">${age} anos</span></div>
+          <div class="detail-row"><span class="label">Telefone</span><span class="value">${p.phone || '-'}</span></div>
+          <div class="detail-row"><span class="label">E-mail</span><span class="value">${p.email || '-'}</span></div>
+          <div class="detail-row"><span class="label">Status</span><span class="value">${{active:'Ativo',paused:'Pausado',completed:'Concluído'}[p.status]}</span></div>
+        </div>
+        <div class="detail-section">
+          <h4>Diagnóstico</h4>
+          <div class="card-text">${p.diagnosis || 'Nenhum diagnóstico registrado'}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px;">
+          <button class="btn btn-secondary" style="flex:1;" onclick="changeStatus(${p.id})">Alterar Status</button>
+          <button class="btn btn-danger" style="flex:1;" onclick="deletePatient(${p.id})">Excluir</button>
+        </div>`;
+      document.getElementById('patientDetailModal').classList.add('show');
+    }
+    function closeDetail() { document.getElementById('patientDetailModal').classList.remove('show'); }
+
+    function changeStatus(id) {
+      const pts = getPatients();
+      const p = pts.find(x => x.id === id);
+      if (!p) return;
+      const states = ['active','paused','completed'];
+      const idx = (states.indexOf(p.status) + 1) % states.length;
+      p.status = states[idx];
+      savePatients(pts);
+      closeDetail();
+      renderPatients();
+      renderHome();
+      showToast('Status alterado para ' + {active:'Ativo',paused:'Pausado',completed:'Concluído'}[p.status]);
+    }
+
+    function deletePatient(id) {
+      if (!confirm('Tem certeza que deseja excluir este paciente?')) return;
+      const pts = getPatients().filter(x => x.id !== id);
+      savePatients(pts);
+      closeDetail();
+      renderPatients();
+      renderHome();
+      showToast('Paciente excluído');
+    }
+
+    // ===== ADD PATIENT =====
+    function openAddPatient() { document.getElementById('addPatientModal').classList.add('show'); }
+    function closeAddPatient() { document.getElementById('addPatientModal').classList.remove('show'); }
+    function saveNewPatient() {
+      const name = document.getElementById('newName').value.trim();
+      const birth = document.getElementById('newBirthDate').value;
+      if (!name || !birth) { showToast('Preencha nome e data de nascimento'); return; }
+      const pts = getPatients();
+      const newId = pts.length > 0 ? Math.max(...pts.map(p=>p.id)) + 1 : 1;
+      pts.push({
+        id: newId,
+        fullName: name,
+        birthDate: birth,
+        phone: document.getElementById('newPhone').value.trim(),
+        email: document.getElementById('newEmail').value.trim(),
+        diagnosis: document.getElementById('newDiagnosis').value.trim(),
+        medicalNotes: document.getElementById('newNotes').value.trim(),
+        status: 'active',
+        createdAt: new Date().toISOString()
+      });
+      savePatients(pts);
+      closeAddPatient();
+      // Clear form
+      ['newName','newBirthDate','newPhone','newEmail','newDiagnosis','newNotes'].forEach(id => document.getElementById(id).value = '');
+      renderPatients();
+      renderHome();
+      showToast('Paciente cadastrado!');
+    }
+
+    // ===== SESSIONS =====
+    function renderSessionPatients() {
+      const pts = getPatients();
+      document.getElementById('sessionPatientList').innerHTML = pts.length === 0
+        ? '<div class="empty"><div class="empty-icon">📋</div><p>Nenhum paciente cadastrado</p></div>'
+        : pts.map(p => `<div class="list-item" onclick="showPatientSessions(${p.id})">
+            <div class="list-avatar">${p.fullName.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}</div>
+            <div class="list-info"><div class="list-name">${p.fullName}</div><div class="list-sub">${getSessions().filter(s=>s.patientId===p.id).length} sessões</div></div>
+          </div>`).join('');
+    }
+    function showPatientSessions(patientId) {
+      const p = getPatients().find(x => x.id === patientId);
+      const sess = getSessions().filter(s => s.patientId === patientId);
+      document.getElementById('sessionPatientList').innerHTML = `
+        <button class="btn btn-secondary" style="margin-bottom:12px;" onclick="renderSessionPatients()">← Voltar</button>
+        <div class="section-title">Sessões de ${p.fullName}</div>
+        ${sess.length === 0 ? '<div class="empty"><p>Nenhuma sessão registrada</p></div>' : sess.map(s => `
+          <div class="card">
+            <div class="card-title">Sessão ${s.date}</div>
+            <div class="card-text">Duração: ${s.duration || '-'} min<br>Observações: ${s.observations || 'Nenhuma'}</div>
+          </div>`).join('')}
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="addSession(${patientId})">+ Nova Sessão</button>`;
+    }
+    function addSession(patientId) {
+      const sess = getSessions();
+      sess.push({id:Date.now(),patientId,date:new Date().toISOString().split('T')[0],duration:30,observations:'Sessão registrada via PWA'});
+      saveSessions(sess);
+      showPatientSessions(patientId);
+      showToast('Sessão registrada!');
+    }
+
+    // ===== SCALES =====
+    function renderScalePatients() {
+      const pts = getPatients();
+      document.getElementById('scalePatientList').innerHTML = pts.length === 0
+        ? '<div class="empty"><div class="empty-icon">📊</div><p>Nenhum paciente cadastrado</p></div>'
+        : pts.map(p => `<div class="list-item" onclick="showPatientScales(${p.id})">
+            <div class="list-avatar">${p.fullName.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}</div>
+            <div class="list-info"><div class="list-name">${p.fullName}</div><div class="list-sub">${getScales().filter(s=>s.patientId===p.id).length} avaliações</div></div>
+          </div>`).join('');
+    }
+    function showPatientScales(patientId) {
+      const p = getPatients().find(x => x.id === patientId);
+      const scales = getScales().filter(s => s.patientId === patientId);
+      document.getElementById('scalePatientList').innerHTML = `
+        <button class="btn btn-secondary" style="margin-bottom:12px;" onclick="renderScalePatients()">← Voltar</button>
+        <div class="section-title">Escalas de ${p.fullName}</div>
+        ${scales.length === 0 ? '<div class="empty"><p>Nenhuma avaliação registrada</p></div>' : scales.map(s => `
+          <div class="card">
+            <div class="card-title">${s.date} - ${s.type}</div>
+            <div class="scale-value">${s.value}/10</div>
+          </div>`).join('')}
+        <div class="card" style="margin-top:12px;">
+          <div class="card-title">Nova Avaliação</div>
+          <div class="form-group"><label>Tipo</label>
+            <select id="scaleType_${patientId}">
+              <option>Dor (EVA)</option><option>Funcionalidade</option><option>Satisfação</option><option>Qualidade de Vida</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Pontuação</label>
+            <input type="range" min="0" max="10" value="5" class="scale-slider" id="scaleVal_${patientId}" oninput="document.getElementById('scaleDisplay_${patientId}').textContent=this.value">
+            <div class="scale-value" id="scaleDisplay_${patientId}">5</div>
+            <div class="scale-labels"><span>0 - Mínimo</span><span>10 - Máximo</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="addScale(${patientId})">Registrar Avaliação</button>
+        </div>`;
+    }
+    function addScale(patientId) {
+      const scales = getScales();
+      const type = document.getElementById('scaleType_'+patientId).value;
+      const value = document.getElementById('scaleVal_'+patientId).value;
+      scales.push({id:Date.now(),patientId,date:new Date().toISOString().split('T')[0],type,value:parseInt(value)});
+      saveScales(scales);
+      showPatientScales(patientId);
+      showToast('Avaliação registrada!');
+    }
+
+    // ===== CYCLES =====
+    function renderCyclePatients() {
+      const pts = getPatients();
+      document.getElementById('cyclePatientList').innerHTML = pts.length === 0
+        ? '<div class="empty"><div class="empty-icon">🔄</div><p>Nenhum paciente cadastrado</p></div>'
+        : pts.map(p => {
+          const sess = getSessions().filter(s => s.patientId === p.id);
+          return `<div class="card">
+            <div class="card-title">${p.fullName}</div>
+            <div class="card-text">
+              Status: ${{active:'Ativo',paused:'Pausado',completed:'Concluído'}[p.status]}<br>
+              Sessões realizadas: ${sess.length}<br>
+              Diagnóstico: ${p.diagnosis || 'Não informado'}
+            </div>
+          </div>`;
+        }).join('');
+    }
+
+    // ===== EFFECTIVENESS =====
+    function renderEffectiveness() {
+      const pts = getPatients();
+      const sess = getSessions();
+      const scales = getScales();
+      document.getElementById('effectivenessSummary').innerHTML = `
+        <strong>Total de Pacientes:</strong> ${pts.length}<br>
+        <strong>Pacientes Ativos:</strong> ${pts.filter(p=>p.status==='active').length}<br>
+        <strong>Total de Sessões:</strong> ${sess.length}<br>
+        <strong>Total de Avaliações:</strong> ${scales.length}<br>
+        <strong>Média das Escalas:</strong> ${scales.length > 0 ? (scales.reduce((a,s)=>a+s.value,0)/scales.length).toFixed(1) : 'N/A'}/10`;
+    }
+
+    // ===== EXPORT =====
+    function exportData() {
+      const pts = getPatients();
+      const sess = getSessions();
+      const scales = getScales();
+      let csv = 'Nome,Nascimento,Telefone,Email,Diagnóstico,Status,Sessões,Avaliações\n';
+      pts.forEach(p => {
+        const nSess = sess.filter(s=>s.patientId===p.id).length;
+        const nScales = scales.filter(s=>s.patientId===p.id).length;
+        csv += `"${p.fullName}","${p.birthDate}","${p.phone||''}","${p.email||''}","${p.diagnosis||''}","${p.status}",${nSess},${nScales}\n`;
+      });
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'neurolasermap_export.csv'; a.click();
+      showToast('Dados exportados!');
+    }
+
+    function clearCache() {
+      if (confirm('Tem certeza? Isso apagará todos os dados locais.')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    // ===== INIT =====
+    renderHome();
+  </script>
+</body>
+</html>

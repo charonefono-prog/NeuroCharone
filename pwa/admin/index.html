@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#667eea">
+  <title>NeuroLaserMap - Admin</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5568d3;
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-dark: #6366f1;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #f87171;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-tap-highlight-color:transparent; }
+    
+    /* Header */
+    .header { background:var(--primary); color:#fff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+    .header h1 { font-size:18px; font-weight:700; }
+    .header-actions { display:flex; gap:12px; align-items:center; }
+    .theme-btn, .logout-btn { background:rgba(255,255,255,0.2); border:none; color:#fff; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+    .theme-btn:active, .logout-btn:active { transform:scale(0.92); }
+
+    /* Login */
+    .login-container { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
+    .login-card { background:var(--surface); border-radius:16px; padding:32px 24px; width:100%; max-width:400px; box-shadow:var(--shadow); }
+    .login-card h2 { font-size:24px; text-align:center; margin-bottom:8px; }
+    .login-card p { text-align:center; color:var(--text-muted); margin-bottom:24px; font-size:14px; }
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-muted); }
+    .form-group input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:16px; background:var(--bg); color:var(--text); outline:none; }
+    .form-group input:focus { border-color:var(--primary); }
+    .btn { width:100%; padding:14px; border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer; }
+    .btn-primary { background:var(--primary); color:#fff; }
+    .btn-primary:active { background:var(--primary-dark); transform:scale(0.98); }
+    .error-msg { color:var(--error); font-size:13px; text-align:center; margin-top:12px; }
+
+    /* Dashboard */
+    .dashboard { display:none; }
+    .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:16px; }
+    .stat-card { background:var(--surface); border-radius:12px; padding:16px; box-shadow:var(--shadow); text-align:center; }
+    .stat-card .number { font-size:28px; font-weight:700; }
+    .stat-card .label { font-size:12px; color:var(--text-muted); margin-top:4px; }
+    .stat-card.pending .number { color:var(--warning); }
+    .stat-card.approved .number { color:var(--success); }
+    .stat-card.denied .number { color:var(--error); }
+    .stat-card.total .number { color:var(--primary); }
+
+    /* Tabs */
+    .tabs { display:flex; padding:0 16px; gap:4px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:56px; z-index:90; }
+    .tab { flex:1; padding:12px 8px; text-align:center; font-size:13px; font-weight:600; border:none; background:none; color:var(--text-muted); cursor:pointer; border-bottom:3px solid transparent; }
+    .tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+    .tab:active { opacity:0.7; }
+
+    /* User List */
+    .user-list { padding:12px 16px; }
+    .user-card { background:var(--surface); border-radius:12px; padding:16px; margin-bottom:10px; box-shadow:var(--shadow); }
+    .user-card .user-info { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .user-card .avatar { width:44px; height:44px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; flex-shrink:0; }
+    .user-card .details { flex:1; }
+    .user-card .name { font-size:15px; font-weight:600; }
+    .user-card .email { font-size:13px; color:var(--text-muted); }
+    .user-card .date { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    .user-card .actions { display:flex; gap:8px; }
+    .user-card .actions button { flex:1; padding:10px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; }
+    .user-card .actions button:active { transform:scale(0.96); }
+    .btn-approve { background:#dcfce7; color:#16a34a; }
+    .btn-deny { background:#fee2e2; color:#dc2626; }
+    .btn-block { background:#fee2e2; color:#dc2626; }
+    .btn-unblock { background:#dcfce7; color:#16a34a; }
+    .badge { display:inline-block; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:600; }
+    .badge-approved { background:#dcfce7; color:#16a34a; }
+    .badge-pending { background:#fef3c7; color:#b45309; }
+    .badge-denied { background:#fee2e2; color:#dc2626; }
+
+    .empty { text-align:center; padding:40px 20px; color:var(--text-muted); }
+    .empty-icon { font-size:48px; margin-bottom:12px; }
+
+    /* Loading */
+    .loading { text-align:center; padding:40px; }
+    .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Toast */
+    .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:12px 24px; border-radius:10px; font-size:14px; font-weight:500; z-index:200; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+    .toast.show { opacity:1; }
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:150; align-items:flex-end; justify-content:center; }
+    .modal-overlay.show { display:flex; }
+    .modal { background:var(--surface); border-radius:16px 16px 0 0; width:100%; max-width:500px; padding:24px; max-height:70vh; overflow-y:auto; }
+    .modal h3 { font-size:18px; margin-bottom:16px; }
+    .modal .form-group textarea { width:100%; padding:12px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; background:var(--bg); color:var(--text); resize:vertical; min-height:80px; font-family:inherit; }
+    .modal-actions { display:flex; gap:8px; margin-top:16px; }
+    .modal-actions button { flex:1; }
+    .btn-cancel { background:var(--bg); color:var(--text); border:1.5px solid var(--border); }
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div id="loginView" class="login-container">
+    <div class="login-card">
+      <h2>NeuroLaserMap</h2>
+      <p>Painel Administrativo</p>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" placeholder="admin@exemplo.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="loginPassword" placeholder="Sua senha" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+      <div id="loginError" class="error-msg" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboardView" class="dashboard">
+    <div class="header">
+      <h1>Admin</h1>
+      <div class="header-actions">
+        <button class="theme-btn" onclick="toggleTheme()" title="Alternar tema">🌓</button>
+        <button class="logout-btn" onclick="doLogout()" title="Sair">⏻</button>
+      </div>
+    </div>
+
+    <div class="stats" id="statsContainer">
+      <div class="stat-card total"><div class="number" id="statTotal">-</div><div class="label">Total</div></div>
+      <div class="stat-card pending"><div class="number" id="statPending">-</div><div class="label">Pendentes</div></div>
+      <div class="stat-card approved"><div class="number" id="statApproved">-</div><div class="label">Aprovados</div></div>
+      <div class="stat-card denied"><div class="number" id="statDenied">-</div><div class="label">Bloqueados</div></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="pending" onclick="switchTab('pending')">Pendentes</div>
+      <div class="tab" data-tab="approved" onclick="switchTab('approved')">Aprovados</div>
+      <div class="tab" data-tab="denied" onclick="switchTab('denied')">Bloqueados</div>
+    </div>
+
+    <div id="userList" class="user-list">
+      <div class="loading"><div class="spinner"></div><p>Carregando...</p></div>
+    </div>
+  </div>
+
+  <!-- Deny Modal -->
+  <div id="denyModal" class="modal-overlay">
+    <div class="modal">
+      <h3>Bloquear Usuário</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;" id="denyUserInfo"></p>
+      <div class="form-group">
+        <label>Motivo (opcional)</label>
+        <textarea id="denyReason" placeholder="Informe o motivo do bloqueio..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeDenyModal()">Cancelar</button>
+        <button class="btn btn-deny" onclick="confirmDeny()" style="color:#fff;background:var(--error)">Bloquear</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const API_BASE = window.location.origin + '/api/trpc';
+    let currentUser = null;
+    let allUsers = [];
+    let currentTab = 'pending';
+    let denyTargetEmail = '';
+
+    // Theme
+    function initTheme() {
+      const saved = localStorage.getItem('admin-theme');
+      if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('admin-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('admin-theme', 'dark');
+      }
+    }
+    initTheme();
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // tRPC call helper
+    async function trpcQuery(proc) {
+      const url = `${API_BASE}/${proc}?input={}`;
+      const res = await fetch(url, { credentials: 'include' });
+      const data = await res.json();
+      if (data.result?.data) return data.result.data;
+      throw new Error(data.error?.message || 'Request failed');
+    }
+
+    async function trpcMutation(proc, input) {
+      const url = `${API_BASE}/${proc}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(input)
+      });
+      const data = await res.json();
+      if (data.result?.data) return data.result.data;
+      throw new Error(data.error?.message || 'Request failed');
+    }
+
+    // Login
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errEl = document.getElementById('loginError');
+      errEl.style.display = 'none';
+
+      if (!email || !password) {
+        errEl.textContent = 'Preencha todos os campos';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        const result = await trpcMutation('registration.login', { email, password });
+        if (result.success) {
+          if (result.user.accessLevel !== 'admin') {
+            errEl.textContent = 'Acesso restrito a administradores';
+            errEl.style.display = 'block';
+            return;
+          }
+          currentUser = result.user;
+          localStorage.setItem('admin-user', JSON.stringify(currentUser));
+          showDashboard();
+        } else {
+          errEl.textContent = result.reason || 'Credenciais inválidas';
+          errEl.style.display = 'block';
+        }
+      } catch (e) {
+        errEl.textContent = 'Erro ao conectar. Tente novamente.';
+        errEl.style.display = 'block';
+      }
+    }
+
+    function doLogout() {
+      currentUser = null;
+      localStorage.removeItem('admin-user');
+      document.getElementById('loginView').style.display = 'flex';
+      document.getElementById('dashboardView').style.display = 'none';
+    }
+
+    // Dashboard
+    async function showDashboard() {
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
+      await loadData();
+    }
+
+    async function loadData() {
+      try {
+        const [stats, pending] = await Promise.all([
+          trpcQuery('accessControl.getStats'),
+          trpcQuery('registration.getPendingUsers')
+        ]);
+
+        document.getElementById('statTotal').textContent = stats.totalUsers;
+        document.getElementById('statPending').textContent = stats.pendingUsers;
+        document.getElementById('statApproved').textContent = stats.approvedUsers;
+        document.getElementById('statDenied').textContent = stats.deniedUsers;
+
+        // Load all users
+        const allUsersData = await trpcQuery('accessControl.getAllUsers');
+        allUsers = allUsersData;
+        renderUsers();
+      } catch (e) {
+        console.error('Load data error:', e);
+        document.getElementById('userList').innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>Erro ao carregar dados</p></div>';
+      }
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+      renderUsers();
+    }
+
+    function renderUsers() {
+      const container = document.getElementById('userList');
+      let filtered = [];
+
+      if (currentTab === 'pending') {
+        filtered = allUsers.filter(u => !u.isApproved && !u.denialReason);
+      } else if (currentTab === 'approved') {
+        filtered = allUsers.filter(u => u.isApproved);
+      } else if (currentTab === 'denied') {
+        filtered = allUsers.filter(u => u.denialReason);
+      }
+
+      if (filtered.length === 0) {
+        const labels = { pending: 'pendentes', approved: 'aprovados', denied: 'bloqueados' };
+        const icons = { pending: '⏳', approved: '✅', denied: '🚫' };
+        container.innerHTML = `<div class="empty"><div class="empty-icon">${icons[currentTab]}</div><p>Nenhum usuário ${labels[currentTab]}</p></div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(u => {
+        const initials = (u.name || u.email).substring(0, 2).toUpperCase();
+        const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '';
+        let actions = '';
+
+        if (currentTab === 'pending') {
+          actions = `
+            <div class="actions">
+              <button class="btn-approve" onclick="approveUser('${u.email}')">✓ Aprovar</button>
+              <button class="btn-deny" onclick="openDenyModal('${u.email}','${u.name || u.email}')">✕ Bloquear</button>
+            </div>`;
+        } else if (currentTab === 'approved') {
+          actions = `
+            <div class="actions">
+              <button class="btn-block" onclick="openDenyModal('${u.email}','${u.name || u.email}')">🚫 Bloquear</button>
+            </div>`;
+        } else if (currentTab === 'denied') {
+          actions = `
+            <div class="actions">
+              <button class="btn-unblock" onclick="approveUser('${u.email}')">✓ Desbloquear</button>
+            </div>`;
+          if (u.denialReason) {
+            actions = `<p style="font-size:12px;color:var(--error);margin-bottom:8px;">Motivo: ${u.denialReason}</p>` + actions;
+          }
+        }
+
+        return `
+          <div class="user-card">
+            <div class="user-info">
+              <div class="avatar">${initials}</div>
+              <div class="details">
+                <div class="name">${u.name || 'Sem nome'}</div>
+                <div class="email">${u.email}</div>
+                <div class="date">${date}</div>
+              </div>
+            </div>
+            ${actions}
+          </div>`;
+      }).join('');
+    }
+
+    // Approve
+    async function approveUser(email) {
+      try {
+        await trpcMutation('accessControl.approveUser', { email });
+        showToast('Usuário aprovado!');
+        await loadData();
+      } catch (e) {
+        showToast('Erro ao aprovar: ' + e.message);
+      }
+    }
+
+    // Deny Modal
+    function openDenyModal(email, name) {
+      denyTargetEmail = email;
+      document.getElementById('denyUserInfo').textContent = `Bloquear: ${name} (${email})`;
+      document.getElementById('denyReason').value = '';
+      document.getElementById('denyModal').classList.add('show');
+    }
+    function closeDenyModal() {
+      document.getElementById('denyModal').classList.remove('show');
+      denyTargetEmail = '';
+    }
+    async function confirmDeny() {
+      const reason = document.getElementById('denyReason').value.trim() || 'Bloqueado pelo administrador';
+      try {
+        await trpcMutation('accessControl.denyUser', { email: denyTargetEmail, reason });
+        showToast('Usuário bloqueado!');
+        closeDenyModal();
+        await loadData();
+      } catch (e) {
+        showToast('Erro ao bloquear: ' + e.message);
+      }
+    }
+
+    // Init
+    const savedUser = localStorage.getItem('admin-user');
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      showDashboard();
+    }
+
+    // Enter key on login
+    document.getElementById('loginPassword').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>

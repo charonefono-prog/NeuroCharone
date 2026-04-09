@@ -72,6 +72,25 @@ async function startServer() {
     }),
   );
 
+  // Serve PWA Admin
+  app.get("/pwa/admin", (_req, res) => {
+    res.sendFile(path.join(process.cwd(), "pwa", "admin", "index.html"));
+  });
+  app.get("/pwa/admin/*", (_req, res) => {
+    res.sendFile(path.join(process.cwd(), "pwa", "admin", "index.html"));
+  });
+
+  // Serve PWA App
+  app.get("/pwa/app", (_req, res) => {
+    res.sendFile(path.join(process.cwd(), "pwa", "app", "index.html"));
+  });
+  app.get("/pwa/app/*", (_req, res) => {
+    res.sendFile(path.join(process.cwd(), "pwa", "app", "index.html"));
+  });
+
+  // Serve PWA static files
+  app.use("/pwa", express.static(path.join(process.cwd(), "pwa")));
+
   // Serve index.html for root path
   app.get("/", (_req, res) => {
     res.sendFile(path.join(process.cwd(), "index.html"));
