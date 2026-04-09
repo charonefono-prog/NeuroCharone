@@ -1089,4 +1089,10 @@ export default function MyScreen() {
 - [x] Configurar Express para servir o build estático em /api/webapp/
 - [x] Corrigir paths de assets (JS, CSS, manifest, service-worker) para /api/webapp/
 - [x] Testar localmente (200 OK para /api/webapp/, manifest.json, JS bundles)
-- [ ] Salvar checkpoint e publicar
+- [x] Salvar checkpoint e publicar
+
+## BUG - Unmatched Route na PWA publicada
+- [x] Expo Router não reconhece /api/webapp como rota válida
+- [x] Configurar baseUrl no Expo (experiments.baseUrl via EXPO_BASE_URL env var)
+- [x] Re-exportar com EXPO_BASE_URL="/api/webapp" e corrigir paths restantes
+- [x] Testar localmente - todas as rotas retornam 200
