@@ -1096,3 +1096,35 @@ export default function MyScreen() {
 - [x] Configurar baseUrl no Expo (experiments.baseUrl via EXPO_BASE_URL env var)
 - [x] Re-exportar com EXPO_BASE_URL="/api/webapp" e corrigir paths restantes
 - [x] Testar localmente - todas as rotas retornam 200
+
+## Sistema de Autorização PWA - 3 Níveis
+### Backend
+- [x] Criar tabela access_control no schema (id, email, password_hash, name, role, status, etc.)
+- [x] Roles: admin, user (profissional), paciente (futuro)
+- [x] Status: pending (isApproved=false), active (isApproved=true), rejected (denialReason)
+- [x] Endpoints: register, login, me, approve, reject, list-users, delete, logs
+- [x] Hash de senhas com bcryptjs
+- [x] JWT tokens com jose (expiração 7 dias)
+- [x] Middleware de autenticação (requireAuth, requireAdmin)
+
+### Frontend - Tela de Login
+- [x] Tela de login com email/senha
+- [x] Tela de registro com nome, email, senha
+- [x] Mensagem "Aguardando aprovação" para usuários pendentes
+- [x] Redirecionamento automático após login
+- [x] Botão de logout no Perfil
+
+### Frontend - Controle de Acesso por Role
+- [x] Admin: acesso total (todas as abas + gerenciamento de usuários)
+- [ ] Profissional: acesso a pacientes vinculados (futuro)
+- [ ] Paciente: acesso limitado (futuro)
+
+### Frontend - Painel Admin de Usuários
+- [x] Lista de todos os usuários com role e status
+- [x] Botões Aprovar/Rejeitar/Excluir
+- [x] Badges de status (Pendente/Aprovado/Admin/Rejeitado)
+- [x] Integrado na aba Admin existente
+
+### Vínculo Profissional-Paciente
+- [ ] Profissional automaticamente vinculado aos pacientes que criar (futuro)
+- [ ] Paciente só vê seus próprios dados (futuro)

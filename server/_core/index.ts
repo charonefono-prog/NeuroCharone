@@ -9,6 +9,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { pwaAuthRouter } from "../pwa-auth";
 
 // Resolve project root reliably in both dev (tsx) and production (esbuild ESM)
 function resolveProjectRoot(): string {
@@ -98,6 +99,11 @@ async function startServer() {
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true, timestamp: Date.now() });
   });
+
+  // ============================================================
+  // PWA Auth routes
+  // ============================================================
+  app.use("/api/pwa-auth", pwaAuthRouter);
 
   // ============================================================
   // EXPO WEB APP (Static Export) - Served under /api/webapp/

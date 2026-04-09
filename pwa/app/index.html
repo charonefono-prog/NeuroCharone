@@ -141,6 +141,46 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 /* Toast */
 .toast{position:fixed;bottom:calc(var(--tab-h) + 20px);left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
+/* Auth Screen */
+.auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.auth-overlay.hidden{display:none}
+.auth-box{width:100%;max-width:380px}
+.auth-logo{text-align:center;margin-bottom:28px}
+.auth-logo img{width:72px;height:72px;border-radius:16px;margin-bottom:12px}
+.auth-logo h1{font-size:24px;font-weight:800;color:var(--fg)}
+.auth-logo p{font-size:13px;color:var(--muted);margin-top:4px}
+.auth-box .fg{margin-bottom:14px}
+.auth-box .fg label{display:block;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:5px}
+.auth-box .fg input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:var(--surface);color:var(--fg);outline:none}
+.auth-box .fg input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,204,.15)}
+.auth-btn{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+.auth-btn:active{opacity:.85}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-switch{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
+.auth-switch a{color:var(--primary);font-weight:600;cursor:pointer;text-decoration:none}
+.auth-error{background:var(--error);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
+.auth-error.show{display:block}
+.auth-success{background:var(--success);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
+.auth-success.show{display:block}
+.auth-pending{text-align:center;padding:40px 20px}
+.auth-pending .ei{font-size:52px;margin-bottom:16px}
+.auth-pending h2{font-size:20px;font-weight:700;margin-bottom:8px}
+.auth-pending p{font-size:14px;color:var(--muted);line-height:1.6}
+/* User management cards */
+.user-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.user-card .uc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.user-card .uc-name{font-size:15px;font-weight:600}
+.user-card .uc-email{font-size:12px;color:var(--muted)}
+.user-card .uc-actions{display:flex;gap:6px;margin-top:10px}
+.user-card .uc-actions button{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit}
+.uc-approve{background:var(--success);color:#fff}
+.uc-reject{background:var(--error);color:#fff}
+.uc-delete{background:var(--surface);color:var(--error);border:1px solid var(--error)!important}
+.uc-badge{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase}
+.uc-badge.pending{background:#FEF3C7;color:#92400E}
+.uc-badge.approved{background:#D1FAE5;color:#065F46}
+.uc-badge.admin{background:#DBEAFE;color:#1E40AF}
+.uc-badge.rejected{background:#FEE2E2;color:#991B1B}
 /* Filter bar */
 .fb{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .fb::-webkit-scrollbar{display:none}
@@ -149,6 +189,45 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </style>
 </head>
 <body>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663028848082/ffWyBwQdEOPmmYLX.png" alt="NeuroLaserMap">
+      <h1>NeuroLaserMap</h1>
+      <p>Sistema de Mapeamento de Neuromodulação</p>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-success" id="auth-success"></div>
+    <!-- Login Form -->
+    <div id="login-form">
+      <div class="fg"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email"></div>
+      <div class="fg"><label>Senha</label><input type="password" id="login-pass" placeholder="Sua senha" autocomplete="current-password"></div>
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+      <div class="auth-switch">Não tem conta? <a onclick="showRegister()">Criar conta</a></div>
+    </div>
+    <!-- Register Form -->
+    <div id="register-form" style="display:none">
+      <div class="fg"><label>Nome Completo</label><input type="text" id="reg-name" placeholder="Seu nome completo"></div>
+      <div class="fg"><label>Email</label><input type="email" id="reg-email" placeholder="seu@email.com" autocomplete="email"></div>
+      <div class="fg"><label>Senha</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+      <div class="fg"><label>Confirmar Senha</label><input type="password" id="reg-pass2" placeholder="Repita a senha"></div>
+      <button class="auth-btn" id="reg-btn" onclick="doRegister()">Criar Conta</button>
+      <div class="auth-switch">Já tem conta? <a onclick="showLogin()">Fazer login</a></div>
+    </div>
+    <!-- Pending Screen -->
+    <div id="pending-screen" style="display:none">
+      <div class="auth-pending">
+        <div class="ei">⏳</div>
+        <h2>Aguardando Aprovação</h2>
+        <p>Sua conta foi criada com sucesso!<br>O administrador precisa aprovar seu acesso antes que você possa usar o sistema.</p>
+        <button class="auth-btn" style="margin-top:20px;background:var(--surface);color:var(--fg);border:1px solid var(--border)" onclick="showLogin()">Voltar ao Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="app">
 <!-- ===== HOME ===== -->
 <div class="screen active" id="s-home">
@@ -252,6 +331,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
     <div class="st">Sobre</div>
     <div class="card"><p style="font-size:13px;color:var(--muted);line-height:1.6">NeuroLaserMap v1.0.0<br>Desenvolvido por Carlos Charone<br>Fonoaudiólogo CRFa 9-10025-5</p></div>
   </div>
+  <div style="margin-top:20px">
+    <button onclick="doLogout()" style="width:100%;padding:14px;background:var(--error);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">Sair da Conta</button>
+  </div>
 </div>
 
 <!-- ===== CONFIGURAÇÕES ===== -->
@@ -305,8 +387,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
     <div id="helmet-map-container"></div>
   </div>
   <div class="sec">
-    <div class="st">Gerenciamento de Acesso</div>
-    <div id="admin-users"><div class="es"><div class="ei">🔒</div><p>Gerenciamento de acesso via PWA Admin</p></div></div>
+    <div class="st">Gerenciamento de Usuários</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:13px;color:var(--muted)">Controle de acesso ao sistema</span>
+      <button onclick="loadUsers()" style="padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--primary);font-family:inherit">Atualizar</button>
+    </div>
+    <div id="user-mgmt-list"><div class="es"><div class="ei">🔒</div><p>Carregando usuários...</p></div></div>
   </div>
 </div>
 
@@ -787,13 +873,259 @@ function importData(){
   };inp.click();
 }
 
+// ===== AUTH =====
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '' : '';
+const AUTH_URL = API_BASE + '/api/pwa-auth';
+let authUser = null;
+let authToken = localStorage.getItem('nlm_token');
+
+function showAuthError(msg) {
+  const el = $('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  $('auth-success').classList.remove('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+function showAuthSuccess(msg) {
+  const el = $('auth-success');
+  el.textContent = msg;
+  el.classList.add('show');
+  $('auth-error').classList.remove('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+function showLogin() {
+  $('login-form').style.display = '';
+  $('register-form').style.display = 'none';
+  $('pending-screen').style.display = 'none';
+  $('auth-error').classList.remove('show');
+  $('auth-success').classList.remove('show');
+}
+function showRegister() {
+  $('login-form').style.display = 'none';
+  $('register-form').style.display = '';
+  $('pending-screen').style.display = 'none';
+  $('auth-error').classList.remove('show');
+  $('auth-success').classList.remove('show');
+}
+function showPending() {
+  $('login-form').style.display = 'none';
+  $('register-form').style.display = 'none';
+  $('pending-screen').style.display = '';
+}
+function showApp() {
+  $('auth-overlay').classList.add('hidden');
+}
+function hideApp() {
+  $('auth-overlay').classList.remove('hidden');
+}
+function doLogout() {
+  localStorage.removeItem('nlm_token');
+  authToken = null;
+  authUser = null;
+  hideApp();
+  showLogin();
+  toast('Sess\u00e3o encerrada');
+}
+
+async function doLogin() {
+  const email = $('login-email').value.trim();
+  const password = $('login-pass').value;
+  if (!email || !password) { showAuthError('Preencha email e senha'); return; }
+  $('login-btn').disabled = true;
+  $('login-btn').textContent = 'Entrando...';
+  try {
+    const res = await fetch(AUTH_URL + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.pending) { showPending(); return; }
+      showAuthError(data.error || 'Erro ao fazer login');
+      return;
+    }
+    authToken = data.token;
+    authUser = data.user;
+    localStorage.setItem('nlm_token', data.token);
+    showApp();
+    initAppAfterAuth();
+    toast('Bem-vindo, ' + (authUser.name || authUser.email));
+  } catch (e) {
+    showAuthError('Erro de conex\u00e3o com o servidor');
+  } finally {
+    $('login-btn').disabled = false;
+    $('login-btn').textContent = 'Entrar';
+  }
+}
+
+async function doRegister() {
+  const name = $('reg-name').value.trim();
+  const email = $('reg-email').value.trim();
+  const password = $('reg-pass').value;
+  const password2 = $('reg-pass2').value;
+  if (!name || !email || !password) { showAuthError('Preencha todos os campos'); return; }
+  if (password.length < 6) { showAuthError('Senha deve ter no m\u00ednimo 6 caracteres'); return; }
+  if (password !== password2) { showAuthError('As senhas n\u00e3o conferem'); return; }
+  $('reg-btn').disabled = true;
+  $('reg-btn').textContent = 'Criando...';
+  try {
+    const res = await fetch(AUTH_URL + '/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { showAuthError(data.error || 'Erro ao registrar'); return; }
+    if (data.pending) {
+      showPending();
+      return;
+    }
+    // Admin auto-login
+    if (data.token) {
+      authToken = data.token;
+      authUser = data.user;
+      localStorage.setItem('nlm_token', data.token);
+      showApp();
+      initAppAfterAuth();
+      toast('Bem-vindo, ' + (authUser.name || authUser.email));
+    }
+  } catch (e) {
+    showAuthError('Erro de conex\u00e3o com o servidor');
+  } finally {
+    $('reg-btn').disabled = false;
+    $('reg-btn').textContent = 'Criar Conta';
+  }
+}
+
+async function checkAuth() {
+  if (!authToken) { hideApp(); showLogin(); return false; }
+  try {
+    const res = await fetch(AUTH_URL + '/me', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if (!res.ok) {
+      localStorage.removeItem('nlm_token');
+      authToken = null;
+      hideApp(); showLogin();
+      return false;
+    }
+    const data = await res.json();
+    authUser = data.user;
+    showApp();
+    return true;
+  } catch {
+    // Offline mode - allow if token exists
+    showApp();
+    return true;
+  }
+}
+
+// ===== ADMIN: USER MANAGEMENT =====
+async function loadUsers() {
+  if (!authUser || authUser.accessLevel !== 'admin') return;
+  try {
+    const res = await fetch(AUTH_URL + '/users', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    renderUserList(data.users || []);
+  } catch {}
+}
+
+function renderUserList(users) {
+  const container = $('user-mgmt-list');
+  if (!container) return;
+  if (users.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Nenhum usu\u00e1rio registrado</p>';
+    return;
+  }
+  container.innerHTML = users.map(u => {
+    const badge = u.accessLevel === 'admin' ? '<span class="uc-badge admin">Admin</span>' :
+      u.isApproved ? '<span class="uc-badge approved">Aprovado</span>' :
+      u.denialReason ? '<span class="uc-badge rejected">Rejeitado</span>' :
+      '<span class="uc-badge pending">Pendente</span>';
+    const actions = u.accessLevel === 'admin' ? '' : `
+      <div class="uc-actions">
+        ${!u.isApproved ? `<button class="uc-approve" onclick="approveUser('${u.email}')">Aprovar</button>` : ''}
+        ${u.isApproved ? `<button class="uc-reject" onclick="rejectUser('${u.email}')">Revogar</button>` : ''}
+        ${!u.isApproved && !u.denialReason ? `<button class="uc-reject" onclick="rejectUser('${u.email}')">Rejeitar</button>` : ''}
+        <button class="uc-delete" onclick="deleteUser('${u.email}')">Excluir</button>
+      </div>`;
+    return `<div class="user-card">
+      <div class="uc-header"><span class="uc-name">${u.name || 'Sem nome'}</span>${badge}</div>
+      <div class="uc-email">${u.email}</div>
+      ${u.helmetSerialNumber ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">Capacete: ${u.helmetSerialNumber} ${u.helmetModel ? '(' + u.helmetModel + ')' : ''}</div>` : ''}
+      ${u.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">Obs: ${u.notes}</div>` : ''}
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
+async function approveUser(email) {
+  if (!confirm('Aprovar acesso para ' + email + '?')) return;
+  try {
+    const res = await fetch(AUTH_URL + '/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) { toast('Usu\u00e1rio aprovado'); loadUsers(); }
+    else { const d = await res.json(); toast(d.error || 'Erro'); }
+  } catch { toast('Erro de conex\u00e3o'); }
+}
+
+async function rejectUser(email) {
+  const reason = prompt('Motivo da rejei\u00e7\u00e3o (opcional):');
+  try {
+    const res = await fetch(AUTH_URL + '/reject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      body: JSON.stringify({ email, reason: reason || undefined })
+    });
+    if (res.ok) { toast('Acesso revogado'); loadUsers(); }
+    else { const d = await res.json(); toast(d.error || 'Erro'); }
+  } catch { toast('Erro de conex\u00e3o'); }
+}
+
+async function deleteUser(email) {
+  if (!confirm('Excluir permanentemente o usu\u00e1rio ' + email + '?')) return;
+  try {
+    const res = await fetch(AUTH_URL + '/user/' + encodeURIComponent(email), {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if (res.ok) { toast('Usu\u00e1rio exclu\u00eddo'); loadUsers(); }
+    else { const d = await res.json(); toast(d.error || 'Erro'); }
+  } catch { toast('Erro de conex\u00e3o'); }
+}
+
+function initAppAfterAuth() {
+  loadTheme(); initSample(); rScales(); refresh('home');
+  const P = gD(K.P);
+  $('ns-pat').innerHTML = P.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+  $('nc-pat').innerHTML = P.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+  // Update profile with auth user info
+  if (authUser) {
+    const nameEl = document.querySelector('#s-profile .sh h2');
+    if (nameEl) nameEl.textContent = authUser.name || 'Usu\u00e1rio';
+    const emailEl = document.querySelector('#s-profile .sh p');
+    if (emailEl) emailEl.textContent = authUser.email || '';
+  }
+  // Show admin user management if admin
+  if (authUser && authUser.accessLevel === 'admin') {
+    loadUsers();
+  }
+}
+
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded',()=>{
-  loadTheme();initSample();rScales();refresh('home');
-  // Pre-populate session modal patient select
-  const P=gD(K.P);
-  $('ns-pat').innerHTML=P.map(p=>`<option value="${p.id}">${p.fullName}</option>`).join('');
-  $('nc-pat').innerHTML=P.map(p=>`<option value="${p.id}">${p.fullName}</option>`).join('');
+document.addEventListener('DOMContentLoaded', async () => {
+  loadTheme();
+  const authed = await checkAuth();
+  if (authed) {
+    initAppAfterAuth();
+  }
 });
 </script>
 </body>
