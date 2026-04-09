@@ -1066,4 +1066,4 @@ export default function MyScreen() {
 - [x] Diagnosticar por que /pwa/app/ retorna Not Found no domínio publicado
 - [x] Corrigir servidor para servir PWA corretamente no deploy (PROJECT_ROOT robusto)
 - [x] Rebuild produção (pnpm build)
-- [ ] Salvar checkpoint e testar no domínio publicado
+- [x] Salvar checkpoint e testar no domínio publicado

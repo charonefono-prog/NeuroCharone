@@ -99,6 +99,30 @@ async function startServer() {
     res.json({ ok: true, timestamp: Date.now() });
   });
 
+  // Debug endpoint to check file system in production
+  app.get("/api/debug-pwa", (_req, res) => {
+    const info: Record<string, unknown> = {
+      projectRoot: PROJECT_ROOT,
+      cwd: process.cwd(),
+      nodeEnv: process.env.NODE_ENV,
+      pwaAppExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app", "index.html")),
+      pwaAdminExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa", "admin", "index.html")),
+      pwaFolderExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa")),
+    };
+    try {
+      info.cwdContents = fs.readdirSync(process.cwd()).filter((f: string) => !f.startsWith(".") && f !== "node_modules");
+    } catch (e: any) { info.cwdError = e.message; }
+    try {
+      info.rootContents = fs.readdirSync(PROJECT_ROOT).filter((f: string) => !f.startsWith(".") && f !== "node_modules");
+    } catch (e: any) { info.rootError = e.message; }
+    try {
+      if (fs.existsSync(path.join(PROJECT_ROOT, "pwa"))) {
+        info.pwaContents = fs.readdirSync(path.join(PROJECT_ROOT, "pwa"));
+      }
+    } catch (e: any) { info.pwaError = e.message; }
+    res.json(info);
+  });
+
   app.use(
     "/api/trpc",
     createExpressMiddleware({
