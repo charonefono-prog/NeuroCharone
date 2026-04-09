@@ -81,31 +81,69 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
   // ============================================================
-  // PWA ROUTES - MUST be registered FIRST before any other routes
-  // to ensure they are matched before static middleware or OAuth
+  // OAuth routes
+  // ============================================================
+  registerOAuthRoutes(app);
+
+  // ============================================================
+  // Serve static HTML files from project root
+  // ============================================================
+  app.use(express.static(PROJECT_ROOT));
+
+  // ============================================================
+  // API routes - ALL under /api/ prefix so production gateway forwards them
+  // ============================================================
+  app.get("/api/health", (_req, res) => {
+    res.json({ ok: true, timestamp: Date.now() });
+  });
+
+  // ============================================================
+  // PWA ROUTES - Under /api/pwa/ so production gateway forwards to Express
+  // The gateway only routes /api/* to the Express server.
   // ============================================================
 
-  // Serve PWA static assets (CSS, JS, images, manifest.json)
-  app.use("/pwa", express.static(path.join(PROJECT_ROOT, "pwa"), {
+  // Serve PWA static assets (CSS, JS, images, manifest.json) under /api/pwa/
+  app.use("/api/pwa", express.static(path.join(PROJECT_ROOT, "pwa"), {
     index: "index.html",
     fallthrough: true,
   }));
 
-  // PWA App - explicit routes for all URL patterns
+  // PWA App - serve index.html for SPA routing
+  app.get("/api/pwa/app", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
+  });
+  app.get("/api/pwa/app/", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
+  });
+  app.get("/api/pwa/app/*", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
+  });
+
+  // PWA Admin - serve index.html for SPA routing
+  app.get("/api/pwa/admin", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+  });
+  app.get("/api/pwa/admin/", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+  });
+  app.get("/api/pwa/admin/*", (_req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
+  });
+
+  // Also keep /pwa/ routes for local dev (where there's no gateway)
+  app.use("/pwa", express.static(path.join(PROJECT_ROOT, "pwa"), {
+    index: "index.html",
+    fallthrough: true,
+  }));
   app.get("/pwa/app", (_req, res) => {
-    const filePath = path.join(PROJECT_ROOT, "pwa", "app", "index.html");
-    console.log(`[pwa] Serving /pwa/app -> ${filePath} (exists: ${fs.existsSync(filePath)})`);
-    res.sendFile(filePath);
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
   });
   app.get("/pwa/app/", (_req, res) => {
-    const filePath = path.join(PROJECT_ROOT, "pwa", "app", "index.html");
-    res.sendFile(filePath);
+    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
   });
   app.get("/pwa/app/*", (_req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
   });
-
-  // PWA Admin - explicit routes for all URL patterns
   app.get("/pwa/admin", (_req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
   });
@@ -114,23 +152,6 @@ async function startServer() {
   });
   app.get("/pwa/admin/*", (_req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-
-  // ============================================================
-  // OAuth routes
-  // ============================================================
-  registerOAuthRoutes(app);
-
-  // ============================================================
-  // Static files from project root
-  // ============================================================
-  app.use(express.static(PROJECT_ROOT));
-
-  // ============================================================
-  // API routes
-  // ============================================================
-  app.get("/api/health", (_req, res) => {
-    res.json({ ok: true, timestamp: Date.now() });
   });
 
   // Debug endpoint
@@ -143,17 +164,6 @@ async function startServer() {
       pwaAdminExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa", "admin", "index.html")),
       pwaFolderExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa")),
     };
-    try {
-      info.cwdContents = fs.readdirSync(process.cwd()).filter((f: string) => !f.startsWith(".") && f !== "node_modules");
-    } catch (e: any) { info.cwdError = e.message; }
-    try {
-      info.rootContents = fs.readdirSync(PROJECT_ROOT).filter((f: string) => !f.startsWith(".") && f !== "node_modules");
-    } catch (e: any) { info.rootError = e.message; }
-    try {
-      if (fs.existsSync(path.join(PROJECT_ROOT, "pwa"))) {
-        info.pwaContents = fs.readdirSync(path.join(PROJECT_ROOT, "pwa"));
-      }
-    } catch (e: any) { info.pwaError = e.message; }
     try {
       if (fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app"))) {
         info.pwaAppContents = fs.readdirSync(path.join(PROJECT_ROOT, "pwa", "app"));
@@ -173,18 +183,6 @@ async function startServer() {
   // Serve index.html for root path
   app.get("/", (_req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, "index.html"));
-  });
-
-  // Catch-all: if nothing matched and it's a /pwa route, try to serve the PWA
-  app.use("/pwa/*", (req, res) => {
-    const reqPath = req.path;
-    if (reqPath.startsWith("/pwa/app")) {
-      res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-    } else if (reqPath.startsWith("/pwa/admin")) {
-      res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-    } else {
-      res.status(404).send("Not Found");
-    }
   });
 
   // Log project root for debugging

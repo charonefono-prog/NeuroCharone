@@ -1067,3 +1067,10 @@ export default function MyScreen() {
 - [x] Corrigir servidor para servir PWA corretamente no deploy (PROJECT_ROOT robusto)
 - [x] Rebuild produção (pnpm build)
 - [x] Salvar checkpoint e testar no domínio publicado
+
+## BUG - PWA Not Found no deploy (gateway só roteia /api/*)
+- [x] Diagnosticar: gateway de produção só encaminha /api/* ao Express
+- [x] Mover rotas PWA para /api/pwa/app/ e /api/pwa/admin/
+- [x] Manter rotas /pwa/ para dev local
+- [x] Rebuild produção
+- [ ] Testar no domínio publicado com novo endereço /api/pwa/app/
