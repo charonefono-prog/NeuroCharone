@@ -13,11 +13,12 @@ import { createContext } from "./context";
 // Resolve project root reliably in both dev (tsx) and production (esbuild ESM)
 function resolveProjectRoot(): string {
   const cwd = process.cwd();
-  if (fs.existsSync(path.join(cwd, "pwa"))) {
+  // Check for dist-web (Expo static export) as marker
+  if (fs.existsSync(path.join(cwd, "dist-web")) || fs.existsSync(path.join(cwd, "pwa"))) {
     return cwd;
   }
   const parentDir = path.resolve(cwd, "..");
-  if (fs.existsSync(path.join(parentDir, "pwa"))) {
+  if (fs.existsSync(path.join(parentDir, "dist-web")) || fs.existsSync(path.join(parentDir, "pwa"))) {
     return parentDir;
   }
   try {
@@ -25,7 +26,7 @@ function resolveProjectRoot(): string {
     const __dirname = path.dirname(__filename);
     for (let i = 1; i <= 3; i++) {
       const candidate = path.resolve(__dirname, ...Array(i).fill(".."));
-      if (fs.existsSync(path.join(candidate, "pwa"))) {
+      if (fs.existsSync(path.join(candidate, "dist-web")) || fs.existsSync(path.join(candidate, "pwa"))) {
         return candidate;
       }
     }
@@ -34,6 +35,7 @@ function resolveProjectRoot(): string {
 }
 
 const PROJECT_ROOT = resolveProjectRoot();
+const DIST_WEB = path.join(PROJECT_ROOT, "dist-web");
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -98,61 +100,96 @@ async function startServer() {
   });
 
   // ============================================================
-  // PWA ROUTES - Under /api/pwa/ so production gateway forwards to Express
-  // The gateway only routes /api/* to the Express server.
+  // EXPO WEB APP (Static Export) - Served under /api/webapp/
+  // This is the EXACT same app as the mobile version, exported as static HTML.
+  // The production gateway only routes /api/* to Express.
   // ============================================================
+  const distWebExists = fs.existsSync(DIST_WEB);
+  
+  if (distWebExists) {
+    // Serve all static assets (JS bundles, CSS, images, manifest, service-worker, etc.)
+    app.use("/api/webapp", express.static(DIST_WEB, {
+      index: false, // We handle index.html manually below
+      fallthrough: true,
+    }));
 
-  // Serve PWA static assets (CSS, JS, images, manifest.json) under /api/pwa/
-  app.use("/api/pwa", express.static(path.join(PROJECT_ROOT, "pwa"), {
-    index: "index.html",
-    fallthrough: true,
-  }));
+    // Serve index.html for the root and all SPA routes
+    app.get("/api/webapp", (_req, res) => {
+      res.sendFile(path.join(DIST_WEB, "index.html"));
+    });
+    app.get("/api/webapp/", (_req, res) => {
+      res.sendFile(path.join(DIST_WEB, "index.html"));
+    });
 
-  // PWA App - serve index.html for SPA routing
-  app.get("/api/pwa/app", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-  app.get("/api/pwa/app/", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-  app.get("/api/pwa/app/*", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
+    // For any sub-route, try the specific HTML file first, then fall back to index.html
+    app.get("/api/webapp/*", (req, res) => {
+      const subPath = (req.params as Record<string, string>)[0] || "";
+      // Try exact HTML file (e.g., /api/webapp/patients -> dist-web/patients.html)
+      const htmlFile = path.join(DIST_WEB, subPath + ".html");
+      if (fs.existsSync(htmlFile)) {
+        res.sendFile(htmlFile);
+        return;
+      }
+      // Try as directory with index.html
+      const dirIndex = path.join(DIST_WEB, subPath, "index.html");
+      if (fs.existsSync(dirIndex)) {
+        res.sendFile(dirIndex);
+        return;
+      }
+      // Try exact file (for assets like .js, .css, .png)
+      const exactFile = path.join(DIST_WEB, subPath);
+      if (fs.existsSync(exactFile) && fs.statSync(exactFile).isFile()) {
+        res.sendFile(exactFile);
+        return;
+      }
+      // Fall back to index.html for SPA routing
+      res.sendFile(path.join(DIST_WEB, "index.html"));
+    });
 
-  // PWA Admin - serve index.html for SPA routing
-  app.get("/api/pwa/admin", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-  app.get("/api/pwa/admin/", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-  app.get("/api/pwa/admin/*", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
+    console.log(`[api] Expo web app (static export) available at /api/webapp/`);
+  } else {
+    console.log(`[api] WARNING: dist-web folder not found at ${DIST_WEB}`);
+  }
 
-  // Also keep /pwa/ routes for local dev (where there's no gateway)
-  app.use("/pwa", express.static(path.join(PROJECT_ROOT, "pwa"), {
-    index: "index.html",
-    fallthrough: true,
-  }));
-  app.get("/pwa/app", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-  app.get("/pwa/app/", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-  app.get("/pwa/app/*", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "app", "index.html"));
-  });
-  app.get("/pwa/admin", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-  app.get("/pwa/admin/", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
-  app.get("/pwa/admin/*", (_req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"));
-  });
+  // ============================================================
+  // PWA ROUTES (old HTML version) - Under /api/pwa/
+  // ============================================================
+  const pwaDir = path.join(PROJECT_ROOT, "pwa");
+  if (fs.existsSync(pwaDir)) {
+    app.use("/api/pwa", express.static(pwaDir, {
+      index: "index.html",
+      fallthrough: true,
+    }));
+
+    app.get("/api/pwa/app", (_req, res) => {
+      res.sendFile(path.join(pwaDir, "app", "index.html"));
+    });
+    app.get("/api/pwa/app/", (_req, res) => {
+      res.sendFile(path.join(pwaDir, "app", "index.html"));
+    });
+    app.get("/api/pwa/app/*", (_req, res) => {
+      res.sendFile(path.join(pwaDir, "app", "index.html"));
+    });
+
+    app.get("/api/pwa/admin", (_req, res) => {
+      res.sendFile(path.join(pwaDir, "admin", "index.html"));
+    });
+    app.get("/api/pwa/admin/", (_req, res) => {
+      res.sendFile(path.join(pwaDir, "admin", "index.html"));
+    });
+    app.get("/api/pwa/admin/*", (_req, res) => {
+      res.sendFile(path.join(pwaDir, "admin", "index.html"));
+    });
+
+    // Also keep /pwa/ routes for local dev
+    app.use("/pwa", express.static(pwaDir, { index: "index.html", fallthrough: true }));
+    app.get("/pwa/app", (_req, res) => res.sendFile(path.join(pwaDir, "app", "index.html")));
+    app.get("/pwa/app/", (_req, res) => res.sendFile(path.join(pwaDir, "app", "index.html")));
+    app.get("/pwa/app/*", (_req, res) => res.sendFile(path.join(pwaDir, "app", "index.html")));
+    app.get("/pwa/admin", (_req, res) => res.sendFile(path.join(pwaDir, "admin", "index.html")));
+    app.get("/pwa/admin/", (_req, res) => res.sendFile(path.join(pwaDir, "admin", "index.html")));
+    app.get("/pwa/admin/*", (_req, res) => res.sendFile(path.join(pwaDir, "admin", "index.html")));
+  }
 
   // Debug endpoint
   app.get("/api/debug-pwa", (_req, res) => {
@@ -160,15 +197,15 @@ async function startServer() {
       projectRoot: PROJECT_ROOT,
       cwd: process.cwd(),
       nodeEnv: process.env.NODE_ENV,
+      distWebExists: fs.existsSync(DIST_WEB),
+      distWebIndexExists: fs.existsSync(path.join(DIST_WEB, "index.html")),
       pwaAppExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app", "index.html")),
-      pwaAdminExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa", "admin", "index.html")),
-      pwaFolderExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa")),
     };
     try {
-      if (fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app"))) {
-        info.pwaAppContents = fs.readdirSync(path.join(PROJECT_ROOT, "pwa", "app"));
+      if (fs.existsSync(DIST_WEB)) {
+        info.distWebContents = fs.readdirSync(DIST_WEB).slice(0, 20);
       }
-    } catch (e: any) { info.pwaAppError = e.message; }
+    } catch (e: any) { info.distWebError = e.message; }
     res.json(info);
   });
 
@@ -185,10 +222,10 @@ async function startServer() {
     res.sendFile(path.join(PROJECT_ROOT, "index.html"));
   });
 
-  // Log project root for debugging
+  // Log info
   console.log(`[api] Project root: ${PROJECT_ROOT}`);
-  console.log(`[api] PWA app exists: ${fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app", "index.html"))}`);
-  console.log(`[api] PWA admin exists: ${fs.existsSync(path.join(PROJECT_ROOT, "pwa", "admin", "index.html"))}`);
+  console.log(`[api] dist-web exists: ${fs.existsSync(DIST_WEB)}`);
+  console.log(`[api] PWA exists: ${fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app", "index.html"))}`);
 
   const preferredPort = parseInt(process.env.PORT || "3000");
   const port = await findAvailablePort(preferredPort);

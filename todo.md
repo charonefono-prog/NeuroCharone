@@ -1082,3 +1082,11 @@ export default function MyScreen() {
 - [x] Criar app/+html.tsx com PWA meta tags (modo static)
 - [x] Verificar que o visual é idêntico ao app mobile (mesmo código Expo)
 - [ ] Testar instalação como PWA no celular (usuário)
+
+## Expo Web Static Export como PWA no domínio publicado
+- [x] Gerar build estático do Expo web (npx expo export --platform web)
+- [x] Copiar arquivos PWA (manifest, service-worker, icons) para o dist-web
+- [x] Configurar Express para servir o build estático em /api/webapp/
+- [x] Corrigir paths de assets (JS, CSS, manifest, service-worker) para /api/webapp/
+- [x] Testar localmente (200 OK para /api/webapp/, manifest.json, JS bundles)
+- [ ] Salvar checkpoint e publicar
