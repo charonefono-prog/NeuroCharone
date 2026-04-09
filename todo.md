@@ -1074,3 +1074,11 @@ export default function MyScreen() {
 - [x] Manter rotas /pwa/ para dev local
 - [x] Rebuild produção
 - [ ] Testar no domínio publicado com novo endereço /api/pwa/app/
+
+## Converter Expo Web em PWA Instalável
+- [x] Pesquisar como transformar Expo web (Metro) em PWA
+- [x] Adicionar manifest.json, meta tags e service worker
+- [x] Configurar ícones e splash para PWA (logo192.png, logo512.png, favicon.ico)
+- [x] Criar app/+html.tsx com PWA meta tags (modo static)
+- [x] Verificar que o visual é idêntico ao app mobile (mesmo código Expo)
+- [ ] Testar instalação como PWA no celular (usuário)
