@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, Alert, Switch, TextInput, Pla
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useAuth } from "@/lib/auth-context";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { exportFullBackup, hasRecentBackup } from "@/lib/backup-system";
 import { useThemeContext } from "@/lib/theme-provider";
@@ -41,6 +42,7 @@ const DEFAULT_PROFILE: ProfessionalProfile = {
 export default function ProfileScreen() {
   const router = useRouter();
   const colors = useColors();
+  const { logout, user } = useAuth();
   const { colorScheme, setColorScheme } = useThemeContext();
   const isDark = colorScheme === "dark";
   const [reminderAdvance, setReminderAdvanceState] = useState<number>(60);
@@ -797,6 +799,88 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Logout */}
+          <View style={{ gap: 12, marginTop: 8 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Conta
+            </Text>
+            {user && (
+              <View
+                style={{
+                  backgroundColor: colors.surface,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  padding: 16,
+                  gap: 8,
+                }}
+              >
+                <Text style={{ fontSize: 13, color: colors.muted }}>
+                  Conectado como: {user.email}
+                </Text>
+                <Text style={{ fontSize: 13, color: colors.muted }}>
+                  Nível: {user.accessLevel === "admin" ? "Administrador" : user.accessLevel === "professional" ? "Profissional" : "Usuário"}
+                </Text>
+              </View>
+            )}
+            <TouchableOpacity
+              onPress={async () => {
+                if (Platform.OS !== "web") {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }
+                Alert.alert(
+                  "Sair",
+                  "Deseja realmente sair da sua conta?",
+                  [
+                    { text: "Cancelar", style: "cancel" },
+                    {
+                      text: "Sair",
+                      style: "destructive",
+                      onPress: async () => {
+                        await logout();
+                      },
+                    },
+                  ]
+                );
+              }}
+              style={{
+                backgroundColor: colors.error + "15",
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.error + "40",
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.error + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>🚪</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.error }}>
+                  Sair da Conta
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                  Encerrar sessão e voltar ao login
+                </Text>
+              </View>
+              <Text style={{ fontSize: 18, color: colors.error }}>›</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Spacer for tab bar */}
+          <View style={{ height: 40 }} />
         </View>
       </ScrollView>
     </ScreenContainer>

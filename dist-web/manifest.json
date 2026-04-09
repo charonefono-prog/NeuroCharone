@@ -39,7 +39,7 @@
       "name": "Novo Paciente",
       "short_name": "Novo Paciente",
       "description": "Criar um novo paciente",
-      "url": "/api/webapp/?action=new-patient",
+      "url": "/?action=new-patient",
       "icons": [
         {
           "src": "/api/webapp/logo192.png",
@@ -51,7 +51,7 @@
       "name": "Meus Pacientes",
       "short_name": "Pacientes",
       "description": "Ver lista de pacientes",
-      "url": "/api/webapp/?action=patients",
+      "url": "/?action=patients",
       "icons": [
         {
           "src": "/api/webapp/logo192.png",

@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, Platform } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
@@ -10,22 +10,56 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [needsApproval, setNeedsApproval] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError("Preencha todos os campos");
       return;
     }
 
     try {
       setError("");
-      await login(email, password);
+      setNeedsApproval(false);
+      const result = await login(email, password);
+      if (result.needsApproval) {
+        setNeedsApproval(true);
+        return;
+      }
       router.replace("/(tabs)");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-      Alert.alert("Login Error", error);
+      const msg = err instanceof Error ? err.message : "Falha no login";
+      setError(msg);
+      if (Platform.OS !== "web") {
+        Alert.alert("Erro", msg);
+      }
     }
   };
+
+  if (needsApproval) {
+    return (
+      <ScreenContainer className="bg-background">
+        <View className="flex-1 justify-center px-6 gap-6">
+          <View className="items-center gap-4">
+            <Text style={{ fontSize: 48 }}>⏳</Text>
+            <Text className="text-2xl font-bold text-foreground text-center">
+              Aguardando Aprovação
+            </Text>
+            <Text className="text-base text-muted text-center leading-relaxed">
+              Sua conta foi registrada com sucesso, mas ainda precisa ser aprovada pelo administrador.
+              Você será notificado quando sua conta for ativada.
+            </Text>
+          </View>
+          <TouchableOpacity
+            className="bg-surface border border-border rounded-lg py-3 items-center"
+            onPress={() => setNeedsApproval(false)}
+          >
+            <Text className="text-foreground font-semibold">Voltar ao Login</Text>
+          </TouchableOpacity>
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   return (
     <ScreenContainer className="bg-background">
@@ -33,8 +67,9 @@ export default function LoginScreen() {
         <View className="flex-1 justify-center px-6 gap-6">
           {/* Header */}
           <View className="items-center gap-2 mb-4">
+            <Text style={{ fontSize: 64 }}>🧠</Text>
             <Text className="text-4xl font-bold text-foreground">NeuroLaserMap</Text>
-            <Text className="text-base text-muted">Mapeamento de Neuromodulação</Text>
+            <Text className="text-base text-muted">Sistema de Mapeamento de Neuromodulação</Text>
           </View>
 
           {/* Error Message */}
@@ -56,6 +91,7 @@ export default function LoginScreen() {
               editable={!isLoading}
               value={email}
               onChangeText={setEmail}
+              returnKeyType="next"
             />
           </View>
 
@@ -70,14 +106,17 @@ export default function LoginScreen() {
               editable={!isLoading}
               value={password}
               onChangeText={setPassword}
+              returnKeyType="done"
+              onSubmitEditing={handleLogin}
             />
           </View>
 
           {/* Login Button */}
           <TouchableOpacity
-            className="bg-primary rounded-lg py-3 items-center active:opacity-80"
+            className="bg-primary rounded-lg py-3.5 items-center active:opacity-80"
             onPress={handleLogin}
             disabled={isLoading}
+            style={isLoading ? { opacity: 0.6 } : undefined}
           >
             <Text className="text-white font-semibold text-base">
               {isLoading ? "Entrando..." : "Entrar"}
@@ -94,9 +133,9 @@ export default function LoginScreen() {
 
           {/* Info Box */}
           <View className="bg-surface rounded-lg p-4 border border-border mt-4">
-            <Text className="text-xs text-muted leading-relaxed">
-              Após o cadastro, sua conta será analisada pelo administrador. Você receberá um email
-              de confirmação quando for aprovado.
+            <Text className="text-xs text-muted leading-relaxed text-center">
+              Após o cadastro, sua conta será analisada pelo administrador.{"\n"}
+              Você será notificado quando for aprovado.
             </Text>
           </View>
         </View>

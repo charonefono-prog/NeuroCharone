@@ -1130,6 +1130,15 @@ export default function MyScreen() {
 - [ ] Paciente só vê seus próprios dados (futuro)
 
 ## BUG - Login e Logout não aparecem na PWA publicada
-- [ ] Diagnosticar por que a tela de login não aparece
-- [ ] Diagnosticar por que o botão de logout não funciona
-- [ ] Corrigir e testar
+- [x] Diagnosticar por que a tela de login não aparece
+- [x] Diagnosticar por que o botão de logout não funciona
+- [x] Corrigir e testar
+
+## Integrar Auth no Expo Web App (/api/webapp/)
+- [x] Criar tela de login/registro no Expo (app/login.tsx, app/register.tsx)
+- [x] Criar contexto de autenticação (AuthProvider) com endpoints /api/pwa-auth/*
+- [x] Proteger rotas - redirecionar para login se não autenticado
+- [x] Adicionar botão de logout no Perfil
+- [x] Re-exportar Expo web com EXPO_BASE_URL="/api/webapp"
+- [x] Atualizar dist-web no servidor
+- [ ] Testar no domínio publicado
