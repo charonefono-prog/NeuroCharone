@@ -195,6 +195,7 @@ async function startServer() {
   app.get("/api/debug-pwa", (_req, res) => {
     const info: Record<string, unknown> = {
       projectRoot: PROJECT_ROOT,
+      distWeb: DIST_WEB,
       cwd: process.cwd(),
       nodeEnv: process.env.NODE_ENV,
       distWebExists: fs.existsSync(DIST_WEB),
@@ -203,10 +204,41 @@ async function startServer() {
     };
     try {
       if (fs.existsSync(DIST_WEB)) {
-        info.distWebContents = fs.readdirSync(DIST_WEB).slice(0, 20);
+        info.distWebContents = fs.readdirSync(DIST_WEB).slice(0, 30);
       }
-    } catch (e: any) { info.distWebError = e.message; }
+      // Check specific _expo path
+      const expoDir = path.join(DIST_WEB, "_expo");
+      info.expoExists = fs.existsSync(expoDir);
+      if (fs.existsSync(expoDir)) {
+        info.expoContents = fs.readdirSync(expoDir);
+        const jsDir = path.join(expoDir, "static", "js", "web");
+        info.jsDirExists = fs.existsSync(jsDir);
+        if (fs.existsSync(jsDir)) {
+          info.jsFiles = fs.readdirSync(jsDir);
+        }
+      }
+    } catch (e: any) { info.error = e.message; }
     res.json(info);
+  });
+
+  // Test endpoint to manually serve a specific file
+  app.get("/api/debug-serve-js", (_req, res) => {
+    try {
+      const jsDir = path.join(DIST_WEB, "_expo", "static", "js", "web");
+      if (fs.existsSync(jsDir)) {
+        const files = fs.readdirSync(jsDir);
+        const entryFile = files.find(f => f.startsWith("entry-") && f.endsWith(".js"));
+        if (entryFile) {
+          const fullPath = path.join(jsDir, entryFile);
+          res.setHeader("Content-Type", "application/javascript");
+          res.sendFile(fullPath);
+          return;
+        }
+      }
+      res.status(404).json({ error: "JS file not found", jsDir });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
   });
 
   app.use(
