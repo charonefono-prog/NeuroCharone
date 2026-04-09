@@ -208,6 +208,15 @@ async function startServer() {
       distWebIndexExists: fs.existsSync(path.join(DIST_WEB, "index.html")),
       pwaAppExists: fs.existsSync(path.join(PROJECT_ROOT, "pwa", "app", "index.html")),
     };
+    // Check registered routes
+    try {
+      const routes: string[] = [];
+      app._router.stack.forEach((r: any) => {
+        if (r.route) routes.push(`${Object.keys(r.route.methods).join(',')} ${r.route.path}`);
+        else if (r.name === 'router' && r.regexp) routes.push(`ROUTER ${r.regexp}`);
+      });
+      info.registeredRoutes = routes;
+    } catch(e: any) { info.routeError = e.message; }
     try {
       if (fs.existsSync(DIST_WEB)) {
         info.distWebContents = fs.readdirSync(DIST_WEB).slice(0, 30);

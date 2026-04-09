@@ -1128,3 +1128,8 @@ export default function MyScreen() {
 ### Vínculo Profissional-Paciente
 - [ ] Profissional automaticamente vinculado aos pacientes que criar (futuro)
 - [ ] Paciente só vê seus próprios dados (futuro)
+
+## BUG - Login e Logout não aparecem na PWA publicada
+- [ ] Diagnosticar por que a tela de login não aparece
+- [ ] Diagnosticar por que o botão de logout não funciona
+- [ ] Corrigir e testar
