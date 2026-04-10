@@ -43,17 +43,31 @@ function isTokenExpired(token: string): boolean {
 // Get the API base URL depending on the platform
 function getApiBaseUrl(): string {
   if (Platform.OS === "web") {
-    // On web, check if we're in development (Metro dev server)
-    // In dev, use absolute URL to the backend server
-    // In production, use relative URL
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      return 'http://localhost:3000';
+    // On web, check the current hostname to determine the API URL
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
+      
+      // If on localhost, use localhost:3000
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:3000';
+      }
+      
+      // If on Manus sandbox (8081 port), use the exposed server URL
+      if (hostname.includes('8081') || hostname.includes('manus.computer')) {
+        // Use the exposed server URL that works for all users
+        return 'https://3000-ipwt1mvxgwoomsk324iqs-ca7ba40a.us2.manus.computer';
+      }
+      
+      // Default: use the same origin
+      return `${protocol}//${hostname}`;
     }
     return "";
   }
-  // On native, use the server URL from environment
+  // On native (Expo Go), use the server URL from environment or constants
   const apiUrl = Constants.expoConfig?.extra?.apiUrl;
   if (apiUrl) return apiUrl;
+  // Default to localhost for development
   return "http://localhost:3000";
 }
 

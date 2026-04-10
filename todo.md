@@ -1133,6 +1133,7 @@ export default function MyScreen() {
 - [x] Diagnosticar por que a tela de login não aparece
 - [x] Diagnosticar por que o botão de logout não funciona
 - [x] Corrigir e testar
+- [x] Testar fluxo completo de logout (login → perfil → logout → login)
 
 ## Integrar Auth no Expo Web App (/api/webapp/)
 - [x] Criar tela de login/registro no Expo (app/login.tsx, app/register.tsx)
@@ -1146,6 +1147,6 @@ export default function MyScreen() {
 
 ## Sistema de Auth PWA-Only (Nova Abordagem) - DESCONTINUADO
 - [x] Removido em favor de unificar em AuthProvider com localStorage no web
-- [ ] Integrar proteção de rotas na PWA
-- [ ] Re-exportar PWA web com novo sistema
-- [ ] Testar login/logout em produção
+- [x] Integrar proteção de rotas na PWA
+- [x] Re-exportar PWA web com novo sistema
+- [x] Testar login/logout em produção
