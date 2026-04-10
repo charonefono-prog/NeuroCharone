@@ -69,17 +69,17 @@ const getAuthStorage = async (key: string): Promise<string | null> => {
 
 const setAuthStorage = async (key: string, value: string): Promise<void> => {
   if (Platform.OS === "web") {
-    window.localStorage.setItem(key, value);
+    return Promise.resolve(window.localStorage.setItem(key, value));
   } else {
-    await AsyncStorage.setItem(key, value);
+    return AsyncStorage.setItem(key, value);
   }
 };
 
 const removeAuthStorage = async (key: string): Promise<void> => {
   if (Platform.OS === "web") {
-    window.localStorage.removeItem(key);
+    return Promise.resolve(window.localStorage.removeItem(key));
   } else {
-    await AsyncStorage.removeItem(key);
+    return AsyncStorage.removeItem(key);
   }
 };
 

@@ -71,6 +71,20 @@
       "when": 1774403680831,
       "tag": "0009_kind_johnny_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1775790349407,
+      "tag": "0010_small_madame_web",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1775790452269,
+      "tag": "0011_fresh_the_hood",
+      "breakpoints": true
     }
   ]
 }
