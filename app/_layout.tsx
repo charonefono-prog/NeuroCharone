@@ -98,11 +98,9 @@ function RootLayoutContent() {
 
     if (!isAuthenticated && !inAuthGroup) {
       // User is not authenticated and not in auth screens - redirect to login
-      console.log("[LAYOUT] Not authenticated, redirecting to login");
       router.replace("/login");
     } else if (isAuthenticated && inAuthGroup) {
       // User is authenticated but in auth screens - redirect to home
-      console.log("[LAYOUT] Authenticated, redirecting to home");
       router.replace("/(tabs)");
     }
   }, [isAuthenticated, isLoading, segments, router]);
@@ -124,8 +122,6 @@ function RootLayoutContent() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="login" />
             <Stack.Screen name="register" />
-            <Stack.Screen name="pwa-login" />
-            <Stack.Screen name="pwa-register" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="oauth/callback" />
           </Stack>

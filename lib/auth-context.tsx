@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
@@ -92,7 +92,7 @@ const fetchWithTimeout = (url: string, options: RequestInit = {}, timeoutMs: num
     .finally(() => clearTimeout(timeoutId));
 };
 
-export function AuthProvider({ children }: { children: React.ReactNode | React.ReactNode[] }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   console.log("[AUTH] AuthProvider mounted");
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -102,6 +102,9 @@ export function AuthProvider({ children }: { children: React.ReactNode | React.R
   useEffect(() => {
     const restoreSession = async () => {
       console.log("[AUTH] Starting session restore...");
+      let restoredUser: AuthUser | null = null;
+      let restoredToken: string | null = null;
+      
       try {
         const storedToken = await getAuthStorage("pwa_auth_token");
         const storedUser = await getAuthStorage("pwa_auth_user");
@@ -121,30 +124,25 @@ export function AuthProvider({ children }: { children: React.ReactNode | React.R
             
             if (response.ok) {
               const data = await response.json();
-              const userData: AuthUser = {
+              restoredUser = {
                 email: data.user.email,
                 name: data.user.name,
                 accessLevel: data.user.accessLevel,
                 isApproved: data.user.isApproved,
               };
-              console.log("[AUTH] Token valid, user:", userData.email, "approved:", userData.isApproved);
-              setUser(userData);
-              setToken(storedToken);
+              restoredToken = storedToken;
+              console.log("[AUTH] Token valid, user:", restoredUser.email, "approved:", restoredUser.isApproved);
             } else {
               // Token expired or invalid (401, 403, etc)
               console.warn("[AUTH] Token validation failed:", response.status);
               await removeAuthStorage("pwa_auth_token");
               await removeAuthStorage("pwa_auth_user");
-              setUser(null);
-              setToken(null);
             }
           } catch (validationError) {
             // Network error or timeout during validation - clear auth to be safe
             console.error("[AUTH] Token validation error:", validationError);
             await removeAuthStorage("pwa_auth_token");
             await removeAuthStorage("pwa_auth_user");
-            setUser(null);
-            setToken(null);
           }
         } else {
           console.log("[AUTH] No stored token/user, user is unauthenticated");
@@ -159,7 +157,10 @@ export function AuthProvider({ children }: { children: React.ReactNode | React.R
           // ignore
         }
       } finally {
-        console.log("[AUTH] Session restore complete. isAuthenticated:", user !== null && user.isApproved === true);
+        // Set state after restoration is complete
+        setUser(restoredUser);
+        setToken(restoredToken);
+        console.log("[AUTH] Session restore complete. isAuthenticated:", restoredUser !== null && restoredUser.isApproved === true);
         setIsLoading(false);
       }
     };
@@ -198,14 +199,18 @@ export function AuthProvider({ children }: { children: React.ReactNode | React.R
       setToken(data.token);
       await setAuthStorage("pwa_auth_token", data.token);
       await setAuthStorage("pwa_auth_user", JSON.stringify(userData));
-
+      console.log('[AUTH] Login successful');
       return {};
+    } catch (error) {
+      console.error('[AUTH] Login failed:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   const register = async (email: string, name: string, password: string): Promise<{ needsApproval?: boolean }> => {
+    console.log('[AUTH] Attempting registration with email:', email);
     setIsLoading(true);
     try {
       const response = await fetchWithTimeout(`${API_BASE}/api/pwa-auth/register`, {
@@ -220,59 +225,42 @@ export function AuthProvider({ children }: { children: React.ReactNode | React.R
         throw new Error(data.error || "Falha no registro");
       }
 
-      // If auto-approved (admin), log in automatically
-      if (data.user?.isApproved) {
-        const userData: AuthUser = {
-          email: data.user.email,
-          name: data.user.name,
-          accessLevel: data.user.accessLevel,
-          isApproved: true,
-        };
-        setUser(userData);
-        setToken(data.token);
-        await AsyncStorage.setItem("pwa_auth_token", data.token);
-        await AsyncStorage.setItem("pwa_auth_user", JSON.stringify(userData));
-        return {};
-      }
-
-      // Needs approval
+      // After registration, user needs approval
       return { needsApproval: true };
+    } catch (error) {
+      console.error('[AUTH] Registration failed:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = async () => {
-    setIsLoading(true);
+    console.log('[AUTH] Logging out');
     try {
-      // Clear auth state first
+      if (token) {
+        await fetchWithTimeout(`${API_BASE}/api/pwa-auth/logout`, {
+          method: "POST",
+          headers: { 
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('[AUTH] Logout API call failed:', error);
+      // Continue with local logout even if API call fails
+    } finally {
       setUser(null);
       setToken(null);
-      // Then clear storage
       await removeAuthStorage("pwa_auth_token");
       await removeAuthStorage("pwa_auth_user");
-      // Optional: Call logout endpoint to invalidate token server-side
-      try {
-        if (token) {
-          await fetchWithTimeout(`${API_BASE}/api/pwa-auth/logout`, {
-            method: "POST",
-            headers: { 
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json"
-            },
-          }, 3000);
-        }
-      } catch (_) {
-        // Ignore logout endpoint errors
-      }
-    } finally {
-      setIsLoading(false);
+      console.log('[AUTH] Logout complete');
     }
   };
 
   const isAuthenticated = user !== null && user.isApproved === true;
-  console.log("[AUTH] Context value updated. user:", user?.email, "isAuthenticated:", isAuthenticated);
-  
+
   const value: AuthContextType = {
     user,
     token,
@@ -286,9 +274,9 @@ export function AuthProvider({ children }: { children: React.ReactNode | React.R
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
