@@ -1150,3 +1150,20 @@ export default function MyScreen() {
 - [x] Integrar proteção de rotas na PWA
 - [x] Re-exportar PWA web com novo sistema
 - [x] Testar login/logout em produção
+
+
+## BUG - Scroll com trackpad não funciona no PWA (Mac)
+- [ ] Diagnosticar problema de scroll no PWA (página não arrasta com trackpad no Mac)
+- [ ] Corrigir CSS/HTML para melhorar compatibilidade com scroll em Mac
+- [ ] Mover botão de logout para local mais acessível (não requer scroll)
+- [ ] Adicionar botão de logout no header/topo da página
+- [ ] Testar scroll com trackpad no Mac após correção
+
+## PWA Remix - Proxy e CSRF Fix
+- [x] Configurar proxy reverso no Express para /api/webapp/ → Remix porta 3001
+- [x] Mover proxy ANTES do body parser para evitar consumo do body em POSTs
+- [x] Adicionar pathRewrite para restaurar /api/webapp no path do proxy
+- [x] Corrigir proteção CSRF do React Router v7 (Origin vs Host mismatch)
+- [x] Configurar X-Forwarded-Host no proxy para corresponder ao Origin do browser
+- [x] Testar login via URL pública (POST funciona com cookie de sessão)
+- [x] Verificar navegação completa do PWA (Home, Pacientes, Escalas, Admin, Config)

@@ -20,6 +20,8 @@ import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { useServiceWorker } from "@/hooks/use-service-worker";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { forceLogoutButtonFixed } from "@/lib/force-logout-fixed";
+import type { ViewProps } from "react-native";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -106,6 +108,12 @@ function RootLayoutContent() {
       router.replace("/(tabs)");
     }
   }, [isAuthenticated, isLoading, segments, router]);
+
+  // Force logout button to have position fixed on web
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    return forceLogoutButtonFixed();
+  }, []);
 
   // Show loading while checking auth state
   if (isLoading) {

@@ -1,3 +1,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Melhorar scroll em Mac com trackpad */
+body {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* ScrollView do React Native */
+[style*="overflow"]::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[style*="overflow"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[style*="overflow"]::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+[style*="overflow"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Botão de Logout Flutuante */
+#floating-logout-btn {
+  position: fixed !important;
+  top: 16px !important;
+  right: 16px !important;
+  width: 50px !important;
+  height: 50px !important;
+  background: #EF4444 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  z-index: 9999 !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+#floating-logout-btn:hover {
+  background: #DC2626 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+  transform: scale(1.05) !important;
+}
+
+#floating-logout-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* Forçar position fixed para o botão de logout */
+/* Procura por elementos que contenham o emoji 🚪 */
+button:has-text('🚪'),
+div:has-text('🚪') {
+  position: fixed !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 9999 !important;
+}
+
+/* Alternativa: usar nth-child para elementos específicos */
+/* Forçar todos os elementos com position absolute no topo direito */
+[style*="position: absolute"][style*="top: 16"][style*="right: 16"] {
+  position: fixed !important;
+}
+
+
+/* Script de injeção via CSS */
+@supports (--css: variables) {
+  /* Forçar position fixed usando MutationObserver */
+  :root {
+    --logout-button-fixed: true;
+  }
+}

@@ -10,6 +10,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { pwaAuthRouter } from "../pwa-auth";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 // Resolve project root reliably in both dev (tsx) and production (esbuild ESM)
 function resolveProjectRoot(): string {
@@ -61,7 +62,42 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  // Enable CORS for all routes
+  // ============================================================
+  // REMIX PWA - Proxy to Remix server at port 3001
+  // MUST be BEFORE CORS, body parsers, and express.static
+  // to avoid body consumption and header interference
+  // ============================================================
+  const REMIX_PORT = 3001;
+  const remixProxy = createProxyMiddleware({
+    target: `http://127.0.0.1:${REMIX_PORT}`,
+    changeOrigin: true,
+    // Express strips the mount path (/api/webapp) when using app.use('/api/webapp', ...)
+    // We need pathRewrite to restore it because Remix expects /api/webapp as basename
+    pathRewrite: (path: string) => `/api/webapp${path}`,
+    ws: true,
+    on: {
+      proxyReq: (proxyReq: any, req: any) => {
+        // React Router v7 has CSRF protection that compares Origin header with Host/X-Forwarded-Host.
+        // When behind a reverse proxy, the Origin (public domain) doesn't match the Host (127.0.0.1:3001).
+        // We set X-Forwarded-Host to match the Origin so the CSRF check passes.
+        const origin = req.headers.origin;
+        if (origin) {
+          try {
+            const originHost = new URL(origin).host;
+            proxyReq.setHeader('x-forwarded-host', originHost);
+          } catch {}
+        }
+      },
+      error: (err: any, _req: any, _res: any) => {
+        console.error('[proxy] Error:', err.message);
+      },
+    },
+  });
+
+  app.use("/api/webapp", remixProxy as any);
+  console.log(`[api] Remix PWA proxy -> http://127.0.0.1:${REMIX_PORT} at /api/webapp/`);
+
+  // Enable CORS for all routes (except /api/webapp which is proxied above)
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin) {
@@ -104,58 +140,6 @@ async function startServer() {
   // PWA Auth routes
   // ============================================================
   app.use("/api/pwa-auth", pwaAuthRouter);
-
-  // ============================================================
-  // EXPO WEB APP (Static Export) - Served under /api/webapp/
-  // This is the EXACT same app as the mobile version, exported as static HTML.
-  // The production gateway only routes /api/* to Express.
-  // ============================================================
-  const distWebExists = fs.existsSync(DIST_WEB);
-  
-  if (distWebExists) {
-    // Serve all static assets (JS bundles, CSS, images, manifest, service-worker, etc.)
-    app.use("/api/webapp", express.static(DIST_WEB, {
-      index: false, // We handle index.html manually below
-      fallthrough: true,
-    }));
-
-    // Serve index.html for the root and all SPA routes
-    app.get("/api/webapp", (_req, res) => {
-      res.sendFile(path.join(DIST_WEB, "index.html"));
-    });
-    app.get("/api/webapp/", (_req, res) => {
-      res.sendFile(path.join(DIST_WEB, "index.html"));
-    });
-
-    // For any sub-route, try the specific HTML file first, then fall back to index.html
-    app.get("/api/webapp/*", (req, res) => {
-      const subPath = (req.params as Record<string, string>)[0] || "";
-      // Try exact HTML file (e.g., /api/webapp/patients -> dist-web/patients.html)
-      const htmlFile = path.join(DIST_WEB, subPath + ".html");
-      if (fs.existsSync(htmlFile)) {
-        res.sendFile(htmlFile);
-        return;
-      }
-      // Try as directory with index.html
-      const dirIndex = path.join(DIST_WEB, subPath, "index.html");
-      if (fs.existsSync(dirIndex)) {
-        res.sendFile(dirIndex);
-        return;
-      }
-      // Try exact file (for assets like .js, .css, .png)
-      const exactFile = path.join(DIST_WEB, subPath);
-      if (fs.existsSync(exactFile) && fs.statSync(exactFile).isFile()) {
-        res.sendFile(exactFile);
-        return;
-      }
-      // Fall back to index.html for SPA routing
-      res.sendFile(path.join(DIST_WEB, "index.html"));
-    });
-
-    console.log(`[api] Expo web app (static export) available at /api/webapp/`);
-  } else {
-    console.log(`[api] WARNING: dist-web folder not found at ${DIST_WEB}`);
-  }
 
   // ============================================================
   // PWA ROUTES (old HTML version) - Under /api/pwa/

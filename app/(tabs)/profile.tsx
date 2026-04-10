@@ -218,20 +218,67 @@ export default function ProfileScreen() {
 
   return (
     <ScreenContainer className="p-6">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ flex: 1, gap: 24 }}>
-          {/* Header */}
-          <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
-              Perfil
-            </Text>
-            <Text style={{ fontSize: 14, color: colors.muted }}>
-              {isEditing ? "Editar informações profissionais" : "Informações do profissional"}
-            </Text>
-          </View>
+      {/* Botao de Logout Fixo no Topo */}
+      <TouchableOpacity
+        onPress={async () => {
+          if (Platform.OS !== "web") {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }
+          
+          const shouldLogout = Platform.OS === "web" 
+            ? window.confirm("Deseja realmente sair da sua conta?")
+            : await new Promise(resolve => {
+                Alert.alert(
+                  "Sair",
+                  "Deseja realmente sair da sua conta?",
+                  [
+                    { text: "Cancelar", onPress: () => resolve(false) },
+                    { text: "Sair", onPress: () => resolve(true), style: "destructive" },
+                  ]
+                );
+              });
+          
+          if (shouldLogout) {
+            console.log("[PROFILE] Logging out...");
+            await logout();
+            console.log("[PROFILE] Logout complete");
+          }
+        }}
+        style={{
+          position: Platform.OS === "web" ? "fixed" : "absolute",
+          top: Platform.OS === "web" ? 16 : 50,
+          right: 16,
+          backgroundColor: colors.error,
+          borderRadius: 50,
+          width: 50,
+          height: 50,
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          shadowColor: colors.error,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 8,
+        }}
+      >
+        <Text style={{ fontSize: 24 }}>🚪</Text>
+      </TouchableOpacity>
 
-          {/* Card do Profissional */}
-          <View
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} scrollEnabled={true} nestedScrollEnabled={true}>
+          <View style={{ flex: 1, gap: 24 }}>
+            {/* Header */}
+            <View style={{ gap: 8 }}>
+              <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
+                Perfil
+              </Text>
+              <Text style={{ fontSize: 14, color: colors.muted }}>
+                {isEditing ? "Editar informações profissionais" : "Informações do profissional"}
+              </Text>
+            </View>
+
+            {/* Card do Profissional */}
+            <View
             style={{
               backgroundColor: colors.surface,
               borderRadius: 16,
