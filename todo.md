@@ -1243,3 +1243,11 @@ export default function MyScreen() {
 - [ ] Integrar templates ao modal de novo plano
 - [ ] Seleção de template ao criar plano
 - [ ] Metas de progresso por protocolo com alertas
+
+## PWA - Login/Logout e Admin de Aprovação
+- [x] Página de Login com email e senha no PWA
+- [x] Página de Cadastro de novo usuário no PWA
+- [x] Funcionalidade de Logout no PWA
+- [x] Painel Admin para aprovar/desaprovar usuários que acessam o PWA
+- [ ] Notificação ao admin quando novo usuário se registra
+- [x] Atualizar imagem do sistema 10-20 no PWA com a nova imagem fornecida (IMG_2826.png)

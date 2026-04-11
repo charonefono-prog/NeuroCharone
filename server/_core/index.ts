@@ -115,9 +115,57 @@ async function startServer() {
   app.use("/api/pwa-auth", pwaAuthRouter);
 
   // ============================================================
-  // PWA ROUTES (old HTML version) - Under /api/pwa/
+  // NEW PWA route - uncached path
+  // ============================================================
+  app.get("/api/neuromap", (_req, res) => {
+    const pwaAppDir = path.join(PROJECT_ROOT, "pwa", "app");
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("ETag", `W/"${Date.now()}"`);
+    res.sendFile(path.join(pwaAppDir, "index.html"));
+  });
+  app.get("/api/neuromap/", (_req, res) => {
+    const pwaAppDir = path.join(PROJECT_ROOT, "pwa", "app");
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("ETag", `W/"${Date.now()}"`);
+    res.sendFile(path.join(pwaAppDir, "index.html"));
+  });
+  // Serve static files for neuromap
+  app.use("/api/neuromap", express.static(path.join(PROJECT_ROOT, "pwa", "app"), {
+    index: false,
+    fallthrough: true,
+    setHeaders: (res) => {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
+    }
+  }));
+
+  // ============================================================
+  // PWA static assets - dedicated routes for images/js/css
   // ============================================================
   const pwaDir = path.join(PROJECT_ROOT, "pwa");
+  
+  // Serve specific static files from pwa/app directory
+  app.get("/api/pwa-assets/:filename", (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(pwaDir, "app", filename);
+    if (fs.existsSync(filePath)) {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
+      res.sendFile(filePath);
+    } else {
+      res.status(404).send("Not found");
+    }
+  });
+
+  // ============================================================
+  // PWA ROUTES (old HTML version) - Under /api/pwa/
+  // ============================================================
   if (fs.existsSync(pwaDir)) {
     app.use("/api/pwa", express.static(pwaDir, {
       index: "index.html",
@@ -136,6 +184,17 @@ async function startServer() {
       res.set("Expires", "0");
       res.sendFile(path.join(pwaDir, "app", "index.html"));
     });
+    // Serve static files from pwa/app with explicit static middleware
+    app.use("/api/pwa/app", express.static(path.join(pwaDir, "app"), {
+      index: false,
+      fallthrough: true,
+      setHeaders: (res) => {
+        res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.set("Pragma", "no-cache");
+        res.set("Expires", "0");
+      }
+    }));
+    // Catch-all for SPA routing (only for paths without file extensions)
     app.get("/api/pwa/app/*", (_req, res) => {
       res.set("Cache-Control", "no-cache, no-store, must-revalidate");
       res.set("Pragma", "no-cache");
