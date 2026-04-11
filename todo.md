@@ -1251,3 +1251,11 @@ export default function MyScreen() {
 - [x] Painel Admin para aprovar/desaprovar usuários que acessam o PWA
 - [ ] Notificação ao admin quando novo usuário se registra
 - [x] Atualizar imagem do sistema 10-20 no PWA com a nova imagem fornecida (IMG_2826.png)
+
+## Correções de Cache CDN e Helmet2D
+- [x] Corrigir Helmet2D para aceitar ambos os formatos (objeto e argumentos separados)
+- [x] Injetar classe Helmet2D inline no index.html para evitar dependência do JS externo cacheado
+- [x] Remover data URIs pesados do index.html (3.6MB → 99KB)
+- [x] Adicionar rotas dinâmicas /api/pwa-dynamic/ para bypass de cache CDN
+- [x] Adicionar rotas /api/neuromap para acesso alternativo sem cache
+- [x] Rebuild do servidor com todas as rotas atualizadas
