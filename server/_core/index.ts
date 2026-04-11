@@ -145,6 +145,28 @@ async function startServer() {
   }));
 
   // ============================================================
+  // PWA dynamic asset endpoints (bypass CDN cache)
+  // ============================================================
+  app.get("/api/pwa-dynamic/helmet-2d.js", (_req, res) => {
+    const filePath = path.join(PROJECT_ROOT, "pwa", "app", "helmet-2d.js");
+    res.set("Content-Type", "application/javascript");
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("ETag", `W/"${Date.now()}"`);
+    res.sendFile(filePath);
+  });
+  app.get("/api/pwa-dynamic/helmet-10-20.webp", (_req, res) => {
+    const filePath = path.join(PROJECT_ROOT, "pwa", "app", "helmet-10-20.webp");
+    res.set("Content-Type", "image/webp");
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("ETag", `W/"${Date.now()}"`);
+    res.sendFile(filePath);
+  });
+
+  // ============================================================
   // PWA static assets - dedicated routes for images/js/css
   // ============================================================
   const pwaDir = path.join(PROJECT_ROOT, "pwa");

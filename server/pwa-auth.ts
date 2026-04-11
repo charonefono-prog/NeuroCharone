@@ -980,4 +980,38 @@ router.put("/plans/:id", requireAuth as any, async (req: Request, res: Response)
   }
 });
 
+// ============================================================
+// Dynamic asset endpoints (bypass CDN cache)
+// ============================================================
+import path from "path";
+import fs from "fs";
+
+router.get("/helmet-js", (_req, res) => {
+  const filePath = path.join(process.cwd(), "pwa", "app", "helmet-2d.js");
+  if (fs.existsSync(filePath)) {
+    res.set("Content-Type", "application/javascript");
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("ETag", `W/"${Date.now()}"`);
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send("Not found");
+  }
+});
+
+router.get("/helmet-img", (_req, res) => {
+  const filePath = path.join(process.cwd(), "pwa", "app", "helmet-10-20.webp");
+  if (fs.existsSync(filePath)) {
+    res.set("Content-Type", "image/webp");
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.set("ETag", `W/"${Date.now()}"`);
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send("Not found");
+  }
+});
+
 export { router as pwaAuthRouter };
