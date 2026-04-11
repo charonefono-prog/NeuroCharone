@@ -1,6 +1,8 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "../../shared/const.js";
 import type { Express, Request, Response } from "express";
-import { getUserByOpenId, upsertUser } from "../db";
+import { db, getUserByOpenId, upsertUser } from "../db";
+import { accessControl } from "../db/schema";
+import { eq } from "drizzle-orm";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 
@@ -15,13 +17,60 @@ async function syncUser(userInfo: {
   email?: string | null;
   loginMethod?: string | null;
   platform?: string | null;
-}) {
+}): Promise<{
+  openId: string;
+  name: string | null;
+  email: string | null;
+  loginMethod: string | null;
+  lastSignedIn: Date;
+  role: "pending" | "user" | "admin";
+}> {
   if (!userInfo.openId) {
     throw new Error("openId missing from user info");
   }
 
   const lastSignedIn = new Date();
-  await upsertUser({
+  let userRole: "pending" | "user" | "admin" = "pending";
+
+  // Check if user is the owner
+  if (userInfo.openId === process.env.OWNER_OPEN_ID) {
+    userRole = "admin";
+  }
+
+  const existingUser = await getUserByOpenId(userInfo.openId);
+
+  if (!existingUser) {
+    // New user, create access control entry
+    const [newAccessControl] = await db.insert(accessControl).values({
+      userId: 0, // Temporary, will be updated after user creation
+      status: userRole === "admin" ? "approved" : "pending",
+    });
+    // If it's the owner, set role to admin directly
+    if (userRole === "admin") {
+      userRole = "admin";
+    } else {
+      userRole = "pending";
+    }
+  } else {
+    // Existing user, get their role from access control
+    const existingAccessControl = await db.query.accessControl.findFirst({
+      where: eq(accessControl.userId, existingUser.id),
+    });
+    if (existingAccessControl) {
+      if (existingAccessControl.status === "approved") {
+        userRole = "user";
+      } else if (existingAccessControl.status === "rejected") {
+        throw new Error("User access rejected");
+      }
+    }
+    // If it's the owner, ensure role is admin
+    if (userInfo.openId === process.env.OWNER_OPEN_ID) {
+      userRole = "admin";
+    }
+  }
+
+  const user = await upsertUser({
+    role: userRole,
     openId: userInfo.openId,
     name: userInfo.name || null,
     email: userInfo.email ?? null,
@@ -36,8 +85,16 @@ async function syncUser(userInfo: {
       email: userInfo.email,
       loginMethod: userInfo.loginMethod ?? null,
       lastSignedIn,
+      role: userRole,
     }
   );
+
+  // Update accessControl userId if it was a new user
+  if (!existingUser && user.id) {
+    await db.update(accessControl).set({ userId: user.id }).where(eq(accessControl.id, (await db.query.accessControl.findFirst({ where: eq(accessControl.status, userRole === "admin" ? "approved" : "pending") }))?.id || 0));
+  }
+
+  return user;
 }
 
 function buildUserResponse(
@@ -58,6 +115,7 @@ function buildUserResponse(
     email: user?.email ?? null,
     loginMethod: user?.loginMethod ?? null,
     lastSignedIn: (user?.lastSignedIn ?? new Date()).toISOString(),
+    role: user?.role ?? "pending",
   };
 }
 
@@ -74,7 +132,13 @@ export function registerOAuthRoutes(app: Express) {
     try {
       const tokenResponse = await sdk.exchangeCodeForToken(code, state);
       const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
-      await syncUser(userInfo);
+      const user = await syncUser(userInfo);
+
+      if (user.role === "pending") {
+        res.redirect(302, "/pending-approval");
+        return;
+      }
+
       const sessionToken = await sdk.createSessionToken(userInfo.openId!, {
         name: userInfo.name || "",
         expiresInMs: ONE_YEAR_MS,
@@ -89,6 +153,10 @@ export function registerOAuthRoutes(app: Express) {
         process.env.EXPO_WEB_PREVIEW_URL ||
         process.env.EXPO_PACKAGER_PROXY_URL ||
         "http://localhost:8081";
+      if (user.role === "pending") {
+        res.redirect(302, frontendUrl + "/pending-approval");
+        return;
+      }
       res.redirect(302, frontendUrl);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
@@ -109,6 +177,11 @@ export function registerOAuthRoutes(app: Express) {
       const tokenResponse = await sdk.exchangeCodeForToken(code, state);
       const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
       const user = await syncUser(userInfo);
+
+      if (user.role === "pending") {
+        res.status(403).json({ error: "User approval pending" });
+        return;
+      }
 
       const sessionToken = await sdk.createSessionToken(userInfo.openId!, {
         name: userInfo.name || "",

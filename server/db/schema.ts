@@ -13,6 +13,7 @@ export const users = mysqlTable("users", {
   photoUrl: text("photo_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+  role: varchar("role", { length: 50, enum: ["pending", "user", "admin"] }).notNull().default("pending"),
 });
 
 // Tabela de pacientes
@@ -64,6 +65,16 @@ export const sessions = mysqlTable("sessions", {
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
 
+// Tabela de controle de acesso
+export const accessControl = mysqlTable("access_control", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("user_id").notNull().unique(),
+  status: varchar("status", { length: 50, enum: ["pending", "approved", "rejected"] }).notNull().default("pending"),
+  requestedAt: timestamp("requested_at").defaultNow().notNull(),
+  approvedAt: timestamp("approved_at"),
+  approvedBy: int("approved_by"),
+});
+
 // Relações
 export const usersRelations = relations(users, ({ many }) => ({
   patients: many(patients),
@@ -97,6 +108,18 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   }),
 }));
 
+export const accessControlRelations = relations(accessControl, ({ one }) => ({
+  user: one(users, {
+    fields: [accessControl.userId],
+    references: [users.id],
+  }),
+  approver: one(users, {
+    fields: [accessControl.approvedBy],
+    references: [users.id],
+    relationName: "approver",
+  }),
+}));
+
 // Tipos TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -109,3 +132,6 @@ export type NewTherapeuticPlan = typeof therapeuticPlans.$inferInsert;
 
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
+
+export type AccessControl = typeof accessControl.$inferSelect;
+export type NewAccessControl = typeof accessControl.$inferInsert;

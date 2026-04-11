@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../../lib/auth-context";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -11,6 +12,7 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
+  const { user } = useAuth();
 
   return (
     <Tabs
@@ -84,13 +86,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="admin"
-        options={{
-          title: "Admin",
-          tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
-        }}
-      />
+      {user?.role === "admin" && (
+        <Tabs.Screen
+          name="(admin)/users"
+          options={{
+            title: "Admin Users",
+            tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="person.crop.circle.fill.badge.checkmark" color={color} />,
+          }}
+        />
+      )}
     </Tabs>
   );
 }

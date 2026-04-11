@@ -131,7 +131,9 @@ export async function getMe(): Promise<{
   email: string | null;
   loginMethod: string | null;
   lastSignedIn: string;
+  role: 'pending' | 'user' | 'admin' | 'rejected';
 } | null> {
+
   try {
     const result = await apiCall<{ user: any }>("/api/auth/me");
     return result.user || null;
@@ -143,6 +145,19 @@ export async function getMe(): Promise<{
 
 // Establish session cookie on the backend (3000-xxx domain)
 // Called after receiving token via postMessage to get a proper Set-Cookie from the backend
+export async function getAdminUsers(): Promise<any[]> {
+  const result = await apiCall<{ users: any[] }>("/api/admin/getUsers");
+  return result.users;
+}
+
+export async function updateUserRole(userId: number, role: 'pending' | 'user' | 'admin' | 'rejected'): Promise<boolean> {
+  const result = await apiCall<{ success: boolean }>("/api/admin/updateUserRole", {
+    method: "POST",
+    body: JSON.stringify({ userId, role }),
+  });
+  return result.success;
+}
+
 export async function establishSession(token: string): Promise<boolean> {
   try {
     console.log("[API] establishSession: setting cookie on backend...");

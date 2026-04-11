@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, User } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -18,7 +18,7 @@ export async function getDb() {
   return _db;
 }
 
-export async function upsertUser(user: InsertUser): Promise<void> {
+export async function upsertUser(user: InsertUser): Promise<User> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");
   }
@@ -26,7 +26,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot upsert user: database not available");
-    return;
+    throw new Error("Database not available");
   }
 
   try {
@@ -55,9 +55,6 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     if (user.role !== undefined) {
       values.role = user.role;
       updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerOpenId) {
-      values.role = "admin";
-      updateSet.role = "admin";
     }
 
     if (!values.lastSignedIn) {
@@ -68,9 +65,15 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    const [result] = await db.insert(users).values(values).onDuplicateKeyUpdate({
       set: updateSet,
     });
+    // After upsert, fetch the user to return the complete object
+    const updatedUser = await getUserByOpenId(user.openId);
+    if (!updatedUser) {
+      throw new Error("Failed to retrieve user after upsert");
+    }
+    return updatedUser;
   } catch (error) {
     console.error("[Database] Failed to upsert user:", error);
     throw error;
@@ -90,3 +93,6 @@ export async function getUserByOpenId(openId: string) {
 }
 
 // TODO: add feature queries here as your schema grows.
+
+
+

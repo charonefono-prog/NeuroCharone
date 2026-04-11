@@ -9,6 +9,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const colors = useColors();
   const { isAuthenticated, loading, startOAuthLogin } = useAuth();
+  const { error } = router.query;
 
   useEffect(() => {
     if (isAuthenticated && !loading) {
@@ -29,6 +30,14 @@ export default function LoginScreen() {
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
         <View className="flex-1 justify-center gap-8">
+          {/* Error Message */}
+          {error === "pending_approval" && (
+            <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <Text className="font-bold">Acesso Pendente</Text>
+              <Text className="block sm:inline">Seu acesso está aguardando aprovação. Por favor, aguarde ou entre em contato com o administrador.</Text>
+            </View>
+          )}
+
           {/* Header */}
           <View className="items-center gap-4">
             <Text className="text-4xl font-bold text-foreground">NeuroLaserMap</Text>
@@ -59,13 +68,27 @@ export default function LoginScreen() {
             />
           </View>
 
-          {/* Login Button */}
-          <TouchableOpacity
-            onPress={startOAuthLogin}
-            className="bg-primary rounded-lg p-4 items-center"
-          >
-            <Text className="text-background font-semibold text-base">Fazer Login</Text>
-          </TouchableOpacity>
+          {/* Login Buttons */}
+          <View className="gap-4">
+            <TouchableOpacity
+              onPress={() => startOAuthLogin("google")}
+              className="bg-red-500 rounded-lg p-4 items-center"
+            >
+              <Text className="text-white font-semibold text-base">Login com Google</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => startOAuthLogin("microsoft")}
+              className="bg-blue-500 rounded-lg p-4 items-center"
+            >
+              <Text className="text-white font-semibold text-base">Login com Microsoft</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => startOAuthLogin("apple")}
+              className="bg-gray-800 rounded-lg p-4 items-center"
+            >
+              <Text className="text-white font-semibold text-base">Login com Apple</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Footer */}
           <Text className="text-xs text-muted text-center">

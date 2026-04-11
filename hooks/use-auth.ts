@@ -80,10 +80,10 @@ export function useAuth(options?: UseAuthOptions) {
     }
   }, []);
 
-  const startOAuthLogin = useCallback(() => {
+  const startOAuthLogin = useCallback((provider?: string) => {
     if (Platform.OS === "web") {
       // Web: redirect to OAuth login
-      const oauthUrl = `${process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000"}/auth/oauth/login`;
+      const oauthUrl = `${process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000"}/auth/oauth/login${provider ? `?provider=${provider}` : ''}`;
       window.location.href = oauthUrl;
     } else {
       // Native: use deep linking
