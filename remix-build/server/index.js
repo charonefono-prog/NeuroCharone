@@ -68,9 +68,17 @@ function handleRequest(request, responseStatusCode, responseHeaders, routerConte
 var root_exports = /* @__PURE__ */ __exportAll({
 	ErrorBoundary: () => ErrorBoundary,
 	Layout: () => Layout,
+	action: () => action$4,
 	default: () => root_default,
 	links: () => links
 });
+async function action$4({ request }) {
+	if (request.method === "POST") return new Response(null, {
+		status: 303,
+		headers: { Location: "/" }
+	});
+	return null;
+}
 var links = () => [
 	{
 		rel: "preconnect",
@@ -2961,7 +2969,7 @@ var server_manifest_default = {
 			"path": "",
 			"index": void 0,
 			"caseSensitive": void 0,
-			"hasAction": false,
+			"hasAction": true,
 			"hasLoader": false,
 			"hasClientAction": false,
 			"hasClientLoader": false,
@@ -3250,8 +3258,8 @@ var server_manifest_default = {
 			"hydrateFallbackModule": void 0
 		}
 	},
-	"url": "/api/webapp/assets/manifest-5aea684e.js",
-	"version": "5aea684e",
+	"url": "/api/webapp/assets/manifest-a0722512.js",
+	"version": "a0722512",
 	"sri": void 0
 };
 //#endregion

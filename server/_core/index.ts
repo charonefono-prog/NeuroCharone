@@ -111,7 +111,6 @@ async function startServer() {
     const remixProxy = createProxyMiddleware({
       target: `http://127.0.0.1:${REMIX_PORT}`,
       changeOrigin: true,
-      pathRewrite: (path: string) => `/api/webapp${path}`,
       ws: true,
       on: {
         proxyReq: (proxyReq: any, req: any) => {
