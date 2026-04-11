@@ -506,6 +506,15 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
   <button class="btn-p" onclick="saveCycle()" style="justify-content:center">Salvar Ciclo</button>
 </div></div>
 
+<!-- New Plan -->
+<div class="mo" id="m-new-plan"><div class="ml"><button class="cb" onclick="closeM('m-new-plan')">&times;</button><h2>Novo Plano Terapeutico</h2>
+  <input type="hidden" id="np-pat-id">
+  <div class="fg"><label>Objetivo *</label><textarea id="np-obj" placeholder="Objetivo do tratamento"></textarea></div>
+  <div class="fg"><label>Frequencia (x/semana)</label><input type="number" id="np-freq" min="1" max="7" value="2"></div>
+  <div class="fg"><label>Duracao (sessoes)</label><input type="number" id="np-dur" min="1" max="52" value="8"></div>
+  <button class="btn-p" onclick="savePlan()" style="justify-content:center">Salvar Plano</button>
+</div></div>
+
 <div id="toast-el" class="toast"></div>
 <script src="helmet-2d.js"></script>
 <script src="charts.js"></script>
@@ -1023,6 +1032,34 @@ function saveCycle(){
   CY.push({id:Date.now().toString(),patientId:pid,patientName:pat?pat.fullName:'',objectives:$('nc-obj').value,plannedSessions:parseInt($('nc-sess').value)||10,estimatedDuration:parseInt($('nc-dur').value)||30,startDate:now,endDate:'',frequency:$('nc-freq').value,intensity:$('nc-int').value,status:'active',targetRegions:regions,targetPoints:points,scales:scales,createdAt:now});
   sD(K.CY,CY);closeM('m-cycle');refresh(curTab);toast('Ciclo criado com '+regions.length+' regioes, '+points.length+' pontos e '+scales.length+' escalas!');
 }
+function openPlanM(patientId){
+  $('np-pat-id').value=patientId;
+  $('np-obj').value='';
+  $('np-freq').value='2';
+  $('np-dur').value='8';
+  openM('m-new-plan');
+}
+function savePlan(){
+  const pid=$('np-pat-id').value;
+  const obj=$('np-obj').value;
+  const freq=parseInt($('np-freq').value)||2;
+  const dur=parseInt($('np-dur').value)||8;
+  if(!pid||!obj){toast('Preencha todos os campos');return}
+  const PL=gD(K.PL);
+  PL.push({id:Date.now().toString(),patientId:pid,objective:obj,targetRegions:[],targetPoints:[],frequency:freq,totalDuration:dur,isActive:true,createdAt:new Date().toISOString()});
+  sD(K.PL,PL);
+  closeM('m-new-plan');
+  refresh(curTab);
+  toast('Plano criado!');
+}
+function showPlanDetails(planId,patientId){
+  const PL=gD(K.PL);
+  const plan=PL.find(pl=>pl.id===planId);
+  if(!plan)return;
+  const regionsStr=(plan.targetRegions||[]).join(', ')||'Nao definidas';
+  const pointsStr=(plan.targetPoints||[]).join(', ')||'Nao definidos';
+  alert('Objetivo: '+plan.objective+'\nRegioes: '+regionsStr+'\nPontos: '+pointsStr+'\nFrequencia: '+plan.frequency+'x/sem\nDuracao: '+plan.totalDuration+' sessoes');
+}
 
 // Open modals with patient selectors
 function openSessM(){
@@ -1061,8 +1098,8 @@ function openDet(id){
     ${p.email?`<div class="sr"><span class="material-icons-outlined sri">email</span><div class="srt"><div class="rt">E-mail</div><div class="rs">${p.email}</div></div></div>`:''}
     ${p.diagnosis?`<div class="sr"><span class="material-icons-outlined sri">medical_information</span><div class="srt"><div class="rt">Diagnóstico</div><div class="rs">${p.diagnosis}</div></div></div>`:''}
     ${p.initialSymptomScore!==undefined?`<div class="sr"><span class="material-icons-outlined sri">speed</span><div class="srt"><div class="rt">Score Inicial</div><div class="rs">${p.initialSymptomScore}/10</div></div></div>`:''}
-    <div class="st" style="margin-top:16px">Planos Terapêuticos (${pPL.length})</div>
-    ${pPL.length===0?'<p style="color:var(--muted);font-size:13px">Nenhum plano registrado</p>':pPL.map(pl=>`<div class="card"><div style="font-size:14px;font-weight:600">${pl.objective}</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Pontos: ${(pl.targetPoints||[]).join(', ')} • ${pl.frequency}x/sem • ${pl.totalDuration} sessões</div></div>`).join('')}
+    <div class="st" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">Planos Terapêuticos (${pPL.length})<button class="btn-s" style="background:var(--primary);color:#fff;padding:4px 8px;font-size:12px" onclick="openPlanM('${p.id}')">+ Novo</button></div>
+    ${pPL.length===0?'<p style="color:var(--muted);font-size:13px">Nenhum plano registrado</p>':pPL.map(pl=>`<div class="card" style="cursor:pointer" onclick="showPlanDetails('${pl.id}','${p.id}')"><div style="font-size:14px;font-weight:600">${pl.objective}</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Pontos: ${(pl.targetPoints||[]).join(', ')} • ${pl.frequency}x/sem • ${pl.totalDuration} sessões</div></div>`).join('')}
     <div class="st" style="margin-top:16px">Sessões (${pS.length})</div>
     ${pS.length===0?'<p style="color:var(--muted);font-size:13px">Nenhuma sessão registrada</p>':pS.map(s=>`<div class="card"><div style="font-size:13px;font-weight:600">${new Date(s.sessionDate).toLocaleDateString('pt-BR')}</div><div style="font-size:12px;color:var(--muted)">${s.durationMinutes}min • ${(s.stimulatedPoints||[]).join(', ')} • ${s.joules||0}J • Score: ${s.symptomScore!==undefined?s.symptomScore+'/10':'—'}</div>${s.observations?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${s.observations}</div>`:''}</div>`).join('')}
     <div style="display:flex;gap:8px;margin-top:16px">

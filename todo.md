@@ -1212,11 +1212,13 @@ export default function MyScreen() {
 - [x] Exportacao de Evolucao Visual em PDF - Relatorio com screenshots e dados
 
 
-## Correções e Melhorias Necessárias
-- [ ] Refatorar interface de preenchimento de escalas clínicas
-- [ ] Criar formulário estruturado para cada escala
-- [ ] Integrar plano terapêutico com escalas
-- [ ] Implementar sincronização bidirecional de pontos
-- [ ] Adicionar filtro por região cerebral
-- [ ] Criar dashboard de histórico de pontos mais usados
-- [ ] Organizar fluxo de plano terapêutico
+## Correcoes e Melhorias Necessarias
+- [x] Refatorar interface de preenchimento de escalas clinicas com Likert scale
+- [x] Criar formulario estruturado para cada escala
+- [x] Integrar plano terapeutico com escalas
+- [ ] Implementar sincronizacao bidirecional de pontos
+- [ ] Adicionar filtro por regiao cerebral
+- [ ] Criar dashboard de historico de pontos mais usados
+- [x] Organizar fluxo de plano terapeutico com visualizador 2D
+- [ ] Testar carregamento da imagem do sistema 10-20 no browser
+- [x] Corrigir caminhos de imagem para producao
