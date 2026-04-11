@@ -31,17 +31,25 @@ export default function AdminScreen() {
   const fetchUsers = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('/api/access-control.getAll', {
+      const response = await fetch('/api/pwa-auth/users', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       })
 
       const data = await response.json()
 
-      if (data.success) {
-        setUsers(data.users || [])
+      if (data.users) {
+        // Transform API response to UI format
+        const transformedUsers = data.users.map((u: any) => ({
+          id: u.id || u.email,
+          email: u.email,
+          name: u.name,
+          status: u.isApproved ? 'approved' : 'pending',
+          createdAt: u.createdAt || new Date().toISOString(),
+        }))
+        setUsers(transformedUsers)
       } else {
-        Alert.alert('Erro', data.reason || 'Falha ao carregar usuários')
+        Alert.alert('Erro', 'Falha ao carregar usuários')
       }
     } catch (error) {
       Alert.alert('Erro', 'Falha ao conectar com o servidor')
@@ -73,10 +81,14 @@ export default function AdminScreen() {
 
   const updateUserStatus = async (userId: string, newStatus: 'approved' | 'blocked') => {
     try {
-      const response = await fetch('/api/access-control.updateStatus', {
+      const user = users.find((u) => u.id === userId)
+      if (!user) return
+
+      const endpoint = newStatus === 'approved' ? '/api/pwa-auth/approve' : '/api/pwa-auth/reject'
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, status: newStatus }),
+        body: JSON.stringify({ email: user.email, reason: newStatus === 'blocked' ? 'Bloqueado pelo administrador' : undefined }),
       })
 
       const data = await response.json()
@@ -85,7 +97,7 @@ export default function AdminScreen() {
         setUsers(users.map((u) => (u.id === userId ? { ...u, status: newStatus } : u)))
         Alert.alert('Sucesso', `Usuário ${newStatus === 'approved' ? 'aprovado' : 'bloqueado'}`)
       } else {
-        Alert.alert('Erro', data.reason || 'Falha ao atualizar usuário')
+        Alert.alert('Erro', data.error || 'Falha ao atualizar usuário')
       }
     } catch (error) {
       Alert.alert('Erro', 'Falha ao conectar com o servidor')
@@ -100,10 +112,12 @@ export default function AdminScreen() {
         text: 'Deletar',
         onPress: async () => {
           try {
-            const response = await fetch('/api/access-control.delete', {
-              method: 'POST',
+            const user = users.find((u) => u.id === userId)
+            if (!user) return
+
+            const response = await fetch(`/api/pwa-auth/user/${encodeURIComponent(user.email)}`, {
+              method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId }),
             })
 
             const data = await response.json()
@@ -112,7 +126,7 @@ export default function AdminScreen() {
               setUsers(users.filter((u) => u.id !== userId))
               Alert.alert('Sucesso', 'Usuário deletado')
             } else {
-              Alert.alert('Erro', data.reason || 'Falha ao deletar usuário')
+              Alert.alert('Erro', data.error || 'Falha ao deletar usuário')
             }
           } catch (error) {
             Alert.alert('Erro', 'Falha ao conectar com o servidor')

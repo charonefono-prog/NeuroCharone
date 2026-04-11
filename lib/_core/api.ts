@@ -123,6 +123,36 @@ export async function logout(): Promise<void> {
   });
 }
 
+// Login with email and password (PWA auth)
+export async function loginWithPassword(email: string, password: string): Promise<{
+  success: boolean;
+  token: string;
+  user: {
+    email: string;
+    name: string;
+    accessLevel: string;
+    isApproved: boolean;
+  };
+} | null> {
+  try {
+    const result = await apiCall<any>("/api/pwa-auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    if (result.success && result.token) {
+      // Save token for web platform
+      if (Platform.OS === "web") {
+        await Auth.setSessionToken(result.token);
+      }
+      return result;
+    }
+    return null;
+  } catch (error) {
+    console.error("[API] loginWithPassword failed:", error);
+    return null;
+  }
+}
+
 // Get current authenticated user (web uses cookie-based auth)
 export async function getMe(): Promise<{
   id: number;

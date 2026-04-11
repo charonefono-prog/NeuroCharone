@@ -10,8 +10,6 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { pwaAuthRouter } from "../pwa-auth";
-import { createProxyMiddleware } from "http-proxy-middleware";
-import { createRequestHandler } from "@react-router/express";
 
 // Resolve project root reliably in both dev (tsx) and production (esbuild ESM)
 function resolveProjectRoot(): string {
@@ -69,69 +67,10 @@ async function startServer() {
   // In PROD: use @react-router/express handler with pre-built assets
   // MUST be BEFORE CORS, body parsers, and express.static
   // ============================================================
-  const isProduction = process.env.NODE_ENV === "production";
-  const REMIX_BUILD_DIR = path.join(PROJECT_ROOT, "remix-build");
+  // PWA disabled - using standalone PWA in separate repository
+  console.log(`[api] PWA serving from separate repository`);
 
-  if (isProduction && fs.existsSync(path.join(REMIX_BUILD_DIR, "server", "index.js"))) {
-    // PRODUCTION: Serve Remix build directly via @react-router/express
-    const remixClientDir = path.join(REMIX_BUILD_DIR, "client");
-
-    // Serve static assets from the Remix client build (immutable cache)
-    app.use(
-      "/api/webapp/assets",
-      express.static(path.join(remixClientDir, "assets"), {
-        immutable: true,
-        maxAge: "1y",
-      })
-    );
-    // Serve other client files (favicon, images, etc.)
-    app.use("/api/webapp", express.static(remixClientDir));
-
-    // SSR handler for all other /api/webapp routes
-    const remixBuild = await import(path.join(REMIX_BUILD_DIR, "server", "index.js"));
-    app.all(
-      "/api/webapp/*",
-      createRequestHandler({
-        build: remixBuild,
-        mode: "production",
-      }) as any
-    );
-    // Also handle /api/webapp (without trailing path)
-    app.all(
-      "/api/webapp",
-      createRequestHandler({
-        build: remixBuild,
-        mode: "production",
-      }) as any
-    );
-    console.log(`[api] Remix PWA (production) serving from ${REMIX_BUILD_DIR} at /api/webapp/`);
-  } else {
-    // DEVELOPMENT: Proxy to Remix dev server at port 3001
-    const REMIX_PORT = 3001;
-    const remixProxy = createProxyMiddleware({
-      target: `http://127.0.0.1:${REMIX_PORT}`,
-      changeOrigin: true,
-      ws: true,
-      on: {
-        proxyReq: (proxyReq: any, req: any) => {
-          const origin = req.headers.origin;
-          if (origin) {
-            try {
-              const originHost = new URL(origin).host;
-              proxyReq.setHeader('x-forwarded-host', originHost);
-            } catch {}
-          }
-        },
-        error: (err: any, _req: any, _res: any) => {
-          console.error('[proxy] Error:', err.message);
-        },
-      },
-    });
-    app.use("/api/webapp", remixProxy as any);
-    console.log(`[api] Remix PWA (dev) proxy -> http://127.0.0.1:${REMIX_PORT} at /api/webapp/`);
-  }
-
-  // Enable CORS for all routes (except /api/webapp which is proxied above)
+  // Enable CORS for all routes
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin) {

@@ -55,8 +55,10 @@ function getApiBaseUrl(): string {
       
       // If on Manus sandbox (8081 port), use the exposed server URL
       if (hostname.includes('8081') || hostname.includes('manus.computer')) {
-        // Use the exposed server URL that works for all users
-        return 'https://3000-ipwt1mvxgwoomsk324iqs-ca7ba40a.us2.manus.computer';
+        // Extract the base domain and use port 3000
+        // e.g., 8081-ipwt1mvxgwoomsk324iqs-ca7ba40a.us2.manus.computer -> 3000-ipwt1mvxgwoomsk324iqs-ca7ba40a.us2.manus.computer
+        const baseDomain = hostname.replace(/^\d+-/, '3000-');
+        return `${protocol}//${baseDomain}`;
       }
       
       // Default: use the same origin

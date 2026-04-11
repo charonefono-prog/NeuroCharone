@@ -150,6 +150,7 @@ router.post("/register", async (req: Request, res: Response) => {
         success: true,
         message: "Registro realizado! Aguarde aprovação do administrador.",
         pending: true,
+        user: { email: email.toLowerCase(), name, accessLevel: "user", isApproved: false },
       });
     }
   } catch (error: any) {

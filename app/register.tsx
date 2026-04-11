@@ -57,7 +57,7 @@ export default function RegisterScreen() {
     if (!confirmPassword) {
       setConfirmPasswordError("Confirmação de senha é obrigatória");
       hasError = true;
-    } else if (password !== confirmPassword) {
+    } else if (password.trim() !== confirmPassword.trim()) {
       setConfirmPasswordError("As senhas não coincidem");
       hasError = true;
     }
