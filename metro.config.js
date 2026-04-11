@@ -3,9 +3,10 @@ const { withNativeWind } = require("nativewind/metro");
 
 const config = getDefaultConfig(__dirname);
 
+// Fix for SHA-1 error in CI environments like Vercel
+// NativeWind v4 can have issues with its cache directory
 module.exports = withNativeWind(config, {
   input: "./global.css",
-  // Force write CSS to file system instead of virtual modules
-  // This fixes iOS styling issues in development mode
-  forceWriteFileSystem: true,
+  // Only force write to file system in development mode
+  forceWriteFileSystem: process.env.NODE_ENV === "development",
 });
