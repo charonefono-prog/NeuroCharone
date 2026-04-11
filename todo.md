@@ -1167,3 +1167,12 @@ export default function MyScreen() {
 - [x] Configurar X-Forwarded-Host no proxy para corresponder ao Origin do browser
 - [x] Testar login via URL pública (POST funciona com cookie de sessão)
 - [x] Verificar navegação completa do PWA (Home, Pacientes, Escalas, Admin, Config)
+
+## BUG - PWA tela em branco no domínio publicado
+- [x] Diagnosticar: em produção o Remix dev server não roda, proxy não tem destino
+- [x] Solução: integrar @react-router/express para servir Remix build diretamente no Express em produção
+- [x] Configurar Vite base: "/api/webapp/" para assets no path correto
+- [x] Corrigir links hardcoded (usar Link do React Router em vez de <a href>)
+- [x] Copiar Remix build para remix-build/ dentro do projeto Expo
+- [x] Testar servidor em modo produção (login, assets, navegação OK)
+- [ ] Publicar e testar no domínio publicado
