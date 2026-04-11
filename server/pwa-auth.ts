@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { getDb } from "./db";
-import { accessControl, accessLog } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { accessControl, accessLog, patients, sessions, therapeuticPlans } from "../drizzle/schema";
+import { eq, and } from "drizzle-orm";
 
 const router = Router();
 
@@ -70,6 +70,18 @@ async function requireAdmin(req: Request, res: Response, next: Function) {
     }
     next();
   });
+}
+
+// ============================================================
+// Helper: Get user ID from email
+// ============================================================
+async function getUserIdByEmail(db: any, email: string): Promise<number | null> {
+  const user = await db
+    .select({ id: accessControl.id })
+    .from(accessControl)
+    .where(eq(accessControl.email, email.toLowerCase()))
+    .limit(1);
+  return user.length > 0 ? user[0].id : null;
 }
 
 // ============================================================
@@ -486,6 +498,315 @@ router.get("/logs", requireAdmin as any, async (req: Request, res: Response) => 
   } catch (error: any) {
     console.error("[pwa-auth] Logs error:", error);
     res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// ============================================================
+// POST /api/pwa-auth/patients - Create a new patient
+// ============================================================
+router.post("/patients", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const { fullName, birthDate, diagnosis, baselineScore } = req.body;
+    if (!fullName || !birthDate) {
+      res.status(400).json({ error: "Nome e data de nascimento são obrigatórios" });
+      return;
+    }
+
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    const result = await db.insert(patients).values({
+      userId,
+      fullName,
+      birthDate: new Date(birthDate),
+      diagnosis: diagnosis || "",
+      status: "active",
+    });
+
+    res.json({
+      success: true,
+      message: "Paciente criado com sucesso",
+      patientId: result[0],
+    });
+  } catch (error: any) {
+    console.error("[pwa-auth] Create patient error:", error);
+    res.status(500).json({ error: "Erro ao criar paciente" });
+  }
+});
+
+// ============================================================
+// GET /api/pwa-auth/patients - List patients for authenticated user
+// ============================================================
+router.get("/patients", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    const patientsList = await db
+      .select()
+      .from(patients)
+      .where(eq(patients.userId, userId));
+
+    res.json({ patients: patientsList });
+  } catch (error: any) {
+    console.error("[pwa-auth] List patients error:", error);
+    res.status(500).json({ error: "Erro ao listar pacientes" });
+  }
+});
+
+// ============================================================
+// GET /api/pwa-auth/patients/:id - Get patient details
+// ============================================================
+router.get("/patients/:id", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const patientId = parseInt(req.params.id);
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    res.json({ patient: patientData[0] });
+  } catch (error: any) {
+    console.error("[pwa-auth] Get patient error:", error);
+    res.status(500).json({ error: "Erro ao buscar paciente" });
+  }
+});
+
+// ============================================================
+// PUT /api/pwa-auth/patients/:id - Update patient
+// ============================================================
+router.put("/patients/:id", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const patientId = parseInt(req.params.id);
+    const { fullName, birthDate, diagnosis, status } = req.body;
+
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify ownership
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    const updateData: any = {};
+    if (fullName) updateData.fullName = fullName;
+    if (birthDate) updateData.birthDate = new Date(birthDate);
+    if (diagnosis) updateData.diagnosis = diagnosis;
+    if (status) updateData.status = status;
+
+    await db
+      .update(patients)
+      .set(updateData)
+      .where(eq(patients.id, patientId));
+
+    res.json({ success: true, message: "Paciente atualizado com sucesso" });
+  } catch (error: any) {
+    console.error("[pwa-auth] Update patient error:", error);
+    res.status(500).json({ error: "Erro ao atualizar paciente" });
+  }
+});
+
+// ============================================================
+// DELETE /api/pwa-auth/patients/:id - Delete patient
+// ============================================================
+router.delete("/patients/:id", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const patientId = parseInt(req.params.id);
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify ownership
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    await db.delete(patients).where(eq(patients.id, patientId));
+
+    res.json({ success: true, message: "Paciente removido com sucesso" });
+  } catch (error: any) {
+    console.error("[pwa-auth] Delete patient error:", error);
+    res.status(500).json({ error: "Erro ao remover paciente" });
+  }
+});
+
+// ============================================================
+// POST /api/pwa-auth/sessions - Create a new session
+// ============================================================
+router.post("/sessions", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const { patientId, planId, sessionDate, duration, stimulatedPoints, intensity, observations } = req.body;
+
+    if (!patientId || !planId || !sessionDate || !duration) {
+      res.status(400).json({ error: "Campos obrigatórios: patientId, planId, sessionDate, duration" });
+      return;
+    }
+
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify patient ownership
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    const result = await db.insert(sessions).values({
+      patientId,
+      planId,
+      sessionDate: new Date(sessionDate),
+      duration,
+      stimulatedPoints: JSON.stringify(stimulatedPoints || []),
+      intensity: intensity || "",
+      observations: observations || "",
+    });
+
+    res.json({
+      success: true,
+      message: "Sessão registrada com sucesso",
+      sessionId: result[0],
+    });
+  } catch (error: any) {
+    console.error("[pwa-auth] Create session error:", error);
+    res.status(500).json({ error: "Erro ao registrar sessão" });
+  }
+});
+
+// ============================================================
+// GET /api/pwa-auth/sessions/:patientId - List sessions for a patient
+// ============================================================
+router.get("/sessions/:patientId", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const patientId = parseInt(req.params.patientId);
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify patient ownership
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    const sessionsList = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.patientId, patientId));
+
+    res.json({ sessions: sessionsList });
+  } catch (error: any) {
+    console.error("[pwa-auth] List sessions error:", error);
+    res.status(500).json({ error: "Erro ao listar sessões" });
   }
 });
 

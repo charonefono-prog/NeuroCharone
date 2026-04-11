@@ -1176,3 +1176,12 @@ export default function MyScreen() {
 - [x] Copiar Remix build para remix-build/ dentro do projeto Expo
 - [x] Testar servidor em modo produção (login, assets, navegação OK)
 - [ ] Publicar e testar no domínio publicado
+
+
+## Funcionalidades Principais - Sessão Atual
+- [x] Cadastro de Pacientes - Formulário completo com validações (integrado à API)
+- [x] Endpoints de API para pacientes e sessões criados
+- [x] Mapeamento 3D do Capacete EEG - Visualizador 3D interativo criado
+- [ ] Integração do 3D ao modal de sessões
+- [ ] Histórico de Sessões - Registro e acompanhamento de tratamentos
+- [ ] Endpoint de sessões integrado ao PWA

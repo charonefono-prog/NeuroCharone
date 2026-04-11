@@ -460,7 +460,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </div></div>
 
 <div id="toast-el" class="toast"></div>
-
+<script src="helmet-3d.js"></script>
 <script>
 // ===== HELPERS =====
 const $=id=>document.getElementById(id);
@@ -732,15 +732,36 @@ function ptInfo(pid){
 function openM(id){$(id).classList.add('show')}
 function closeM(id){$(id).classList.remove('show')}
 
-function savePat(){
+async function savePat(){
   const name=$('np-name').value.trim();
   if(!name){toast('Nome é obrigatório');return}
-  const P=gD(K.P);const now=new Date().toISOString();
-  P.push({id:Date.now().toString(),fullName:name,birthDate:$('np-birth').value,cpf:$('np-cpf').value,phone:$('np-phone').value,email:$('np-email').value,diagnosis:$('np-diag').value,medicalNotes:$('np-notes').value,initialSymptomScore:parseInt($('np-score').value),status:'active',createdAt:now,updatedAt:now});
-  sD(K.P,P);closeM('m-pat');
-  ['np-name','np-birth','np-cpf','np-phone','np-email','np-diag','np-notes'].forEach(id=>$(id).value='');
-  $('np-score').value=5;$('np-sv').textContent='5';
-  refresh(curTab);toast('Paciente cadastrado!');
+  const fullName = name;
+  const birthDate = $('np-birth').value;
+  const diagnosis = $('np-diag').value;
+  const baselineScore = parseInt($('np-score').value);
+  
+  try {
+    const res = await fetch(AUTH_URL + '/patients', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + authToken
+      },
+      body: JSON.stringify({ fullName, birthDate, diagnosis, baselineScore })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      toast(data.error || 'Erro ao criar paciente');
+      return;
+    }
+    closeM('m-pat');
+    ['np-name','np-birth','np-cpf','np-phone','np-email','np-diag','np-notes'].forEach(id=>$(id).value='');
+    $('np-score').value=5;$('np-sv').textContent='5';
+    loadPatients();
+    toast('Paciente cadastrado com sucesso!');
+  } catch (e) {
+    toast('Erro de conexão: ' + e.message);
+  }
 }
 
 function saveSess(){
@@ -1048,6 +1069,29 @@ async function checkAuth() {
   }
 }
 
+// ===== LOAD PATIENTS FROM API =====
+async function loadPatients() {
+  if (!authToken) return;
+  try {
+    const res = await fetch(AUTH_URL + '/patients', {
+      headers: { 'Authorization': 'Bearer ' + authToken }
+    });
+    if (!res.ok) {
+      console.error('Erro ao carregar pacientes');
+      return;
+    }
+    const data = await res.json();
+    const patients = data.patients || [];
+    sD(K.P, patients);
+    $('ns-pat').innerHTML = patients.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+    $('nc-pat').innerHTML = patients.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+    $('sc-pat').innerHTML = patients.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+    refresh(curTab);
+  } catch (e) {
+    console.error('Erro de conexao ao carregar pacientes:', e);
+  }
+}
+
 // ===== ADMIN: USER MANAGEMENT =====
 async function loadUsers() {
   if (!authUser || authUser.accessLevel !== 'admin') return;
@@ -1143,9 +1187,7 @@ async function deleteUser(email) {
 
 function initAppAfterAuth() {
   loadTheme(); initSample(); rScales(); refresh('home');
-  const P = gD(K.P);
-  $('ns-pat').innerHTML = P.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
-  $('nc-pat').innerHTML = P.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+  loadPatients();
   
   // Update profile with auth user info
   if (authUser) {
@@ -1169,6 +1211,11 @@ function initAppAfterAuth() {
   if (authUser && authUser.accessLevel === 'admin') {
     loadUsers();
   }
+}
+
+// Função auxiliar para compatibilidade
+function initSample() {
+  // Função vazia - dados agora vêm da API
 }
 
 // ===== INIT =====
