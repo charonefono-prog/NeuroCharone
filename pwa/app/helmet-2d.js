@@ -111,6 +111,7 @@ class Helmet2D {
     this.height = this.canvas.height;
     
     this.selectedPoints = new Set(options.selectedPoints || []);
+    this.visibleRegions = new Set(['fa', 'fam', 'fm', 'csm', 'temp', 'par', 'oa', 'occ', 'ref']);
     this.onPointSelect = options.onPointSelect || (() => {});
     this.onPointInfo = options.onPointInfo || (() => {});
     
@@ -253,6 +254,11 @@ class Helmet2D {
     
     // Desenhar pontos
     for (const [pointId, point] of Object.entries(HELMET_POINTS_2D)) {
+      // Filtrar por região visível
+      if (!this.visibleRegions.has(point.region)) {
+        continue;
+      }
+      
       const screenX = this.width / 2 + (point.x - 50) * this.width / 100 * this.zoom + this.panX;
       const screenY = this.height / 2 + (point.y - 50) * this.height / 100 * this.zoom + this.panY;
       
