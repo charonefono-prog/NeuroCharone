@@ -93,6 +93,7 @@ const config: ExpoConfig = {
     output: "static",
     favicon: "./assets/images/favicon.png",
   },
+  baseUrl: "/NeuroCharone",
   plugins: [
     "expo-router",
     [
