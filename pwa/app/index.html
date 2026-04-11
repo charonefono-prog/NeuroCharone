@@ -474,7 +474,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </div></div>
 
 <div id="toast-el" class="toast"></div>
-<script src="helmet-3d.js"></script>
+<script src="helmet-2d.js"></script>
 <script src="charts.js"></script>
 <script src="pdf-generator.js"></script>
 <script src="clinical-scales.js"></script>
@@ -1206,7 +1206,7 @@ function initSessionHelmet3D() {
   const canvas = $('ns-helmet-canvas');
   if (!canvas || sessionHelmet3D) return;
   
-  sessionHelmet3D = new Helmet3D('ns-helmet-canvas', {
+  sessionHelmet3D = new Helmet2D('ns-helmet-canvas', 'helmet-10-20.webp', {
     selectedPoints: [],
     onPointSelect: (points) => {
       updateSelectedPointsDisplay(points);
@@ -1231,14 +1231,18 @@ function updateSelectedPointsDisplay(points) {
 
 function showPointInfo(pointId, info) {
   const content = $('point-info-content');
+  const color = info.color || 'var(--primary)';
   content.innerHTML = `
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px">Ponto ${pointId}</h2>
-    <div style="background:var(--surface);border-left:4px solid var(--primary);padding:12px;border-radius:8px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:600;color:var(--fg);margin-bottom:4px">Região: ${info.region}</div>
-      <div style="font-size:12px;color:var(--muted)">${info.function}</div>
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+      <span style="width:24px;height:24px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 0 0 2px ${color}"></span>
+      ${pointId}
+    </h2>
+    <div style="background:var(--surface);border-left:4px solid ${color};padding:12px;border-radius:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--fg);margin-bottom:4px">Função Neuroanatômica</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.5">${info.function}</div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn-s" style="flex:1;background:var(--primary);color:#fff" onclick="selectPointFromInfo('${pointId}');closeM('m-point-info')">Selecionar</button>
+      <button class="btn-s" style="flex:1;background:${color};color:#fff" onclick="selectPointFromInfo('${pointId}');closeM('m-point-info')">Selecionar</button>
       <button class="btn-s" style="flex:1;background:var(--surface);color:var(--fg);border:1px solid var(--border)" onclick="closeM('m-point-info')">Fechar</button>
     </div>
   `;
@@ -1247,7 +1251,12 @@ function showPointInfo(pointId, info) {
 
 function selectPointFromInfo(pointId) {
   if (sessionHelmet3D) {
-    sessionHelmet3D.selectPoint(pointId);
+    const selected = sessionHelmet3D.getSelectedPoints();
+    if (!selected.includes(pointId)) {
+      selected.push(pointId);
+      sessionHelmet3D.setSelectedPoints(selected);
+      updateSelectedPointsDisplay(selected);
+    }
   }
 }
 
