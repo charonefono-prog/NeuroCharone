@@ -294,6 +294,19 @@ class Helmet2D {
   clearSelection() {
     this.selectedPoints.clear();
   }
+  
+  destroy() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    this.canvas.removeEventListener('mousedown', this.onMouseDown);
+    this.canvas.removeEventListener('mousemove', this.onMouseMove);
+    this.canvas.removeEventListener('mouseup', this.onMouseUp);
+    this.canvas.removeEventListener('wheel', this.onWheel);
+    this.canvas.removeEventListener('touchstart', this.onTouchStart);
+    this.canvas.removeEventListener('touchmove', this.onTouchMove);
+    this.canvas.removeEventListener('touchend', this.onTouchEnd);
+  }
 }
 
 // Exportar para uso global

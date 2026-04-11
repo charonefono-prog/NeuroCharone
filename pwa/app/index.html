@@ -276,7 +276,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
   <h1 style="font-size:22px;font-weight:700;margin-bottom:4px">Ciclos Terapêuticos</h1>
   <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Planos de tratamento</p>
   <div id="cycles-list"></div>
-  <div class="es" id="cyc-empty"><div class="ei">📋</div><p>Nenhum ciclo terapêutico registrado</p><button class="btn-s" style="background:var(--primary);color:#fff;margin-top:10px" onclick="openM('m-cycle')">+ Novo Ciclo</button></div>
+  <div class="es" id="cyc-empty"><div class="ei">📋</div><p>Nenhum ciclo terapêutico registrado</p><button class="btn-s" style="background:var(--primary);color:#fff;margin-top:10px" onclick="openCycleM()">+ Novo Ciclo</button></div>
 </div>
 
 <!-- ===== PACIENTES ===== -->
@@ -994,13 +994,34 @@ async function saveSess(){
   }
 }
 
+function openCycleM(){
+  const P=gD(K.P);
+  $('nc-pat').innerHTML=P.map(p=>`<option value="${p.id}">${p.fullName}</option>`).join('');
+  setTimeout(()=>{
+    if(window.cycleHelmet2D)window.cycleHelmet2D.destroy();
+    window.cycleHelmet2D=new Helmet2D({
+      canvasId:'nc-helmet-canvas',
+      imageUrl:'helmet-10-20.webp',
+      onPointSelect:(point)=>{
+        const selected=Array.from(document.querySelectorAll('input[name="nc-points"]:checked')).map(el=>el.value);
+        $('nc-selected-points').innerHTML=selected.length>0?selected.map(p=>`<span style="display:inline-block;background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;margin:2px;font-size:12px">${p}</span>`).join(''):'Nenhum ponto selecionado';
+      }
+    });
+  },100);
+  openM('m-cycle');
+}
 function saveCycle(){
   const pid=$('nc-pat').value;
   if(!pid){toast('Selecione um paciente');return}
   const P=gD(K.P);const pat=P.find(p=>p.id===pid);
   const CY=gD(K.CY);const now=new Date().toISOString();
-  CY.push({id:Date.now().toString(),patientId:pid,patientName:pat?pat.fullName:'',objectives:$('nc-obj').value,plannedSessions:parseInt($('nc-sess').value)||10,estimatedDuration:parseInt($('nc-dur').value)||30,startDate:now,endDate:'',frequency:$('nc-freq').value,intensity:$('nc-int').value,status:'active',createdAt:now});
-  sD(K.CY,CY);closeM('m-cycle');refresh(curTab);toast('Ciclo criado!');
+  
+  const regions=Array.from(document.querySelectorAll('.nc-region:checked')).map(el=>el.value);
+  const points=window.cycleHelmet2D?Array.from(window.cycleHelmet2D.selectedPoints):[]; 
+  const scales=Array.from(document.querySelectorAll('.nc-scale:checked')).map(el=>el.value);
+  
+  CY.push({id:Date.now().toString(),patientId:pid,patientName:pat?pat.fullName:'',objectives:$('nc-obj').value,plannedSessions:parseInt($('nc-sess').value)||10,estimatedDuration:parseInt($('nc-dur').value)||30,startDate:now,endDate:'',frequency:$('nc-freq').value,intensity:$('nc-int').value,status:'active',targetRegions:regions,targetPoints:points,scales:scales,createdAt:now});
+  sD(K.CY,CY);closeM('m-cycle');refresh(curTab);toast('Ciclo criado com '+regions.length+' regioes, '+points.length+' pontos e '+scales.length+' escalas!');
 }
 
 // Open modals with patient selectors
