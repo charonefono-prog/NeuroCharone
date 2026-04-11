@@ -1222,3 +1222,13 @@ export default function MyScreen() {
 - [x] Organizar fluxo de plano terapeutico com visualizador 2D
 - [ ] Testar carregamento da imagem do sistema 10-20 no browser
 - [x] Corrigir caminhos de imagem para producao
+
+
+## Funcionalidades Finais - Sessão Atual
+- [ ] Integrar visualizador 2D ao modal de plano com seleção de regiões e pontos
+- [ ] Implementar sincronização bidirecional de pontos entre visualizador e galeria
+- [ ] Implementar filtro por região cerebral no visualizador 2D
+- [ ] Adicionar resumo do plano terapêutico em cada nova sessão
+- [ ] Mostrar imagem do mapeamento com plano no histórico de evolução
+- [ ] Implementar metas de progresso por protocolo com alertas
+- [ ] Programação de ciclo de criação de plano para próximo ciclo

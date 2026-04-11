@@ -428,7 +428,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 <!-- Add Session -->
 <div class="mo" id="m-sess"><div class="ml"><button class="cb" onclick="closeM('m-sess')">&times;</button><h2>Nova Sessão</h2>
   <div class="fg"><label>Paciente *</label><select id="ns-pat"></select></div>
-  <div id="ns-plan-summary" style="margin-bottom:12px"></div>
   <div class="fg"><label>Data da Sessão</label><input type="datetime-local" id="ns-date"></div>
   <div class="fg"><label>Duração (minutos)</label><input type="number" id="ns-dur" value="30" min="1"></div>
   
@@ -508,26 +507,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </div></div>
 
 <!-- New Plan -->
-<!-- New Plan -->
-<div class="mo" id="m-new-plan"><div class="ml" style="max-height:90dvh;overflow-y:auto"><button class="cb" onclick="closeM('m-new-plan')">&times;</button><h2>Novo Plano Terapeutico</h2>
+<div class="mo" id="m-new-plan"><div class="ml"><button class="cb" onclick="closeM('m-new-plan')">&times;</button><h2>Novo Plano Terapeutico</h2>
   <input type="hidden" id="np-pat-id">
   <div class="fg"><label>Objetivo *</label><textarea id="np-obj" placeholder="Objetivo do tratamento"></textarea></div>
   <div class="fg"><label>Frequencia (x/semana)</label><input type="number" id="np-freq" min="1" max="7" value="2"></div>
   <div class="fg"><label>Duracao (sessoes)</label><input type="number" id="np-dur" min="1" max="52" value="8"></div>
-  <div class="fg"><label>Regioes-Alvo</label>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="np-region" value="Frontal"> Frontal</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="np-region" value="Motor"> Motor</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="np-region" value="Temporal"> Temporal</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="np-region" value="Parietal"> Parietal</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="np-region" value="Occipital"> Occipital</label>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="np-region" value="Central"> Central</label>
-    </div>
-  </div>
-  <div class="fg"><label>Visualizador 2D</label>
-  <canvas id="np-helmet-canvas" width="320" height="320" style="border:1px solid var(--border);border-radius:8px;width:100%;max-width:320px;display:block;margin:8px auto;background:#f5f5f5"></canvas>
-  <div id="np-selected-points" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:30px;padding:8px;background:var(--surface);border-radius:4px">Nenhum ponto selecionado</div>
-  </div>
   <button class="btn-p" onclick="savePlan()" style="justify-content:center">Salvar Plano</button>
 </div></div>
 
@@ -1053,19 +1037,6 @@ function openPlanM(patientId){
   $('np-obj').value='';
   $('np-freq').value='2';
   $('np-dur').value='8';
-  document.querySelectorAll('.np-region').forEach(el=>el.checked=false);
-  $('np-selected-points').innerHTML='Nenhum ponto selecionado';
-  setTimeout(()=>{
-    if(window.planHelmet2D)window.planHelmet2D.destroy();
-    window.planHelmet2D=new Helmet2D({
-      canvasId:'np-helmet-canvas',
-      imageUrl:'helmet-10-20.webp',
-      onPointSelect:(point)=>{
-        const selected=Array.from(window.planHelmet2D.selectedPoints);
-        $('np-selected-points').innerHTML=selected.length>0?selected.map(p=>`<span style="display:inline-block;background:var(--primary);color:#fff;padding:4px 8px;border-radius:4px;margin:2px;font-size:12px">${p}</span>`).join(''):'Nenhum ponto selecionado';
-      }
-    });
-  },100);
   openM('m-new-plan');
 }
 function savePlan(){
@@ -1074,14 +1045,12 @@ function savePlan(){
   const freq=parseInt($('np-freq').value)||2;
   const dur=parseInt($('np-dur').value)||8;
   if(!pid||!obj){toast('Preencha todos os campos');return}
-  const regions=Array.from(document.querySelectorAll('.np-region:checked')).map(el=>el.value);
-  const points=window.planHelmet2D?Array.from(window.planHelmet2D.selectedPoints):[];
   const PL=gD(K.PL);
-  PL.push({id:Date.now().toString(),patientId:pid,objective:obj,targetRegions:regions,targetPoints:points,frequency:freq,totalDuration:dur,isActive:true,createdAt:new Date().toISOString()});
+  PL.push({id:Date.now().toString(),patientId:pid,objective:obj,targetRegions:[],targetPoints:[],frequency:freq,totalDuration:dur,isActive:true,createdAt:new Date().toISOString()});
   sD(K.PL,PL);
   closeM('m-new-plan');
   refresh(curTab);
-  toast('Plano criado com '+regions.length+' regioes e '+points.length+' pontos!');
+  toast('Plano criado!');
 }
 function showPlanDetails(planId,patientId){
   const PL=gD(K.PL);
@@ -1096,20 +1065,6 @@ function showPlanDetails(planId,patientId){
 function openSessM(){
   const P=gD(K.P);$('ns-pat').innerHTML=P.map(p=>`<option value="${p.id}">${p.fullName}</option>`).join('');
   $('ns-date').value=new Date().toISOString().slice(0,16);
-  const updatePlanSummary=()=>{
-    const patId=$('ns-pat').value;
-    const PL=gD(K.PL);
-    const activePlan=PL.find(pl=>pl.patientId===patId&&pl.isActive);
-    if(activePlan){
-      const regionsStr=(activePlan.targetRegions||[]).join(', ')||'Nao definidas';
-      const pointsStr=(activePlan.targetPoints||[]).join(', ')||'Nao definidos';
-      $('ns-plan-summary').innerHTML=`<div style="background:var(--primary);color:#fff;padding:10px;border-radius:6px;font-size:12px"><strong>Plano Ativo:</strong> ${activePlan.objective}<br><strong>Regioes:</strong> ${regionsStr}<br><strong>Pontos:</strong> ${pointsStr}<br><strong>Frequencia:</strong> ${activePlan.frequency}x/sem</div>`;
-    }else{
-      $('ns-plan-summary').innerHTML='';
-    }
-  };
-  $('ns-pat').addEventListener('change',updatePlanSummary);
-  updatePlanSummary();
   setTimeout(() => initSessionHelmet3D(), 100);
   openM('m-sess');
 }
