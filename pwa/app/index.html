@@ -930,6 +930,7 @@ function showRegister() {
   $('auth-success').classList.remove('show');
 }
 function showPending() {
+  $('auth-overlay').classList.remove('hidden');
   $('login-form').style.display = 'none';
   $('register-form').style.display = 'none';
   $('pending-screen').style.display = '';
