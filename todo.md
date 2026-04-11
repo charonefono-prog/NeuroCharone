@@ -1210,3 +1210,13 @@ export default function MyScreen() {
 - [x] Captura de Screenshot do Mapeamento 3D - Integracao ao historico
 - [x] Historico de Evolucao com Imagens - Galeria de thumbnails com visualizacao
 - [x] Exportacao de Evolucao Visual em PDF - Relatorio com screenshots e dados
+
+
+## Correções e Melhorias Necessárias
+- [ ] Refatorar interface de preenchimento de escalas clínicas
+- [ ] Criar formulário estruturado para cada escala
+- [ ] Integrar plano terapêutico com escalas
+- [ ] Implementar sincronização bidirecional de pontos
+- [ ] Adicionar filtro por região cerebral
+- [ ] Criar dashboard de histórico de pontos mais usados
+- [ ] Organizar fluxo de plano terapêutico

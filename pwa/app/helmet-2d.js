@@ -131,10 +131,13 @@ class Helmet2D {
     this.image.onload = () => {
       this.draw();
     };
-    this.image.onerror = () => {
-      console.error('Erro ao carregar imagem do capacete');
+    this.image.onerror = (e) => {
+      console.error('Erro ao carregar imagem do capacete:', e);
+      console.error('URL tentada:', this.image.src);
     };
-    this.image.src = this.imageUrl;
+    // Usar URL absoluta baseada na localização atual
+    const baseUrl = window.location.pathname.includes('/api/pwa/') ? '/api/pwa/app/' : './'
+    this.image.src = baseUrl + this.imageUrl;
   }
   
   setupEventListeners() {
