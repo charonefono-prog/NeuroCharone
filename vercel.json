@@ -3,8 +3,6 @@
   "public": true,
   "cleanUrls": true,
   "trailingSlash": false,
-  "buildCommand": "pnpm expo export -p web",
-  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/service-worker.js", "destination": "/service-worker.js" },
     { "source": "/manifest.json", "destination": "/manifest.json" },
