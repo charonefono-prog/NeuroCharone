@@ -1,0 +1,67 @@
+{
+  "name": "NeuroLaserMap - Gerenciador de Neuromodulação",
+  "short_name": "NeuroLaserMap",
+  "description": "Aplicativo profissional para gerenciamento de sessões de neuromodulação com mapeamento visual",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#0a7ea4",
+  "icons": [
+    {
+      "src": "/assets/images/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["medical", "productivity"],
+  "screenshots": [
+    {
+      "src": "/assets/images/splash-icon.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Novo Paciente",
+      "short_name": "Novo Paciente",
+      "description": "Criar um novo paciente",
+      "url": "/?action=new-patient",
+      "icons": [
+        {
+          "src": "/assets/images/icon.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Meus Pacientes",
+      "short_name": "Pacientes",
+      "description": "Ver lista de pacientes",
+      "url": "/?action=patients",
+      "icons": [
+        {
+          "src": "/assets/images/icon.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
