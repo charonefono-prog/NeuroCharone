@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity, ScrollView, Alert, Switch, TextInput, Pla
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
-import { useAuth } from "@/lib/auth-context";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { exportFullBackup, hasRecentBackup } from "@/lib/backup-system";
 import { useThemeContext } from "@/lib/theme-provider";
@@ -42,7 +41,6 @@ const DEFAULT_PROFILE: ProfessionalProfile = {
 export default function ProfileScreen() {
   const router = useRouter();
   const colors = useColors();
-  const { logout, user } = useAuth();
   const { colorScheme, setColorScheme } = useThemeContext();
   const isDark = colorScheme === "dark";
   const [reminderAdvance, setReminderAdvanceState] = useState<number>(60);
@@ -218,67 +216,20 @@ export default function ProfileScreen() {
 
   return (
     <ScreenContainer className="p-6">
-      {/* Botao de Logout Fixo no Topo */}
-      <TouchableOpacity
-        onPress={async () => {
-          if (Platform.OS !== "web") {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          }
-          
-          const shouldLogout = Platform.OS === "web" 
-            ? window.confirm("Deseja realmente sair da sua conta?")
-            : await new Promise(resolve => {
-                Alert.alert(
-                  "Sair",
-                  "Deseja realmente sair da sua conta?",
-                  [
-                    { text: "Cancelar", onPress: () => resolve(false) },
-                    { text: "Sair", onPress: () => resolve(true), style: "destructive" },
-                  ]
-                );
-              });
-          
-          if (shouldLogout) {
-            console.log("[PROFILE] Logging out...");
-            await logout();
-            console.log("[PROFILE] Logout complete");
-          }
-        }}
-        style={{
-          position: Platform.OS === "web" ? "fixed" : "absolute",
-          top: Platform.OS === "web" ? 16 : 50,
-          right: 16,
-          backgroundColor: colors.error,
-          borderRadius: 50,
-          width: 50,
-          height: 50,
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-          shadowColor: colors.error,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-          elevation: 8,
-        }}
-      >
-        <Text style={{ fontSize: 24 }}>🚪</Text>
-      </TouchableOpacity>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ flex: 1, gap: 24 }}>
+          {/* Header */}
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
+              Perfil
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.muted }}>
+              {isEditing ? "Editar informações profissionais" : "Informações do profissional"}
+            </Text>
+          </View>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} scrollEnabled={true} nestedScrollEnabled={true}>
-          <View style={{ flex: 1, gap: 24 }}>
-            {/* Header */}
-            <View style={{ gap: 8 }}>
-              <Text style={{ fontSize: 26, fontWeight: "700", color: colors.foreground }}>
-                Perfil
-              </Text>
-              <Text style={{ fontSize: 14, color: colors.muted }}>
-                {isEditing ? "Editar informações profissionais" : "Informações do profissional"}
-              </Text>
-            </View>
-
-            {/* Card do Profissional */}
-            <View
+          {/* Card do Profissional */}
+          <View
             style={{
               backgroundColor: colors.surface,
               borderRadius: 16,
@@ -846,94 +797,6 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Logout */}
-          <View style={{ gap: 12, marginTop: 8 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
-              Conta
-            </Text>
-            {user && (
-              <View
-                style={{
-                  backgroundColor: colors.surface,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  padding: 16,
-                  gap: 8,
-                }}
-              >
-                <Text style={{ fontSize: 13, color: colors.muted }}>
-                  Conectado como: {user.email}
-                </Text>
-                <Text style={{ fontSize: 13, color: colors.muted }}>
-                  Nível: {user.accessLevel === "admin" ? "Administrador" : user.accessLevel === "professional" ? "Profissional" : "Usuário"}
-                </Text>
-              </View>
-            )}
-            <TouchableOpacity
-              onPress={async () => {
-                if (Platform.OS !== "web") {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                }
-                
-                // Use native confirm on web, Alert on mobile
-                const shouldLogout = Platform.OS === "web" 
-                  ? window.confirm("Deseja realmente sair da sua conta?")
-                  : await new Promise(resolve => {
-                      Alert.alert(
-                        "Sair",
-                        "Deseja realmente sair da sua conta?",
-                        [
-                          { text: "Cancelar", onPress: () => resolve(false) },
-                          { text: "Sair", onPress: () => resolve(true), style: "destructive" },
-                        ]
-                      );
-                    });
-                
-                if (shouldLogout) {
-                  console.log("[PROFILE] Logging out...");
-                  await logout();
-                  console.log("[PROFILE] Logout complete");
-                }
-              }}
-              style={{
-                backgroundColor: colors.error + "15",
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.error + "40",
-                padding: 16,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.error + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 20 }}>🚪</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.error }}>
-                  Sair da Conta
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
-                  Encerrar sessão e voltar ao login
-                </Text>
-              </View>
-              <Text style={{ fontSize: 18, color: colors.error }}>›</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Spacer for tab bar */}
-          <View style={{ height: 40 }} />
         </View>
       </ScrollView>
     </ScreenContainer>

@@ -125,7 +125,6 @@ const config: ExpoConfig = {
   ],
   experiments: {
     typedRoutes: true,
-    baseUrl: process.env.EXPO_BASE_URL || "",
   },
 };
 

@@ -10,30 +10,33 @@
   "theme_color": "#0a7ea4",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
+      "src": "/assets/images/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo512.png",
+      "src": "/assets/images/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo192.png",
+      "src": "/assets/images/icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
   "categories": ["medical", "productivity"],
+  "screenshots": [
+    {
+      "src": "/assets/images/splash-icon.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Novo Paciente",
@@ -42,7 +45,7 @@
       "url": "/?action=new-patient",
       "icons": [
         {
-          "src": "logo192.png",
+          "src": "/assets/images/icon.png",
           "sizes": "192x192"
         }
       ]
@@ -54,7 +57,7 @@
       "url": "/?action=patients",
       "icons": [
         {
-          "src": "logo192.png",
+          "src": "/assets/images/icon.png",
           "sizes": "192x192"
         }
       ]

@@ -1,5 +1,6 @@
+import "@/global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack, useSegments, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -20,8 +21,6 @@ import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { useServiceWorker } from "@/hooks/use-service-worker";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
-import { forceLogoutButtonFixed } from "@/lib/force-logout-fixed";
-import type { ViewProps } from "react-native";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -36,8 +35,6 @@ function RootLayoutContent() {
 
   const [insets, setInsets] = useState<EdgeInsets>(initialInsets);
   const [frame, setFrame] = useState<Rect>(initialFrame);
-  const router = useRouter();
-  const segments = useSegments();
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
@@ -92,29 +89,6 @@ function RootLayoutContent() {
 
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Handle auth-based navigation
-  useEffect(() => {
-    if (isLoading) return; // Still loading auth state
-
-    const inAuthGroup = segments[0] === "login" || segments[0] === "register";
-
-    if (!isAuthenticated && !inAuthGroup) {
-      // User is not authenticated and not in auth screens - redirect to login
-      console.log("[LAYOUT] Not authenticated, redirecting to login");
-      router.replace("/login");
-    } else if (isAuthenticated && inAuthGroup) {
-      // User is authenticated but in auth screens - redirect to home
-      console.log("[LAYOUT] Authenticated, redirecting to home");
-      router.replace("/(tabs)");
-    }
-  }, [isAuthenticated, isLoading, segments, router]);
-
-  // Force logout button to have position fixed on web
-  useEffect(() => {
-    if (Platform.OS !== "web") return;
-    return forceLogoutButtonFixed();
-  }, []);
-
   // Show loading while checking auth state
   if (isLoading) {
     return (
@@ -128,14 +102,21 @@ function RootLayoutContent() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
-          {/* All routes are always rendered - navigation is handled by useEffect above */}
+          {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
+          {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
+          {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
           <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="login" />
-            <Stack.Screen name="register" />
-            <Stack.Screen name="pwa-login" />
-            <Stack.Screen name="pwa-register" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="oauth/callback" />
+            {!isAuthenticated ? (
+              <>
+                <Stack.Screen name="login" />
+                <Stack.Screen name="register" />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="oauth/callback" />
+              </>
+            )}
           </Stack>
           <StatusBar style="auto" />
         </QueryClientProvider>
@@ -167,9 +148,6 @@ function RootLayoutContent() {
 }
 
 export default function RootLayout() {
-  console.log("[LAYOUT] RootLayout rendering");
-  const isWeb = Platform.OS === "web";
-  
   return (
     <AuthProvider>
       <RootLayoutContent />

@@ -1,107 +1,31 @@
-import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert, Platform, ActivityIndicator } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useAuth } from "@/lib/auth-context";
-import { useColors } from "@/hooks/use-colors";
-import { WebButton } from "@/components/web-button";
 
 export default function LoginScreen() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
-  const colors = useColors();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [needsApproval, setNeedsApproval] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-
-  const validateEmail = (value: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (value && !emailRegex.test(value)) {
-      setEmailError("Email inválido");
-    } else {
-      setEmailError("");
-    }
-  };
-
-  const validatePassword = (value: string) => {
-    if (value && value.length < 6) {
-      setPasswordError("Senha deve ter pelo menos 6 caracteres");
-    } else {
-      setPasswordError("");
-    }
-  };
 
   const handleLogin = async () => {
-    // Clear previous errors
-    setError("");
-    setEmailError("");
-    setPasswordError("");
-
-    // Validate inputs
-    let hasError = false;
-    if (!email) {
-      setEmailError("Email é obrigatório");
-      hasError = true;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError("Email inválido");
-      hasError = true;
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
     }
-
-    if (!password) {
-      setPasswordError("Senha é obrigatória");
-      hasError = true;
-    } else if (password.length < 6) {
-      setPasswordError("Senha deve ter pelo menos 6 caracteres");
-      hasError = true;
-    }
-
-    if (hasError) return;
 
     try {
       setError("");
-      setNeedsApproval(false);
-      const result = await login(email, password);
-      if (result.needsApproval) {
-        setNeedsApproval(true);
-        return;
-      }
+      await login(email, password);
       router.replace("/(tabs)");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Falha no login";
-      setError(msg);
-      if (Platform.OS !== "web") {
-        Alert.alert("Erro", msg);
-      }
+      setError(err instanceof Error ? err.message : "Login failed");
+      Alert.alert("Login Error", error);
     }
   };
-
-  if (needsApproval) {
-    return (
-      <ScreenContainer className="bg-background">
-        <View className="flex-1 justify-center px-6 gap-6">
-          <View className="items-center gap-4">
-            <Text style={{ fontSize: 48 }}>⏳</Text>
-            <Text className="text-2xl font-bold text-foreground text-center">
-              Aguardando Aprovação
-            </Text>
-            <Text className="text-base text-muted text-center leading-relaxed">
-              Sua conta foi registrada com sucesso, mas ainda precisa ser aprovada pelo administrador.
-              Você será notificado quando sua conta for ativada.
-            </Text>
-          </View>
-          <TouchableOpacity
-            className="bg-surface border border-border rounded-lg py-3 items-center"
-            onPress={() => setNeedsApproval(false)}
-          >
-            <Text className="text-foreground font-semibold">Voltar ao Login</Text>
-          </TouchableOpacity>
-        </View>
-      </ScreenContainer>
-    );
-  }
 
   return (
     <ScreenContainer className="bg-background">
@@ -109,9 +33,8 @@ export default function LoginScreen() {
         <View className="flex-1 justify-center px-6 gap-6">
           {/* Header */}
           <View className="items-center gap-2 mb-4">
-            <Text style={{ fontSize: 64 }}>🧠</Text>
             <Text className="text-4xl font-bold text-foreground">NeuroLaserMap</Text>
-            <Text className="text-base text-muted">Sistema de Mapeamento de Neuromodulação</Text>
+            <Text className="text-base text-muted">Mapeamento de Neuromodulação</Text>
           </View>
 
           {/* Error Message */}
@@ -125,75 +48,41 @@ export default function LoginScreen() {
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Email</Text>
             <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: emailError ? colors.error : colors.border,
-                borderRadius: 8,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                backgroundColor: colors.surface,
-                color: colors.foreground,
-                fontSize: 16,
-              }}
+              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
               placeholder="seu@email.com"
-              placeholderTextColor={colors.muted}
+              placeholderTextColor="#9BA1A6"
               keyboardType="email-address"
               autoCapitalize="none"
               editable={!isLoading}
               value={email}
-              onChangeText={(value) => {
-                setEmail(value);
-                validateEmail(value);
-              }}
-              returnKeyType="next"
+              onChangeText={setEmail}
             />
-            {emailError ? (
-              <Text style={{ color: colors.error, fontSize: 12 }}>{emailError}</Text>
-            ) : null}
           </View>
 
           {/* Password Input */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-foreground">Senha</Text>
             <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: passwordError ? colors.error : colors.border,
-                borderRadius: 8,
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                backgroundColor: colors.surface,
-                color: colors.foreground,
-                fontSize: 16,
-              }}
+              className="border border-border rounded-lg px-4 py-3 bg-surface text-foreground"
               placeholder="••••••••"
-              placeholderTextColor={colors.muted}
+              placeholderTextColor="#9BA1A6"
               secureTextEntry
               editable={!isLoading}
               value={password}
-              onChangeText={(value) => {
-                setPassword(value);
-                validatePassword(value);
-              }}
-              returnKeyType="done"
-              onSubmitEditing={handleLogin}
+              onChangeText={setPassword}
             />
-            {passwordError ? (
-              <Text style={{ color: colors.error, fontSize: 12 }}>{passwordError}</Text>
-            ) : null}
           </View>
 
           {/* Login Button */}
-          <WebButton
+          <TouchableOpacity
+            className="bg-primary rounded-lg py-3 items-center active:opacity-80"
             onPress={handleLogin}
-            disabled={isLoading || !!emailError || !!passwordError}
+            disabled={isLoading}
           >
-            {isLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              "Entrar"
-            )}
-          </WebButton>
+            <Text className="text-white font-semibold text-base">
+              {isLoading ? "Entrando..." : "Entrar"}
+            </Text>
+          </TouchableOpacity>
 
           {/* Register Link */}
           <View className="flex-row justify-center gap-1">
@@ -205,9 +94,9 @@ export default function LoginScreen() {
 
           {/* Info Box */}
           <View className="bg-surface rounded-lg p-4 border border-border mt-4">
-            <Text className="text-xs text-muted leading-relaxed text-center">
-              Após o cadastro, sua conta será analisada pelo administrador.{"\n"}
-              Você será notificado quando for aprovado.
+            <Text className="text-xs text-muted leading-relaxed">
+              Após o cadastro, sua conta será analisada pelo administrador. Você receberá um email
+              de confirmação quando for aprovado.
             </Text>
           </View>
         </View>
