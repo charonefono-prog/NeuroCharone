@@ -1,6 +1,6 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "../../shared/const.js";
 import type { Express, Request, Response } from "express";
-import { db, getUserByOpenId, upsertUser } from "../db";
+import { getDb, getUserByOpenId, upsertUser } from "../db";
 import { accessControl } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { getSessionCookieOptions } from "./cookies";
@@ -38,29 +38,28 @@ async function syncUser(userInfo: {
   }
 
   const existingUser = await getUserByOpenId(userInfo.openId);
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
 
   if (!existingUser) {
     // New user, create access control entry
-    const [newAccessControl] = await db.insert(accessControl).values({
-      userId: 0, // Temporary, will be updated after user creation
-      status: userRole === "admin" ? "approved" : "pending",
+    await db.insert(accessControl).values({
+      email: userInfo.email || userInfo.openId,
+      isApproved: userRole === "admin",
     });
-    // If it's the owner, set role to admin directly
-    if (userRole === "admin") {
-      userRole = "admin";
-    } else {
-      userRole = "pending";
-    }
   } else {
     // Existing user, get their role from access control
-    const existingAccessControl = await db.query.accessControl.findFirst({
-      where: eq(accessControl.userId, existingUser.id),
-    });
+    const [existingAccessControl] = await db
+      .select()
+      .from(accessControl)
+      .where(eq(accessControl.email, existingUser.email || existingUser.openId))
+      .limit(1);
+
     if (existingAccessControl) {
-      if (existingAccessControl.status === "approved") {
-        userRole = "user";
-      } else if (existingAccessControl.status === "rejected") {
-        throw new Error("User access rejected");
+      if (existingAccessControl.isApproved) {
+        userRole = existingUser.role === "admin" ? "admin" : "user";
+      } else {
+        userRole = "pending";
       }
     }
     // If it's the owner, ensure role is admin
@@ -77,24 +76,15 @@ async function syncUser(userInfo: {
     loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
     lastSignedIn,
   });
-  const saved = await getUserByOpenId(userInfo.openId);
-  return (
-    saved ?? {
-      openId: userInfo.openId,
-      name: userInfo.name,
-      email: userInfo.email,
-      loginMethod: userInfo.loginMethod ?? null,
-      lastSignedIn,
-      role: userRole,
-    }
-  );
 
-  // Update accessControl userId if it was a new user
-  if (!existingUser && user.id) {
-    await db.update(accessControl).set({ userId: user.id }).where(eq(accessControl.id, (await db.query.accessControl.findFirst({ where: eq(accessControl.status, userRole === "admin" ? "approved" : "pending") }))?.id || 0));
-  }
-
-  return user;
+  return {
+    openId: user.openId,
+    name: user.name,
+    email: user.email,
+    loginMethod: user.loginMethod,
+    lastSignedIn: user.lastSignedIn,
+    role: user.role as "pending" | "user" | "admin",
+  };
 }
 
 function buildUserResponse(
@@ -106,6 +96,7 @@ function buildUserResponse(
         email?: string | null;
         loginMethod?: string | null;
         lastSignedIn?: Date | null;
+        role?: string | null;
       },
 ) {
   return {
@@ -147,16 +138,11 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      // Redirect to the frontend URL (Expo web on port 8081)
-      // Cookie is set with parent domain so it works across both 3000 and 8081 subdomains
       const frontendUrl =
         process.env.EXPO_WEB_PREVIEW_URL ||
         process.env.EXPO_PACKAGER_PROXY_URL ||
         "http://localhost:8081";
-      if (user.role === "pending") {
-        res.redirect(302, frontendUrl + "/pending-approval");
-        return;
-      }
+      
       res.redirect(302, frontendUrl);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
@@ -207,7 +193,6 @@ export function registerOAuthRoutes(app: Express) {
     res.json({ success: true });
   });
 
-  // Get current authenticated user - works with both cookie (web) and Bearer token (mobile)
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
       const user = await sdk.authenticateRequest(req);
@@ -218,26 +203,17 @@ export function registerOAuthRoutes(app: Express) {
     }
   });
 
-  // Establish session cookie from Bearer token
-  // Used by iframe preview: frontend receives token via postMessage, then calls this endpoint
-  // to get a proper Set-Cookie response from the backend (3000-xxx domain)
   app.post("/api/auth/session", async (req: Request, res: Response) => {
     try {
-      // Authenticate using Bearer token from Authorization header
       const user = await sdk.authenticateRequest(req);
-
-      // Get the token from the Authorization header to set as cookie
       const authHeader = req.headers.authorization || req.headers.Authorization;
       if (typeof authHeader !== "string" || !authHeader.startsWith("Bearer ")) {
         res.status(400).json({ error: "Bearer token required" });
         return;
       }
       const token = authHeader.slice("Bearer ".length).trim();
-
-      // Set cookie for this domain (3000-xxx)
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-
       res.json({ success: true, user: buildUserResponse(user) });
     } catch (error) {
       console.error("[Auth] /api/auth/session failed:", error);
