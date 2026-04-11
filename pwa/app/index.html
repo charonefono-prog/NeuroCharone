@@ -511,6 +511,22 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 <!-- New Plan -->
 <div class="mo" id="m-new-plan"><div class="ml" style="max-height:90dvh;overflow-y:auto"><button class="cb" onclick="closeM('m-new-plan')">&times;</button><h2>Novo Plano Terapeutico</h2>
   <input type="hidden" id="np-pat-id">
+  <div class="fg"><label>Selecionar Template de Tratamento</label>
+    <select id="np-template" onchange="onTemplateSelect(this.value)">
+      <option value="">-- Selecione um template --</option>
+      <option value="comer">Tratamento de Disfagia (Escala do Comer)</option>
+      <option value="tinnitus">Tratamento de Zumbido (THI)</option>
+      <option value="boston">Tratamento de Afasia (Escala de Boston)</option>
+      <option value="sara">Tratamento de Ataxia Cerebelar (SARA)</option>
+      <option value="qcs">Tratamento de Déficit Social (QCS)</option>
+      <option value="depression">Tratamento de Depressão (PHQ-9)</option>
+      <option value="anxiety">Tratamento de Ansiedade (GAD-7)</option>
+    </select>
+  </div>
+  <div id="np-template-info" style="background:var(--surface);padding:10px;border-radius:6px;margin-bottom:10px;font-size:12px;display:none">
+    <div id="np-template-desc"></div>
+    <div id="np-template-goals" style="margin-top:8px"></div>
+  </div>
   <div class="fg"><label>Objetivo *</label><textarea id="np-obj" placeholder="Objetivo do tratamento"></textarea></div>
   <div class="fg"><label>Frequencia (x/semana)</label><input type="number" id="np-freq" min="1" max="7" value="2"></div>
   <div class="fg"><label>Duracao (sessoes)</label><input type="number" id="np-dur" min="1" max="52" value="8"></div>
@@ -538,6 +554,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 <script src="clinical-scales.js"></script>
 <script src="treatment-scheduler.js"></script>
 <script src="helmet-screenshot.js"></script>
+<script src="treatment-templates.js"></script>
 <script>
 // ===== HELPERS =====
 const $=id=>document.getElementById(id);

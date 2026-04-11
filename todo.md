@@ -1232,3 +1232,14 @@ export default function MyScreen() {
 - [ ] Mostrar imagem do mapeamento com plano no histórico de evolução
 - [ ] Implementar metas de progresso por protocolo com alertas
 - [ ] Programação de ciclo de criação de plano para próximo ciclo
+
+
+## Templates de Tratamento por Escala Clínica
+- [ ] Template de Tratamento para Escala do Comer (Disfagia)
+- [ ] Template de Tratamento para Escala de Zumbido (THI)
+- [ ] Template de Tratamento para Escala de Boston (Linguagem)
+- [ ] Template de Tratamento para Escala SARA (Ataxia)
+- [ ] Template de Tratamento para QCS (Comunicação Social)
+- [ ] Integrar templates ao modal de novo plano
+- [ ] Seleção de template ao criar plano
+- [ ] Metas de progresso por protocolo com alertas
