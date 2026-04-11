@@ -136,7 +136,10 @@ class Helmet2D {
       console.error('URL tentada:', this.image.src);
     };
     // Usar URL absoluta baseada na localização atual
-    const baseUrl = window.location.pathname.includes('/api/pwa/') ? '/api/pwa/app/' : './'
+    let baseUrl = '/api/pwa/app/';
+    if (window.location.pathname.includes('localhost') || window.location.pathname === '/') {
+      baseUrl = './';
+    }
     this.image.src = baseUrl + this.imageUrl;
   }
   
