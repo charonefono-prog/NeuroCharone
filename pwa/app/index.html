@@ -52,6 +52,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .li-name{font-size:15px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600}
+.tab-badge{position:absolute;top:-4px;right:-4px;background:#EF4444;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
 .b-active{background:#10B98120;color:var(--success)}
 .b-paused{background:#F59E0B20;color:var(--warning)}
 .b-completed{background:#0066CC20;color:var(--primary)}
@@ -305,16 +306,16 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 <!-- ===== PERFIL ===== -->
 <div class="screen" id="s-profile">
   <div style="text-align:center;padding-top:12px">
-    <div class="pav" id="prof-av">CC</div>
-    <h2 style="font-size:18px;font-weight:700" id="prof-name">Dr. Carlos Charone</h2>
-    <p style="font-size:13px;color:var(--muted)" id="prof-spec">Fonoaudiólogo</p>
-    <p style="font-size:11px;color:var(--muted);margin-top:2px" id="prof-crm">CRFa 9-10025-5</p>
+    <div class="pav" id="prof-av">—</div>
+    <h2 style="font-size:18px;font-weight:700" id="prof-name">—</h2>
+    <p style="font-size:13px;color:var(--muted)" id="prof-spec">—</p>
+    <p style="font-size:11px;color:var(--muted);margin-top:2px" id="prof-crm">—</p>
   </div>
   <div style="margin-top:20px">
     <div class="st">Informações Profissionais</div>
-    <div class="sr"><span class="material-icons-outlined sri">badge</span><div class="srt"><div class="rt">Especialidade</div><div class="rs">Fonoaudiologia / Neuromodulação</div></div></div>
-    <div class="sr"><span class="material-icons-outlined sri">local_hospital</span><div class="srt"><div class="rt">Instituição</div><div class="rs">Grupo Cynthia Charone</div></div></div>
-    <div class="sr"><span class="material-icons-outlined sri">email</span><div class="srt"><div class="rt">E-mail</div><div class="rs">charonejr@gmail.com</div></div></div>
+    <div class="sr"><span class="material-icons-outlined sri">badge</span><div class="srt"><div class="rt">Especialidade</div><div class="rs" id="prof-spec-info">—</div></div></div>
+    <div class="sr"><span class="material-icons-outlined sri">local_hospital</span><div class="srt"><div class="rt">Instituição</div><div class="rs" id="prof-inst">—</div></div></div>
+    <div class="sr"><span class="material-icons-outlined sri">email</span><div class="srt"><div class="rt">E-mail</div><div class="rs" id="prof-email">—</div></div></div>
   </div>
   <div style="margin-top:20px">
     <div class="st">Aparência</div>
@@ -406,7 +407,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
   <div class="tab" onclick="go('profile')"><span class="material-icons-outlined ti">person</span><span class="tl">Perfil</span></div>
   <div class="tab" onclick="go('settings')"><span class="material-icons-outlined ti">settings</span><span class="tl">Config</span></div>
   <div class="tab" onclick="go('effectiveness')"><span class="material-icons-outlined ti">insights</span><span class="tl">Efetividade</span></div>
-  <div class="tab" onclick="go('admin')"><span class="material-icons-outlined ti">admin_panel_settings</span><span class="tl">Admin</span></div>
+  <div class="tab" onclick="go('admin')"><span class="material-icons-outlined ti">admin_panel_settings</span><span class="tl">Admin</span><span class="tab-badge" id="admin-badge" style="display:none"></span></div>
 </div>
 </div>
 
@@ -874,10 +875,31 @@ function importData(){
 }
 
 // ===== AUTH =====
-const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '' : '';
+// Determinar API_BASE dinamicamente
+const API_BASE = (() => {
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    // Em desenvolvimento local
+    return 'http://localhost:3000';
+  } else {
+    // Em produção, usar URL relativa para o mesmo host
+    return '';
+  }
+})();
 const AUTH_URL = API_BASE + '/api/pwa-auth';
 let authUser = null;
 let authToken = localStorage.getItem('nlm_token');
+
+// Carregar authUser do localStorage se disponível
+if (authToken) {
+  const savedUser = localStorage.getItem('nlm_user');
+  if (savedUser) {
+    try {
+      authUser = JSON.parse(savedUser);
+    } catch (e) {
+      // Ignorar erro de parsing
+    }
+  }
+}
 
 function showAuthError(msg) {
   const el = $('auth-error');
@@ -948,6 +970,7 @@ async function doLogin() {
     authToken = data.token;
     authUser = data.user;
     localStorage.setItem('nlm_token', data.token);
+    localStorage.setItem('nlm_user', JSON.stringify(data.user));
     showApp();
     initAppAfterAuth();
     toast('Bem-vindo, ' + (authUser.name || authUser.email));
@@ -978,6 +1001,9 @@ async function doRegister() {
     const data = await res.json();
     if (!res.ok) { showAuthError(data.error || 'Erro ao registrar'); return; }
     if (data.pending) {
+      // Salvar dados do usuário mesmo que pendente
+      authUser = data.user;
+      localStorage.setItem('nlm_user', JSON.stringify(data.user));
       showPending();
       return;
     }
@@ -1037,8 +1063,21 @@ async function loadUsers() {
 function renderUserList(users) {
   const container = $('user-mgmt-list');
   if (!container) return;
+  
+  // Contar usuários pendentes e atualizar badge
+  const pendingCount = users.filter(u => !u.isApproved && !u.denialReason).length;
+  const adminBadge = $('admin-badge');
+  if (adminBadge) {
+    if (pendingCount > 0) {
+      adminBadge.textContent = pendingCount;
+      adminBadge.style.display = 'flex';
+    } else {
+      adminBadge.style.display = 'none';
+    }
+  }
+  
   if (users.length === 0) {
-    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Nenhum usu\u00e1rio registrado</p>';
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Nenhum usuário registrado</p>';
     return;
   }
   container.innerHTML = users.map(u => {
@@ -1106,13 +1145,25 @@ function initAppAfterAuth() {
   const P = gD(K.P);
   $('ns-pat').innerHTML = P.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
   $('nc-pat').innerHTML = P.map(p => `<option value="${p.id}">${p.fullName}</option>`).join('');
+  
   // Update profile with auth user info
   if (authUser) {
-    const nameEl = document.querySelector('#s-profile .sh h2');
-    if (nameEl) nameEl.textContent = authUser.name || 'Usu\u00e1rio';
-    const emailEl = document.querySelector('#s-profile .sh p');
+    // Atualizar nome
+    const nameEl = document.getElementById('prof-name');
+    if (nameEl) nameEl.textContent = authUser.name || 'Usuario';
+    
+    // Atualizar avatar com iniciais
+    const avEl = document.getElementById('prof-av');
+    if (avEl) {
+      const initials = (authUser.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+      avEl.textContent = initials;
+    }
+    
+    // Atualizar email
+    const emailEl = document.getElementById('prof-email');
     if (emailEl) emailEl.textContent = authUser.email || '';
   }
+  
   // Show admin user management if admin
   if (authUser && authUser.accessLevel === 'admin') {
     loadUsers();

@@ -125,12 +125,21 @@ async function startServer() {
     }));
 
     app.get("/api/pwa/app", (_req, res) => {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
       res.sendFile(path.join(pwaDir, "app", "index.html"));
     });
     app.get("/api/pwa/app/", (_req, res) => {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
       res.sendFile(path.join(pwaDir, "app", "index.html"));
     });
     app.get("/api/pwa/app/*", (_req, res) => {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
       res.sendFile(path.join(pwaDir, "app", "index.html"));
     });
 
@@ -146,8 +155,18 @@ async function startServer() {
 
     // Also keep /pwa/ routes for local dev
     app.use("/pwa", express.static(pwaDir, { index: "index.html", fallthrough: true }));
-    app.get("/pwa/app", (_req, res) => res.sendFile(path.join(pwaDir, "app", "index.html")));
-    app.get("/pwa/app/", (_req, res) => res.sendFile(path.join(pwaDir, "app", "index.html")));
+    app.get("/pwa/app", (_req, res) => {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
+      res.sendFile(path.join(pwaDir, "app", "index.html"));
+    });
+    app.get("/pwa/app/", (_req, res) => {
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
+      res.sendFile(path.join(pwaDir, "app", "index.html"));
+    });
     app.get("/pwa/app/*", (_req, res) => res.sendFile(path.join(pwaDir, "app", "index.html")));
     app.get("/pwa/admin", (_req, res) => res.sendFile(path.join(pwaDir, "admin", "index.html")));
     app.get("/pwa/admin/", (_req, res) => res.sendFile(path.join(pwaDir, "admin", "index.html")));
