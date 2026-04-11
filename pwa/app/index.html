@@ -463,13 +463,46 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 <div class="mo" id="m-detail"><div class="ml"><button class="cb" onclick="closeM('m-detail')">&times;</button><div id="det-content"></div></div></div>
 
 <!-- Add Cycle -->
-<div class="mo" id="m-cycle"><div class="ml"><button class="cb" onclick="closeM('m-cycle')">&times;</button><h2>Novo Ciclo Terapêutico</h2>
+<div class="mo" id="m-cycle"><div class="ml" style="max-height:90dvh;overflow-y:auto"><button class="cb" onclick="closeM('m-cycle')">&times;</button><h2>Novo Ciclo Terapêutico</h2>
   <div class="fg"><label>Paciente *</label><select id="nc-pat"></select></div>
   <div class="fg"><label>Objetivos</label><textarea id="nc-obj" placeholder="Objetivos do ciclo"></textarea></div>
   <div class="fg"><label>Sessões Planejadas</label><input type="number" id="nc-sess" value="10" min="1"></div>
   <div class="fg"><label>Duração Estimada (min)</label><input type="number" id="nc-dur" value="30" min="1"></div>
   <div class="fg"><label>Frequência</label><input type="text" id="nc-freq" value="2x por semana"></div>
   <div class="fg"><label>Intensidade</label><select id="nc-int"><option>Baixa</option><option selected>Média</option><option>Alta</option></select></div>
+  
+  <div class="fg"><label>Regiões Cerebrais-Alvo</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--surface);padding:12px;border-radius:8px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="fa"> Frontal Ant.</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="fam"> Frontal Med.</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="fm"> Frontal</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="csm"> Motor</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="t"> Temporal</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="p"> Parietal</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="o"> Occipital</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-region" value="c"> Central</label>
+    </div>
+  </div>
+  
+  <div class="fg"><label>Selecionar Pontos de Estimulação</label>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px">
+      <canvas id="nc-helmet-canvas" width="280" height="280" style="width:100%;height:auto;border-radius:8px;background:var(--bg)"></canvas>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">Clique para selecionar • Arraste para girar • Scroll para zoom</div>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:6px">Pontos Selecionados:</div>
+    <div id="nc-selected-points" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;min-height:30px;font-size:13px;color:var(--fg)">Nenhum ponto selecionado</div>
+  </div>
+  
+  <div class="fg"><label>Escalas a Aplicar</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--surface);padding:12px;border-radius:8px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-scale" value="comer"> Comer</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-scale" value="zumbido"> Zumbido</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-scale" value="boston"> Boston</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-scale" value="sara"> SARA</label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="nc-scale" value="qcs"> QCS</label>
+    </div>
+  </div>
+  
   <button class="btn-p" onclick="saveCycle()" style="justify-content:center">Salvar Ciclo</button>
 </div></div>
 
@@ -653,9 +686,60 @@ function openScale(type){
   $('sc-title').textContent=sc.name;
   const P=gD(K.P);
   $('sc-pat').innerHTML=P.map(p=>`<option value="${p.id}">${p.fullName}</option>`).join('');
-  $('sc-content').innerHTML=`<div class="fg"><label>Pontuação</label><div class="slc"><div class="slv" id="sc-sv">5</div><input type="range" min="0" max="10" value="5" id="sc-score" oninput="$('sc-sv').textContent=this.value"></div></div><div class="fg"><label>Observações</label><textarea id="sc-obs" placeholder="Observações"></textarea></div>`;
+  
+  let html=`<div style="margin-bottom:16px"><p style="font-size:13px;color:var(--muted);margin-bottom:10px">${sc.description}</p></div>`;
+  
+  if(sc.questions && sc.questions.length>0){
+    html+=`<div style="background:var(--surface);border-radius:12px;padding:14px;margin-bottom:14px">`;
+    sc.questions.forEach((q,idx)=>{
+      html+=`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">`;
+      html+=`<label style="display:block;font-size:13px;font-weight:600;color:var(--fg);margin-bottom:8px">${idx+1}. ${q.text}</label>`;
+      html+=`<div style="display:flex;gap:4px;justify-content:space-between">`;
+      for(let i=0;i<=4;i++){
+        const labels=['Não','Pouco','Moderado','Muito','Sempre'];
+        html+=`<label style="display:flex;flex-direction:column;align-items:center;cursor:pointer;flex:1">`;
+        html+=`<input type="radio" name="q${idx}" value="${i}" style="margin-bottom:4px" onchange="updateScaleScore('${type}')"> `;
+        html+=`<span style="font-size:11px;color:var(--muted);text-align:center">${labels[i]}</span>`;
+        html+=`</label>`;
+      }
+      html+=`</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  
+  html+=`<div class="fg"><label>Pontuação Total: <span id="sc-total-score" style="color:var(--primary);font-weight:700">0</span>/${sc.maxScore}</label></div>`;
+  html+=`<div id="sc-interpretation" style="background:var(--surface);border-left:4px solid var(--primary);padding:12px;border-radius:8px;margin-bottom:14px;font-size:13px;color:var(--muted)">Responda todas as questões para ver a interpretação</div>`;
+  html+=`<div class="fg"><label>Observações</label><textarea id="sc-obs" placeholder="Observações adicionais"></textarea></div>`;
+  
+  $('sc-content').innerHTML=html;
   $('sc-content').dataset.type=type;
+  $('sc-content').dataset.scaleData=JSON.stringify(sc);
   openM('m-scale');
+}
+function updateScaleScore(type){
+  const sc=ALL_SCALES.find(s=>s.type===type);
+  if(!sc || !sc.questions)return;
+  
+  let totalScore=0;
+  sc.questions.forEach((q,idx)=>{
+    const answer=document.querySelector(`input[name="q${idx}"]:checked`);
+    if(answer)totalScore+=parseInt(answer.value);
+  });
+  
+  $('sc-total-score').textContent=totalScore;
+  
+  // Mostrar interpretação
+  let interpretation='Responda todas as questões para ver a interpretação';
+  if(sc.interpretation){
+    for(let key in sc.interpretation){
+      const range=sc.interpretation[key];
+      if(totalScore>=range.min && totalScore<=range.max){
+        interpretation=`<strong>${range.meaning}</strong>`;
+        break;
+      }
+    }
+  }
+  $('sc-interpretation').innerHTML=interpretation;
 }
 function saveScale(){
   const type=$('sc-content').dataset.type;
@@ -664,8 +748,17 @@ function saveScale(){
   const P=gD(K.P);
   const pat=P.find(p=>p.id===patId);
   if(!patId){toast('Selecione um paciente');return}
+  
+  let totalScore=0;
+  if(sc.questions){
+    sc.questions.forEach((q,idx)=>{
+      const answer=document.querySelector(`input[name="q${idx}"]:checked`);
+      if(answer)totalScore+=parseInt(answer.value);
+    });
+  }
+  
   const scales=gD(K.SC);
-  scales.push({id:Date.now().toString(),patientId:patId,patientName:pat?pat.fullName:'',scaleType:type,scaleName:sc?sc.name:'',date:new Date().toISOString(),totalScore:parseInt($('sc-score').value),notes:$('sc-obs').value,createdAt:new Date().toISOString()});
+  scales.push({id:Date.now().toString(),patientId:patId,patientName:pat?pat.fullName:'',scaleType:type,scaleName:sc?sc.name:'',date:new Date().toISOString(),totalScore:totalScore,maxScore:sc.maxScore,notes:$('sc-obs').value,createdAt:new Date().toISOString()});
   sD(K.SC,scales);
   closeM('m-scale');
   toast('Escala registrada com sucesso!');
