@@ -213,7 +213,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
       <div class="fg"><label>Nome Completo</label><input type="text" id="reg-name" placeholder="Seu nome completo"></div>
       <div class="fg"><label>Email</label><input type="email" id="reg-email" placeholder="seu@email.com" autocomplete="email"></div>
       <div class="fg"><label>Senha</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
-      <div class="fg"><label>Confirmar Senha</label><input type="password" id="reg-pass2" placeholder="Repita a senha"></div>
+      <div class="fg"><label>Confirmar Senha</label><input type="password" id="reg-pass2" placeholder="Repita a senha" required></div>
       <button class="auth-btn" id="reg-btn" onclick="doRegister()">Criar Conta</button>
       <div class="auth-switch">Já tem conta? <a onclick="showLogin()">Fazer login</a></div>
     </div>
@@ -987,9 +987,9 @@ async function doRegister() {
   const email = $('reg-email').value.trim();
   const password = $('reg-pass').value.trim();
   const password2 = $('reg-pass2').value.trim();
-  if (!name || !email || !password) { showAuthError('Preencha todos os campos'); return; }
-  if (password.length < 6) { showAuthError('Senha deve ter no m\u00ednimo 6 caracteres'); return; }
-  if (password !== password2) { showAuthError('As senhas n\u00e3o conferem'); return; }
+  if (!name || !email || !password || !password2) { showAuthError('Preencha todos os campos'); return; }
+  if (password.length < 6) { showAuthError('Senha deve ter no mínimo 6 caracteres'); return; }
+  if (password !== password2) { showAuthError('As senhas não conferem'); return; }
   $('reg-btn').disabled = true;
   $('reg-btn').textContent = 'Criando...';
   try {
