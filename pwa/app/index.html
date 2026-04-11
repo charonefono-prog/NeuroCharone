@@ -985,8 +985,8 @@ async function doLogin() {
 async function doRegister() {
   const name = $('reg-name').value.trim();
   const email = $('reg-email').value.trim();
-  const password = $('reg-pass').value;
-  const password2 = $('reg-pass2').value;
+  const password = $('reg-pass').value.trim();
+  const password2 = $('reg-pass2').value.trim();
   if (!name || !email || !password) { showAuthError('Preencha todos os campos'); return; }
   if (password.length < 6) { showAuthError('Senha deve ter no m\u00ednimo 6 caracteres'); return; }
   if (password !== password2) { showAuthError('As senhas n\u00e3o conferem'); return; }
