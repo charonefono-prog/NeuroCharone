@@ -1187,3 +1187,16 @@ export default function MyScreen() {
 - [x] Histórico de Sessões - Registro e acompanhamento de tratamentos
 - [x] Endpoint de sessões integrado ao PWA com API
 - [x] Função loadSessions() para sincronizar sessões da API
+
+
+## Funcionalidades Avançadas - Implementadas
+- [x] Dashboard de Progresso - Gráficos de evolução dos sintomas com Chart.js
+- [x] Comparação Baseline vs. Atual - Visualização de melhora em gráfico de barras
+- [x] Planos Terapêuticos Personalizados - APIs completas de CRUD
+- [x] Frequência e Duração de Planos - Configuração por diagnóstico
+- [x] Regiões-Alvo Específicas - JSON array de regiões e pontos
+- [x] Relatórios Clínicos em PDF - Exportação com gráficos e QR Code
+- [x] QR Code de Rastreamento - Código único por relatório (protocolo)
+- [x] Logo e Branding - NeuroLaserMap nos PDFs com design profissional
+- [x] Distribuição de Pontos - Gráfico dos 10 pontos mais estimulados
+- [x] Estatísticas Detalhadas - Total de sessões, duração, scores e melhora

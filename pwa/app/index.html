@@ -475,6 +475,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 
 <div id="toast-el" class="toast"></div>
 <script src="helmet-3d.js"></script>
+<script src="charts.js"></script>
+<script src="pdf-generator.js"></script>
 <script>
 // ===== HELPERS =====
 const $=id=>document.getElementById(id);
@@ -698,12 +700,79 @@ function rEff(P,S){
     const pS=S.filter(s=>s.patientId===p.id);
     const last=pS.length>0?pS[pS.length-1].symptomScore:null;
     const imp=(p.initialSymptomScore&&last!==null)?p.initialSymptomScore-last:null;
-    return `<div class="li" style="flex-direction:column;align-items:stretch;gap:4px">
+    return `<div class="li" style="flex-direction:column;align-items:stretch;gap:4px;cursor:pointer" onclick="showPatientDashboard('${p.id}')">
       <div class="li-name">${p.fullName}</div>
       <div class="li-sub">${pS.length} sessões realizadas</div>
       ${imp!==null?`<div style="font-size:12px;color:${imp>0?'var(--success)':'var(--error)'}">${imp>0?'↓':'↑'} ${Math.abs(imp)} pontos ${imp>0?'(melhora)':'(piora)'}</div>`:''}
     </div>`;
   }).join('');
+}
+
+async function exportPatientReport(patientId){
+  const P=gD(K.P),S=gD(K.S);
+  const patient=P.find(p=>p.id===patientId);
+  if(!patient)return;
+  
+  const patientSessions=S.filter(s=>s.patientId===patientId);
+  const userName=localStorage.getItem('pwa_user_name')||'Profissional';
+  const userProfId=localStorage.getItem('pwa_user_profid')||'';
+  
+  await generateClinicalReport(patient,patientSessions,null,userName,userProfId);
+}
+
+async function showPatientDashboard(patientId){
+  const P=gD(K.P),S=gD(K.S);
+  const patient=P.find(p=>p.id===patientId);
+  if(!patient)return;
+  
+  const patientSessions=S.filter(s=>s.patientId===patientId).sort((a,b)=>new Date(a.sessionDate)-new Date(b.sessionDate));
+  
+  $('det-content').innerHTML=`
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="pav" style="background:var(--primary)">${patient.fullName.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+      <h2 style="font-size:18px;font-weight:700">${patient.fullName}</h2>
+      <span class="badge b-active" style="margin-top:6px;display:inline-block">Dashboard de Progresso</span>
+    </div>
+    
+    <div style="background:var(--surface);border-radius:12px;padding:12px;margin-bottom:16px">
+      <h3 style="font-size:14px;font-weight:600;margin-bottom:8px">Resumo</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:var(--bg);padding:8px;border-radius:8px">
+          <div style="font-size:11px;color:var(--muted)">Baseline</div>
+          <div style="font-size:16px;font-weight:700;color:var(--primary)">${patient.initialSymptomScore||'—'}/10</div>
+        </div>
+        <div style="background:var(--bg);padding:8px;border-radius:8px">
+          <div style="font-size:11px;color:var(--muted)">Atual</div>
+          <div style="font-size:16px;font-weight:700;color:var(--primary)">${patientSessions.length>0?patientSessions[patientSessions.length-1].symptomScore||'—':'—'}/10</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background:var(--surface);border-radius:12px;padding:12px;margin-bottom:16px">
+      <canvas id="dashboard-progress-chart" style="max-height:250px"></canvas>
+    </div>
+    
+    <div style="background:var(--surface);border-radius:12px;padding:12px;margin-bottom:16px">
+      <canvas id="dashboard-comparison-chart" style="max-height:200px"></canvas>
+    </div>
+    
+    <div style="background:var(--surface);border-radius:12px;padding:12px;margin-bottom:16px">
+      <canvas id="dashboard-points-chart" style="max-height:250px"></canvas>
+    </div>
+    
+    <button class="btn-s" style="width:100%;background:var(--primary);color:#fff;margin-bottom:8px" onclick="exportPatientReport('${patientId}')">Exportar Relatório PDF</button>
+    <button class="btn-s" style="width:100%;background:#666;color:#fff" onclick="closeM('m-detail')">Fechar</button>
+  `;
+  
+  openM('m-detail');
+  
+  setTimeout(async ()=>{
+    if(patientSessions.length>0){
+      await createSymptomProgressChart('dashboard-progress-chart',patientSessions,patient.fullName);
+      await createBaselineComparisonChart('dashboard-comparison-chart',patient.initialSymptomScore||0,patientSessions[patientSessions.length-1].symptomScore||0,patient.fullName);
+      await createPointsDistributionChart('dashboard-points-chart',patientSessions);
+    }
+  },100);
 }
 
 // ===== ADMIN =====

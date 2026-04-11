@@ -810,4 +810,174 @@ router.get("/sessions/:patientId", requireAuth as any, async (req: Request, res:
   }
 });
 
+// ============================================================
+// POST /api/pwa-auth/plans - Create a new therapeutic plan
+// ============================================================
+router.post("/plans", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const { patientId, objective, targetRegions, targetPoints, frequency, totalDuration, notes } = req.body;
+
+    if (!patientId || !objective || !targetPoints || !frequency || !totalDuration) {
+      res.status(400).json({ error: "Campos obrigatórios: patientId, objective, targetPoints, frequency, totalDuration" });
+      return;
+    }
+
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify patient ownership
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    const result = await db.insert(therapeuticPlans).values({
+      patientId,
+      objective,
+      targetRegions: JSON.stringify(targetRegions || []),
+      targetPoints: JSON.stringify(targetPoints || []),
+      frequency,
+      totalDuration,
+      notes: notes || "",
+      isActive: true,
+    });
+
+    res.json({
+      success: true,
+      message: "Plano terapêutico criado com sucesso",
+      planId: result[0],
+    });
+  } catch (error: any) {
+    console.error("[pwa-auth] Create plan error:", error);
+    res.status(500).json({ error: "Erro ao criar plano terapêutico" });
+  }
+});
+
+// ============================================================
+// GET /api/pwa-auth/plans/:patientId - List plans for a patient
+// ============================================================
+router.get("/plans/:patientId", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const patientId = parseInt(req.params.patientId);
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify patient ownership
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(404).json({ error: "Paciente não encontrado" });
+      return;
+    }
+
+    const plansList = await db
+      .select()
+      .from(therapeuticPlans)
+      .where(eq(therapeuticPlans.patientId, patientId));
+
+    res.json({ plans: plansList });
+  } catch (error: any) {
+    console.error("[pwa-auth] List plans error:", error);
+    res.status(500).json({ error: "Erro ao listar planos" });
+  }
+});
+
+// ============================================================
+// PUT /api/pwa-auth/plans/:id - Update therapeutic plan
+// ============================================================
+router.put("/plans/:id", requireAuth as any, async (req: Request, res: Response) => {
+  try {
+    const planId = parseInt(req.params.id);
+    const { objective, targetRegions, targetPoints, frequency, totalDuration, notes, isActive } = req.body;
+
+    const db = await getDb();
+    if (!db) {
+      res.status(500).json({ error: "Banco de dados não disponível" });
+      return;
+    }
+
+    const userEmail = (req as any).user?.email;
+    const userId = await getUserIdByEmail(db, userEmail);
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Verify plan ownership through patient
+    const planData = await db
+      .select()
+      .from(therapeuticPlans)
+      .where(eq(therapeuticPlans.id, planId))
+      .limit(1);
+
+    if (planData.length === 0) {
+      res.status(404).json({ error: "Plano não encontrado" });
+      return;
+    }
+
+    const patientData = await db
+      .select()
+      .from(patients)
+      .where(and(eq(patients.id, planData[0].patientId), eq(patients.userId, userId)))
+      .limit(1);
+
+    if (patientData.length === 0) {
+      res.status(403).json({ error: "Acesso negado" });
+      return;
+    }
+
+    const updateData: any = {};
+    if (objective) updateData.objective = objective;
+    if (targetRegions) updateData.targetRegions = JSON.stringify(targetRegions);
+    if (targetPoints) updateData.targetPoints = JSON.stringify(targetPoints);
+    if (frequency) updateData.frequency = frequency;
+    if (totalDuration) updateData.totalDuration = totalDuration;
+    if (notes) updateData.notes = notes;
+    if (isActive !== undefined) updateData.isActive = isActive;
+
+    await db
+      .update(therapeuticPlans)
+      .set(updateData)
+      .where(eq(therapeuticPlans.id, planId));
+
+    res.json({ success: true, message: "Plano atualizado com sucesso" });
+  } catch (error: any) {
+    console.error("[pwa-auth] Update plan error:", error);
+    res.status(500).json({ error: "Erro ao atualizar plano" });
+  }
+});
+
 export { router as pwaAuthRouter };
