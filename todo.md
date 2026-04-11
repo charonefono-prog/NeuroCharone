@@ -1182,6 +1182,8 @@ export default function MyScreen() {
 - [x] Cadastro de Pacientes - Formulário completo com validações (integrado à API)
 - [x] Endpoints de API para pacientes e sessões criados
 - [x] Mapeamento 3D do Capacete EEG - Visualizador 3D interativo criado
-- [ ] Integração do 3D ao modal de sessões
-- [ ] Histórico de Sessões - Registro e acompanhamento de tratamentos
-- [ ] Endpoint de sessões integrado ao PWA
+- [x] Integração do 3D ao modal de sessões com seleção de pontos
+- [x] Modal de informações dos pontos com função neuroanatomica
+- [x] Histórico de Sessões - Registro e acompanhamento de tratamentos
+- [x] Endpoint de sessões integrado ao PWA com API
+- [x] Função loadSessions() para sincronizar sessões da API

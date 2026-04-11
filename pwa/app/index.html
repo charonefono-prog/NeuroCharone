@@ -430,12 +430,26 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
   <div class="fg"><label>Paciente *</label><select id="ns-pat"></select></div>
   <div class="fg"><label>Data da Sessão</label><input type="datetime-local" id="ns-date"></div>
   <div class="fg"><label>Duração (minutos)</label><input type="number" id="ns-dur" value="30" min="1"></div>
-  <div class="fg"><label>Pontos Estimulados</label><input type="text" id="ns-pts" placeholder="F3, F7, T3..."></div>
+  
+  <div class="fg"><label>Selecionar Pontos de Estimulação</label>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px">
+      <canvas id="ns-helmet-canvas" width="320" height="320" style="width:100%;height:auto;border-radius:8px;background:var(--bg)"></canvas>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">Clique para selecionar • Arraste para girar • Scroll para zoom</div>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:6px">Pontos Selecionados:</div>
+    <div id="ns-selected-points" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;min-height:30px;font-size:13px;color:var(--fg)">Nenhum ponto selecionado</div>
+  </div>
+  
   <div class="fg"><label>Energia (Joules)</label><input type="number" id="ns-joules" min="0" step="0.5"></div>
   <div class="fg"><label>Avaliação dos Sintomas (0-10)</label><div class="slc"><div class="slv" id="ns-sv">5</div><input type="range" min="0" max="10" value="5" id="ns-score" oninput="$('ns-sv').textContent=this.value"></div></div>
   <div class="fg"><label>Observações</label><textarea id="ns-obs" placeholder="Observações da sessão"></textarea></div>
   <div class="fg"><label>Reações do Paciente</label><textarea id="ns-react" placeholder="Reações observadas"></textarea></div>
   <button class="btn-p" onclick="saveSess()" style="justify-content:center">Salvar Sessão</button>
+</div></div>
+
+<!-- Point Info Modal -->
+<div class="mo" id="m-point-info"><div class="ml"><button class="cb" onclick="closeM('m-point-info')">&times;</button>
+  <div id="point-info-content"></div>
 </div></div>
 
 <!-- Scale Modal -->
@@ -764,12 +778,55 @@ async function savePat(){
   }
 }
 
-function saveSess(){
-  const pid=$('ns-pat').value;
-  if(!pid){toast('Selecione um paciente');return}
-  const S=gD(K.S);const now=new Date().toISOString();
-  S.push({id:Date.now().toString(),patientId:pid,planId:'',sessionDate:$('ns-date').value||now,durationMinutes:parseInt($('ns-dur').value)||30,stimulatedPoints:$('ns-pts').value.split(',').map(s=>s.trim()).filter(Boolean),joules:parseFloat($('ns-joules').value)||0,symptomScore:parseInt($('ns-score').value),observations:$('ns-obs').value,patientReactions:$('ns-react').value,createdAt:now,updatedAt:now});
-  sD(K.S,S);closeM('m-sess');refresh(curTab);toast('Sessão registrada!');
+async function saveSess(){
+  const patientId = parseInt($('ns-pat').value);
+  if(!patientId){toast('Selecione um paciente');return}
+  
+  const sessionDate = $('ns-date').value || new Date().toISOString();
+  const duration = parseInt($('ns-dur').value) || 30;
+  const stimulatedPoints = sessionHelmet3D ? sessionHelmet3D.getSelectedPoints() : [];
+  const intensity = parseFloat($('ns-joules').value) || 0;
+  const observations = $('ns-obs').value;
+  
+  if(stimulatedPoints.length === 0){
+    toast('Selecione pelo menos um ponto de estimulacao');
+    return;
+  }
+  
+  try {
+    const res = await fetch(AUTH_URL + '/sessions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + authToken
+      },
+      body: JSON.stringify({
+        patientId,
+        planId: 0,
+        sessionDate,
+        duration,
+        stimulatedPoints,
+        intensity,
+        observations
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      toast(data.error || 'Erro ao registrar sessao');
+      return;
+    }
+    
+    closeM('m-sess');
+    sessionHelmet3D = null;
+    ['ns-pat','ns-date','ns-dur','ns-obs'].forEach(id=>$(id).value='');
+    $('ns-joules').value='';
+    $('ns-score').value=5;$('ns-sv').textContent='5';
+    $('ns-selected-points').textContent='Nenhum ponto selecionado';
+    loadSessions();
+    toast('Sessao registrada com sucesso!');
+  } catch (e) {
+    toast('Erro de conexao: ' + e.message);
+  }
 }
 
 function saveCycle(){
@@ -785,6 +842,7 @@ function saveCycle(){
 function openSessM(){
   const P=gD(K.P);$('ns-pat').innerHTML=P.map(p=>`<option value="${p.id}">${p.fullName}</option>`).join('');
   $('ns-date').value=new Date().toISOString().slice(0,16);
+  setTimeout(() => initSessionHelmet3D(), 100);
   openM('m-sess');
 }
 // Override session FAB
@@ -1066,6 +1124,82 @@ async function checkAuth() {
     // Offline mode - allow if token exists
     showApp();
     return true;
+  }
+}
+
+// ===== HELMET 3D INSTANCE FOR SESSIONS =====
+let sessionHelmet3D = null;
+
+function initSessionHelmet3D() {
+  const canvas = $('ns-helmet-canvas');
+  if (!canvas || sessionHelmet3D) return;
+  
+  sessionHelmet3D = new Helmet3D('ns-helmet-canvas', {
+    selectedPoints: [],
+    onPointSelect: (points) => {
+      updateSelectedPointsDisplay(points);
+    },
+    onPointInfo: (pointId, info) => {
+      showPointInfo(pointId, info);
+    }
+  });
+}
+
+function updateSelectedPointsDisplay(points) {
+  const display = $('ns-selected-points');
+  if (points.length === 0) {
+    display.textContent = 'Nenhum ponto selecionado';
+  } else {
+    display.innerHTML = points.map(p => {
+      const info = POINT_INFO[p];
+      return `<div style="display:inline-block;background:var(--primary);color:#fff;padding:4px 10px;border-radius:6px;margin:2px;font-size:12px">${p} ${info ? '(' + info.region + ')' : ''}</div>`;
+    }).join('');
+  }
+}
+
+function showPointInfo(pointId, info) {
+  const content = $('point-info-content');
+  content.innerHTML = `
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px">Ponto ${pointId}</h2>
+    <div style="background:var(--surface);border-left:4px solid var(--primary);padding:12px;border-radius:8px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--fg);margin-bottom:4px">Região: ${info.region}</div>
+      <div style="font-size:12px;color:var(--muted)">${info.function}</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-s" style="flex:1;background:var(--primary);color:#fff" onclick="selectPointFromInfo('${pointId}');closeM('m-point-info')">Selecionar</button>
+      <button class="btn-s" style="flex:1;background:var(--surface);color:var(--fg);border:1px solid var(--border)" onclick="closeM('m-point-info')">Fechar</button>
+    </div>
+  `;
+  openM('m-point-info');
+}
+
+function selectPointFromInfo(pointId) {
+  if (sessionHelmet3D) {
+    sessionHelmet3D.selectPoint(pointId);
+  }
+}
+
+// ===== LOAD SESSIONS FROM API =====
+async function loadSessions() {
+  if (!authToken) return;
+  try {
+    const P = gD(K.P);
+    const allSessions = [];
+    
+    for (const patient of P) {
+      const res = await fetch(AUTH_URL + '/sessions/' + patient.id, {
+        headers: { 'Authorization': 'Bearer ' + authToken }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        allSessions.push(...(data.sessions || []));
+      }
+    }
+    
+    sD(K.S, allSessions);
+    refresh(curTab);
+  } catch (e) {
+    console.error('Erro ao carregar sessoes:', e);
   }
 }
 
