@@ -20,10 +20,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const trpcClient = trpc.useContext();
+  
+  // Get tRPC client - this will be available inside the provider
+  let trpcClient: any = null;
+  try {
+    trpcClient = trpc.useContext();
+  } catch (err) {
+    // Context not available yet, will be handled in useEffect
+  }
 
   const fetchUser = async () => {
+    if (!trpcClient) return;
     setIsLoading(true);
     try {
       const fetchedUser = await trpcClient.auth.me.query();
@@ -39,8 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (trpcClient) {
+      fetchUser();
+    } else {
+      setIsLoading(false);
+    }
+  }, [trpcClient]);
 
   const refresh = async () => {
     await fetchUser();
