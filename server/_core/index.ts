@@ -57,13 +57,7 @@ async function startServer() {
 
   registerOAuthRoutes(app);
 
-  // Serve web app from dist directory (SPA with fallback to index.html)
-  const distPath = path.join(process.cwd(), "dist");
-  app.use(express.static(distPath));
-
-  // Serve static HTML files from root
-  app.use(express.static(path.join(process.cwd())));
-
+  // API routes MUST come before static files and SPA fallback
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true, timestamp: Date.now() });
   });
@@ -75,6 +69,13 @@ async function startServer() {
       createContext,
     }),
   );
+
+  // Serve web app from dist directory (SPA with fallback to index.html)
+  const distPath = path.join(process.cwd(), "dist");
+  app.use(express.static(distPath));
+
+  // Serve static HTML files from root
+  app.use(express.static(path.join(process.cwd())));
 
   // Serve index.html for root path (SPA fallback)
   app.get("/", (_req, res) => {
