@@ -14,8 +14,19 @@ import { useAuth } from './hooks/useAuth';
 type Tab = 'home' | 'scales' | 'cycles' | 'patients' | 'sessions' | 'profile' | 'settings' | 'effectiveness' | 'admin';
 
 export function App() {
-  const { user, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('home');
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return <Login />;
