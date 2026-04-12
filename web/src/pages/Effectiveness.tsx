@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { generateEffectivenessPDF } from '../utils/pdf-generator';
+
+interface Patient {
+  id: string;
+  name: string;
+  improvement: number;
+}
 
 export function Effectiveness() {
   const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
-  
-  const patients = [
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const patients: Patient[] = [
     { id: '1', name: 'Paciente 1', improvement: 65 },
     { id: '2', name: 'Paciente 2', improvement: 82 },
     { id: '3', name: 'Paciente 3', improvement: 45 },
@@ -14,6 +22,41 @@ export function Effectiveness() {
     if (value >= 75) return 'bg-success';
     if (value >= 50) return 'bg-primary';
     return 'bg-warning';
+  };
+
+  const handleExportPDF = async () => {
+    if (!selectedPatient) return;
+    
+    setIsGeneratingPDF(true);
+    try {
+      const patient = patients.find(p => p.id === selectedPatient);
+      if (!patient) return;
+
+      const effectivenessData = {
+        averageImprovement: patient.improvement,
+        sessionsCompleted: 12,
+        successRate: 75,
+        scales: [
+          { name: 'Escala de Boston', score: 85 },
+          { name: 'Escala de Comer', score: 72 },
+          { name: 'SARA', score: 68 },
+        ],
+      };
+
+      const doc = await generateEffectivenessPDF(
+        patient.name,
+        'Dr. Carlos',
+        effectivenessData
+      );
+
+      doc.save(`relatorio-efetividade-${patient.name}.pdf`);
+      alert('PDF gerado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Erro ao gerar PDF');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   return (
@@ -76,7 +119,7 @@ export function Effectiveness() {
           <h3 className="text-xl font-semibold text-foreground mb-4">
             Detalhes - {patients.find(p => p.id === selectedPatient)?.name}
           </h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-background p-4 rounded-lg">
               <p className="text-sm text-muted mb-2">Sessões Realizadas</p>
               <p className="text-2xl font-bold text-primary">12</p>
@@ -90,8 +133,12 @@ export function Effectiveness() {
               <p className="text-sm text-foreground">Há 2 dias</p>
             </div>
           </div>
-          <button className="mt-4 w-full px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90">
-            Exportar Relatório PDF
+          <button
+            onClick={handleExportPDF}
+            disabled={isGeneratingPDF}
+            className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 disabled:opacity-50"
+          >
+            {isGeneratingPDF ? 'Gerando PDF...' : 'Exportar Relatório PDF'}
           </button>
         </div>
       )}
