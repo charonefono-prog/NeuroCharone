@@ -1025,3 +1025,44 @@ export default function MyScreen() {
 - [x] Corrigir Bundle ID no app.config.ts
 - [x] Rebuild iOS IPA com Bundle ID correto
 - [x] Reconfigurar provisioning profile para novo Bundle ID (reutilizado L63YU489L8)
+
+
+## Versão Web Desktop - NeuroLaserMap
+
+### Autenticação e Gerenciamento de Usuários
+- [ ] Criar telas de Login e Registro com validação
+- [ ] Implementar autenticação JWT com banco de dados
+- [ ] Sistema de aprovação de novos usuários
+- [ ] Painel Admin para gerenciar usuários (aprovar, bloquear, excluir)
+- [ ] Sincronização de dados entre app nativo e web
+
+### Implementação das 9 Abas
+- [ ] Home - Dashboard com estatísticas
+- [ ] Escalas - 23 escalas clínicas
+- [ ] Ciclos - Gerenciamento de ciclos terapêuticos
+- [ ] Pacientes - CRUD de pacientes com filtros
+- [ ] Nova Sessão - Registro de sessões
+- [ ] Perfil - Dados profissionais e assinatura eletrônica
+- [ ] Configurações - Backup/Export de dados
+- [ ] Efetividade - Gráficos e análise de progresso
+- [ ] Admin - Painel de gerenciamento de usuários
+
+### Layout e UX
+- [ ] Layout responsivo para desktop
+- [ ] Tema claro/escuro com alternância manual
+- [ ] Visualizador 2D do sistema 10-20 com seleção interativa
+- [ ] Visualizador 3D do capacete (Three.js)
+- [ ] Sincronização 2D/3D bidirecional
+
+### Integração com Servidor
+- [ ] Endpoints de autenticação (/api/auth/*)
+- [ ] Endpoints de usuários (/api/users/*)
+- [ ] Endpoints de pacientes (/api/patients/*)
+- [ ] Endpoints de sessões (/api/sessions/*)
+- [ ] Endpoints de escalas (/api/scales/*)
+- [ ] Endpoints de ciclos (/api/cycles/*)
+
+### Publicação
+- [ ] Build e deploy em neuro-map-muctwckw.manus.space
+- [ ] Testes end-to-end completos
+- [ ] Documentação de uso

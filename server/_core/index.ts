@@ -57,7 +57,11 @@ async function startServer() {
 
   registerOAuthRoutes(app);
 
-  // Serve static HTML files
+  // Serve web app from dist directory (SPA with fallback to index.html)
+  const distPath = path.join(process.cwd(), "dist");
+  app.use(express.static(distPath));
+
+  // Serve static HTML files from root
   app.use(express.static(path.join(process.cwd())));
 
   app.get("/api/health", (_req, res) => {
@@ -72,9 +76,14 @@ async function startServer() {
     }),
   );
 
-  // Serve index.html for root path
+  // Serve index.html for root path (SPA fallback)
   app.get("/", (_req, res) => {
-    res.sendFile(path.join(process.cwd(), "index.html"));
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+
+  // SPA fallback for all routes not matched (for client-side routing)
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
   });
 
   const preferredPort = parseInt(process.env.PORT || "3000");
