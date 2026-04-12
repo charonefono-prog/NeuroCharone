@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { Helmet3D } from '../components/Helmet3D'
+import { generateSessionReport, downloadReport } from '../utils/pdfGenerator'
 
 interface DashboardProps {
   onLogout: () => void
@@ -8,6 +10,7 @@ export default function Dashboard({ onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState('home')
   const [patients, setPatients] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedPoints, setSelectedPoints] = useState<string[]>([])
 
   useEffect(() => {
     loadPatients()
@@ -24,6 +27,20 @@ export default function Dashboard({ onLogout }: DashboardProps) {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleGenerateReport = () => {
+    const sessionData = {
+      patientName: 'João Silva',
+      professionalName: 'Dr. Carlos',
+      duration: 30,
+      points: selectedPoints,
+      intensity: 75,
+      response: 'Positiva',
+      notes: 'Sessão bem tolerada pelo paciente',
+    }
+    const doc = generateSessionReport(sessionData)
+    downloadReport(doc, `relatorio-sessao-${Date.now()}.pdf`)
   }
 
   const tabs = [
@@ -155,22 +172,52 @@ export default function Dashboard({ onLogout }: DashboardProps) {
                           { x: 150, y: 80, label: 'T4' },
                           { x: 100, y: 140, label: 'Oz' },
                         ].map((point, i) => (
-                          <g key={i}>
-                            <circle cx={point.x} cy={point.y} r="4" fill="#0066cc" cursor="pointer"/>
-                            <text x={point.x + 10} y={point.y} fontSize="12" fill="#333">{point.label}</text>
+                          <g key={i} onClick={() => {
+                            if (selectedPoints.includes(point.label)) {
+                              setSelectedPoints(selectedPoints.filter(p => p !== point.label))
+                            } else {
+                              setSelectedPoints([...selectedPoints, point.label])
+                            }
+                          }}>
+                            <circle 
+                              cx={point.x} 
+                              cy={point.y} 
+                              r="6" 
+                              fill={selectedPoints.includes(point.label) ? '#ff6b6b' : '#0066cc'} 
+                              cursor="pointer"
+                              style={{ transition: 'fill 0.2s' }}
+                            />
+                            <text x={point.x + 10} y={point.y + 3} fontSize="12" fill="#333">{point.label}</text>
                           </g>
                         ))}
                       </svg>
                     </div>
+                    <p className="mt-2 text-sm text-gray-600">Pontos selecionados: {selectedPoints.join(', ') || 'Nenhum'}</p>
                   </div>
                   
                   {/* 3D Helmet Visualization */}
                   <div>
                     <h3 className="text-xl font-semibold mb-4">Visualizador 3D</h3>
-                    <div className="bg-gray-100 rounded-lg p-4 h-96 flex items-center justify-center">
-                      <p className="text-gray-600">Modelo 3D com Three.js em desenvolvimento...</p>
+                    <div className="bg-gray-100 rounded-lg p-4 h-96">
+                      <Helmet3D selectedPoints={selectedPoints} />
                     </div>
+                    <p className="mt-2 text-sm text-gray-600">Arraste para rotacionar, scroll para zoom</p>
                   </div>
+                </div>
+                
+                <div className="mt-6 flex gap-4">
+                  <button
+                    onClick={handleGenerateReport}
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700"
+                  >
+                    📄 Gerar Relatório PDF
+                  </button>
+                  <button
+                    onClick={() => setSelectedPoints([])}
+                    className="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-700"
+                  >
+                    🔄 Limpar Seleção
+                  </button>
                 </div>
               </div>
             </div>
