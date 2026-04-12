@@ -1,7 +1,30 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-export default function Dashboard() {
+interface DashboardProps {
+  onLogout: () => void
+}
+
+export default function Dashboard({ onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState('home')
+  const [patients, setPatients] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    loadPatients()
+  }, [])
+
+  const loadPatients = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/trpc/patients.list')
+      const data = await response.json()
+      setPatients(data.result?.data || [])
+    } catch (err) {
+      console.error('Error loading patients:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const tabs = [
     { id: 'home', label: 'Home', icon: '🏠' },
@@ -18,11 +41,11 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
+      <div className="w-64 bg-white shadow-lg flex flex-col">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-bold text-blue-600">NeuroLaserMap</h1>
         </div>
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 flex-1">
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -38,6 +61,14 @@ export default function Dashboard() {
             </button>
           ))}
         </nav>
+        <div className="p-4 border-t">
+          <button
+            onClick={onLogout}
+            className="w-full bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700"
+          >
+            Sair
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -49,11 +80,11 @@ export default function Dashboard() {
               <div className="grid grid-cols-4 gap-4 mb-8">
                 <div className="bg-white p-6 rounded-lg shadow">
                   <p className="text-gray-600 text-sm">Total de Pacientes</p>
-                  <p className="text-3xl font-bold text-blue-600">4</p>
+                  <p className="text-3xl font-bold text-blue-600">{patients.length}</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow">
                   <p className="text-gray-600 text-sm">Ativos</p>
-                  <p className="text-3xl font-bold text-green-600">4</p>
+                  <p className="text-3xl font-bold text-green-600">{patients.filter((p: any) => p.status === 'active').length}</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow">
                   <p className="text-gray-600 text-sm">Sessões Hoje</p>
@@ -70,33 +101,77 @@ export default function Dashboard() {
           {activeTab === 'patients' && (
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Pacientes</h2>
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Nome</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    <tr>
-                      <td className="px-6 py-4 text-sm text-gray-900">Paciente 1</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">paciente1@email.com</td>
-                      <td className="px-6 py-4 text-sm"><span className="bg-green-100 text-green-800 px-2 py-1 rounded">Ativo</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              {isLoading ? (
+                <p>Carregando...</p>
+              ) : (
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Nome</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {patients.length === 0 ? (
+                        <tr>
+                          <td colSpan={3} className="px-6 py-4 text-center text-gray-600">Nenhum paciente cadastrado</td>
+                        </tr>
+                      ) : (
+                        patients.map((p: any) => (
+                          <tr key={p.id}>
+                            <td className="px-6 py-4 text-sm text-gray-900">{p.name}</td>
+                            <td className="px-6 py-4 text-sm text-gray-600">{p.email}</td>
+                            <td className="px-6 py-4 text-sm"><span className="bg-green-100 text-green-800 px-2 py-1 rounded">Ativo</span></td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
           
-          {activeTab === 'admin' && (
+          {activeTab === 'session' && (
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Painel Administrativo</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Nova Sessão</h2>
               <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Gerenciar Usuários</h3>
-                <p className="text-gray-600">Funcionalidade de admin em desenvolvimento...</p>
+                <div className="grid grid-cols-2 gap-8">
+                  {/* 2D Helmet Visualization */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4">Visualizador 2D - Sistema 10-20</h3>
+                    <div className="bg-gray-100 rounded-lg p-4 h-96 flex items-center justify-center">
+                      <svg viewBox="0 0 200 200" className="w-full h-full">
+                        {/* Helmet outline */}
+                        <ellipse cx="100" cy="80" rx="60" ry="70" fill="none" stroke="#333" strokeWidth="2"/>
+                        {/* 10-20 system points */}
+                        {[
+                          { x: 100, y: 30, label: 'Cz' },
+                          { x: 70, y: 60, label: 'C3' },
+                          { x: 130, y: 60, label: 'C4' },
+                          { x: 50, y: 80, label: 'T3' },
+                          { x: 150, y: 80, label: 'T4' },
+                          { x: 100, y: 140, label: 'Oz' },
+                        ].map((point, i) => (
+                          <g key={i}>
+                            <circle cx={point.x} cy={point.y} r="4" fill="#0066cc" cursor="pointer"/>
+                            <text x={point.x + 10} y={point.y} fontSize="12" fill="#333">{point.label}</text>
+                          </g>
+                        ))}
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* 3D Helmet Visualization */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4">Visualizador 3D</h3>
+                    <div className="bg-gray-100 rounded-lg p-4 h-96 flex items-center justify-center">
+                      <p className="text-gray-600">Modelo 3D com Three.js em desenvolvimento...</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
