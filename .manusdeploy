@@ -1,9 +1,0 @@
-{
-  "type": "web",
-  "buildCommand": "npm run build",
-  "startCommand": "npm start",
-  "publicDir": "dist",
-  "env": {
-    "NODE_ENV": "production"
-  }
-}

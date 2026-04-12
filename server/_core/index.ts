@@ -70,21 +70,25 @@ async function startServer() {
     }),
   );
 
-  // Serve web app from dist directory (SPA with fallback to index.html)
+  // Serve web app from dist-web directory (React app)
+  const distWebPath = path.join(process.cwd(), "dist-web");
+  app.use(express.static(distWebPath));
+
+  // Serve Expo web app from dist directory
   const distPath = path.join(process.cwd(), "dist");
-  app.use(express.static(distPath));
+  app.use("/expo", express.static(distPath));
 
   // Serve static HTML files from root
   app.use(express.static(path.join(process.cwd())));
 
-  // Serve index.html for root path (SPA fallback)
+  // Serve index.html for root path (SPA fallback - web app)
   app.get("/", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
+    res.sendFile(path.join(distWebPath, "index.html"));
   });
 
   // SPA fallback for all routes not matched (for client-side routing)
   app.get("*", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
+    res.sendFile(path.join(distWebPath, "index.html"));
   });
 
   const preferredPort = parseInt(process.env.PORT || "3000");
