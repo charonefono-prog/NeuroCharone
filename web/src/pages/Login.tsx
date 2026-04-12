@@ -1,98 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-export function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+interface LoginProps {
+  onLogin: () => void
+}
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+export default function Login({ onLogin }: LoginProps) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
     try {
       const response = await fetch('/api/trpc/auth.login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
+      })
+      if (response.ok) {
+        onLogin()
       }
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token);
-      window.location.reload();
-    } catch (err) {
-      setError('Email ou senha inválidos');
+    } catch (error) {
+      console.error('Login error:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-surface rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground">NeuroLaserMap</h1>
-          <p className="text-muted mt-2">Sistema de Mapeamento de Neuromodulação</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">NeuroLaserMap</h1>
+        <p className="text-center text-gray-600 mb-8">Sistema de Mapeamento de Neuromodulação</p>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="seu@email.com"
               required
             />
           </div>
-
+          
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">
-              Senha
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="••••••••"
               required
             />
           </div>
-
-          {error && (
-            <div className="p-3 bg-error/10 border border-error text-error rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
+          
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
           >
             {isLoading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
-
-        <div className="mt-6 pt-6 border-t border-border">
-          <p className="text-center text-sm text-muted">
-            Não tem conta?{' '}
-            <button className="text-primary font-semibold hover:underline">
-              Solicitar acesso
-            </button>
-          </p>
-        </div>
+        
+        <p className="text-center text-gray-600 text-sm mt-4">
+          Não tem conta? <a href="#" className="text-blue-600 hover:underline">Cadastre-se</a>
+        </p>
       </div>
     </div>
-  );
+  )
 }
