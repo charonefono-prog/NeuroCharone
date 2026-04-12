@@ -70,9 +70,9 @@ async function startServer() {
     }),
   );
 
-  // Serve web app from dist-web directory (React app)
+  // Serve web app from dist-web directory (React app) at /web/ path
   const distWebPath = path.join(process.cwd(), "dist-web");
-  app.use(express.static(distWebPath));
+  app.use("/web", express.static(distWebPath));
 
   // Serve Expo web app from dist directory
   const distPath = path.join(process.cwd(), "dist");
@@ -81,13 +81,13 @@ async function startServer() {
   // Serve static HTML files from root
   app.use(express.static(path.join(process.cwd())));
 
-  // Serve index.html for root path (SPA fallback - web app)
-  app.get("/", (_req, res) => {
+  // Serve index.html for /web path (SPA fallback - web app)
+  app.get("/web", (_req, res) => {
     res.sendFile(path.join(distWebPath, "index.html"));
   });
 
-  // SPA fallback for all routes not matched (for client-side routing)
-  app.get("*", (_req, res) => {
+  // SPA fallback for /web routes (for client-side routing)
+  app.get("/web/*", (_req, res) => {
     res.sendFile(path.join(distWebPath, "index.html"));
   });
 
