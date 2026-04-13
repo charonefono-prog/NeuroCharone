@@ -1082,3 +1082,17 @@ export default function MyScreen() {
 - [ ] Testar atualização automática do app
 - [ ] Adicionar suporte a notificações push (opcional)
 - [ ] Implementar background sync (opcional)
+
+
+## Sistema Multi-Profissional e Compartilhamento
+- [ ] Atualizar schema do banco de dados para suportar múltiplos profissionais
+- [ ] Criar tabela de convites com links únicos
+- [ ] Implementar geração de links de convite
+- [ ] Criar tela de registro para novos profissionais via link
+- [ ] Implementar isolamento de dados por profissional
+- [ ] Criar página de landing para divulgação
+- [ ] Adicionar formulário de contato na landing page
+- [ ] Implementar envio de emails de convite
+- [ ] Criar dashboard de gerenciamento de convites
+- [ ] Testar isolamento de dados entre profissionais
+- [ ] Implementar sistema de permissões por profissional

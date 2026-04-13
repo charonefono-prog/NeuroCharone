@@ -14,6 +14,9 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
   role: varchar("role", { length: 50, enum: ["pending", "user", "admin"] }).notNull().default("pending"),
+  isActive: boolean("is_active").notNull().default(true), // Controle de bloqueio
+  approvedAt: timestamp("approved_at"),
+  approvedBy: int("approved_by"),
 });
 
 // Tabela de pacientes
@@ -75,6 +78,20 @@ export const accessControl = mysqlTable("access_control", {
   approvedBy: int("approved_by"),
 });
 
+// Tabela de convites para novos profissionais
+export const invitations = mysqlTable("invitations", {
+  id: int("id").primaryKey().autoincrement(),
+  inviteCode: varchar("invite_code", { length: 100 }).notNull().unique(),
+  createdBy: int("created_by").notNull(),
+  email: varchar("email", { length: 255 }),
+  status: varchar("status", { length: 50, enum: ["active", "used", "expired"] }).notNull().default("active"),
+  usedBy: int("used_by"),
+  usedAt: timestamp("used_at"),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
 // Relações
 export const usersRelations = relations(users, ({ many }) => ({
   patients: many(patients),
@@ -120,6 +137,18 @@ export const accessControlRelations = relations(accessControl, ({ one }) => ({
   }),
 }));
 
+export const invitationsRelations = relations(invitations, ({ one }) => ({
+  creator: one(users, {
+    fields: [invitations.createdBy],
+    references: [users.id],
+  }),
+  usedByUser: one(users, {
+    fields: [invitations.usedBy],
+    references: [users.id],
+    relationName: "usedByUser",
+  }),
+}));
+
 // Tipos TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -135,3 +164,6 @@ export type NewSession = typeof sessions.$inferInsert;
 
 export type AccessControl = typeof accessControl.$inferSelect;
 export type NewAccessControl = typeof accessControl.$inferInsert;
+
+export type Invitation = typeof invitations.$inferSelect;
+export type NewInvitation = typeof invitations.$inferInsert;
