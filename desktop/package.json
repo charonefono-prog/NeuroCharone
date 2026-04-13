@@ -1,0 +1,14 @@
+{
+  "name": "neurolasermap",
+  "version": "1.0.0",
+  "description": "NeuroLaserMap - Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  }
+}
