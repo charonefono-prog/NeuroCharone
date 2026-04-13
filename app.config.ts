@@ -92,8 +92,12 @@ const config: ExpoConfig = {
     bundler: "metro",
     output: "static",
     favicon: "./assets/images/favicon.png",
+    // Configuracoes PWA
+    display: "standalone",
+    startUrl: "/",
+    scope: "/",
   },
-  baseUrl: "/NeuroCharone",
+  // baseUrl: "/NeuroCharone", // Comentado para PWA funcionar corretamente
   plugins: [
     "expo-router",
     [

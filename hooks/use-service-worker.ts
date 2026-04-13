@@ -1,9 +1,30 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
-export function useServiceWorker() {
+export interface ServiceWorkerStatus {
+  isSupported: boolean;
+  isRegistered: boolean;
+  isOnline: boolean;
+  updateAvailable: boolean;
+}
+
+export interface UseServiceWorkerReturn extends ServiceWorkerStatus {
+  promptUpdate: () => void;
+}
+
+/**
+ * Hook para registrar e gerenciar o Service Worker
+ * Implementa cache, offline support e atualização de app
+ *
+ * Uso:
+ * ```tsx
+ * const { isRegistered, isOnline, updateAvailable, promptUpdate } = useServiceWorker();
+ * ```
+ */
+export function useServiceWorker(): UseServiceWorkerReturn {
   const [isSupported, setIsSupported] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
@@ -30,10 +51,12 @@ export function useServiceWorker() {
         console.log('[PWA] Service Worker registered:', registration);
         setIsRegistered(true);
 
-        // Check for updates periodically
-        setInterval(() => {
-          registration.update();
-        }, 60000); // Check every minute
+        // Check for updates periodically (every 1 hour)
+        const updateCheckInterval = setInterval(() => {
+          registration.update().catch((error) => {
+            console.warn('[PWA] Erro ao verificar atualizações:', error);
+          });
+        }, 3600000);
 
         // Listen for updates
         registration.addEventListener('updatefound', () => {
@@ -47,12 +70,26 @@ export function useServiceWorker() {
             });
           }
         });
+
+        return () => clearInterval(updateCheckInterval);
       } catch (error) {
         console.error('[PWA] Service Worker registration failed:', error);
       }
     };
 
     registerServiceWorker();
+
+    // Monitor online/offline status
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const promptUpdate = () => {
@@ -71,6 +108,7 @@ export function useServiceWorker() {
   return {
     isSupported,
     isRegistered,
+    isOnline,
     updateAvailable,
     promptUpdate,
   };

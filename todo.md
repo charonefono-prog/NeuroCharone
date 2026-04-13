@@ -1066,3 +1066,19 @@ export default function MyScreen() {
 - [ ] Build e deploy em neuro-map-muctwckw.manus.space
 - [ ] Testes end-to-end completos
 - [ ] Documentação de uso
+
+
+## Configuração de Progressive Web App (PWA)
+- [x] Criar Hook do Service Worker (useServiceWorker)
+- [x] Criar arquivo service-worker.js com cache e offline support
+- [x] Configurar manifest.json com metadados PWA
+- [x] Atualizar app.config.ts com configurações PWA
+- [x] Integrar Service Worker Hook no app/_layout.tsx
+- [ ] Testar PWA em navegadores modernos (Chrome, Firefox, Safari)
+- [ ] Validar instalação como app no desktop
+- [ ] Validar instalação como app no mobile
+- [ ] Testar funcionalidade offline
+- [ ] Testar cache de assets estáticos
+- [ ] Testar atualização automática do app
+- [ ] Adicionar suporte a notificações push (opcional)
+- [ ] Implementar background sync (opcional)
