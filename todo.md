@@ -1096,3 +1096,18 @@ export default function MyScreen() {
 - [ ] Criar dashboard de gerenciamento de convites
 - [ ] Testar isolamento de dados entre profissionais
 - [ ] Implementar sistema de permissões por profissional
+
+
+## Sistema de Autenticação (Login/Logout)
+- [ ] Criar API tRPC para login (email/senha)
+- [ ] Criar API tRPC para registro com validação de convite
+- [ ] Criar API tRPC para logout
+- [ ] Implementar hash de senha com bcrypt
+- [ ] Criar tela de login
+- [ ] Criar tela de registro com validação de convite
+- [ ] Implementar proteção de rotas autenticadas
+- [ ] Criar contexto de autenticação global
+- [ ] Implementar persistência de sessão (AsyncStorage)
+- [ ] Criar dashboard de admin para gerenciar profissionais
+- [ ] Adicionar botão de logout no perfil
+- [ ] Testar fluxo completo de autenticação

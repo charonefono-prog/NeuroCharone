@@ -1,123 +1,116 @@
-import { ScrollView, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { useAuth } from "@/hooks/use-auth";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
-import { useEffect } from "react";
+import { trpc } from "@/lib/trpc";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const colors = useColors();
-  const { isAuthenticated, loading, startOAuthLogin } = useAuth();
-  const { error } = router.query;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && !loading) {
-      router.replace("/(tabs)");
+  const loginMutation = trpc.auth.login.useMutation();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Por favor, preencha todos os campos");
+      return;
     }
-  }, [isAuthenticated, loading]);
 
-  if (loading) {
-    return (
-      <ScreenContainer className="flex items-center justify-center">
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="mt-4 text-muted">Carregando...</Text>
-      </ScreenContainer>
-    );
-  }
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await loginMutation.mutateAsync({
+        email,
+        password,
+      });
+
+      // Salvar dados do usuário
+      await AsyncStorage.setItem("user", JSON.stringify(result));
+      await AsyncStorage.setItem("isAuthenticated", "true");
+
+      // Redirecionar para home
+      router.replace("/(tabs)");
+    } catch (err: any) {
+      setError(err.message || "Erro ao fazer login");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <ScreenContainer className="p-6">
+    <ScreenContainer className="bg-background">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
-        <View className="flex-1 justify-center gap-8">
-          {/* Error Message */}
-          {error === "pending_approval" && (
-            <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-              <Text className="font-bold">Acesso Pendente</Text>
-              <Text className="block sm:inline">Seu acesso está aguardando aprovação. Por favor, aguarde ou entre em contato com o administrador.</Text>
-            </View>
-          )}
-
+        <View className="flex-1 justify-center px-6 gap-6">
           {/* Header */}
-          <View className="items-center gap-4">
+          <View className="items-center gap-2 mb-8">
             <Text className="text-4xl font-bold text-foreground">NeuroLaserMap</Text>
-            <Text className="text-base text-muted text-center">
-              Gerenciamento profissional de neuromodulação
-            </Text>
+            <Text className="text-base text-muted">Acesse sua conta</Text>
           </View>
 
-          {/* Features */}
-          <View className="gap-4">
-            <FeatureItem
-              icon="✓"
-              title="Pacientes"
-              description="Gerencie seus pacientes com segurança"
-              colors={colors}
-            />
-            <FeatureItem
-              icon="✓"
-              title="Planos Terapêuticos"
-              description="Crie planos personalizados"
-              colors={colors}
-            />
-            <FeatureItem
-              icon="✓"
-              title="Sincronização"
-              description="Acesse de qualquer dispositivo"
-              colors={colors}
+          {/* Error Message */}
+          {error ? (
+            <View className="bg-error/10 border border-error rounded-lg p-4">
+              <Text className="text-error font-semibold">{error}</Text>
+            </View>
+          ) : null}
+
+          {/* Email Input */}
+          <View className="gap-2">
+            <Text className="text-sm font-semibold text-foreground">Email</Text>
+            <TextInput
+              className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
+              placeholder="seu@email.com"
+              placeholderTextColor="#9BA1A6"
+              value={email}
+              onChangeText={setEmail}
+              editable={!loading}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
           </View>
 
-          {/* Login Buttons */}
-          <View className="gap-4">
-            <TouchableOpacity
-              onPress={() => startOAuthLogin("google")}
-              className="bg-red-500 rounded-lg p-4 items-center"
-            >
-              <Text className="text-white font-semibold text-base">Login com Google</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => startOAuthLogin("microsoft")}
-              className="bg-blue-500 rounded-lg p-4 items-center"
-            >
-              <Text className="text-white font-semibold text-base">Login com Microsoft</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => startOAuthLogin("apple")}
-              className="bg-gray-800 rounded-lg p-4 items-center"
-            >
-              <Text className="text-white font-semibold text-base">Login com Apple</Text>
-            </TouchableOpacity>
+          {/* Password Input */}
+          <View className="gap-2">
+            <Text className="text-sm font-semibold text-foreground">Senha</Text>
+            <TextInput
+              className="bg-surface border border-border rounded-lg px-4 py-3 text-foreground"
+              placeholder="••••••••"
+              placeholderTextColor="#9BA1A6"
+              value={password}
+              onChangeText={setPassword}
+              editable={!loading}
+              secureTextEntry
+            />
           </View>
 
-          {/* Footer */}
-          <Text className="text-xs text-muted text-center">
-            Ao fazer login, você concorda com nossa Política de Privacidade
-          </Text>
+          {/* Login Button */}
+          <TouchableOpacity
+            onPress={handleLogin}
+            disabled={loading}
+            className="bg-primary rounded-lg py-4 items-center mt-4"
+            activeOpacity={0.8}
+          >
+            {loading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <Text className="text-white font-bold text-base">Entrar</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Register Link */}
+          <View className="flex-row justify-center items-center gap-2 mt-4">
+            <Text className="text-muted">Não tem uma conta?</Text>
+            <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+              <Text className="text-primary font-semibold">Cadastre-se</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </ScreenContainer>
-  );
-}
-
-function FeatureItem({
-  icon,
-  title,
-  description,
-  colors,
-}: {
-  icon: string;
-  title: string;
-  description: string;
-  colors: any;
-}) {
-  return (
-    <View className="flex-row gap-3 bg-surface rounded-lg p-4">
-      <Text className="text-2xl">{icon}</Text>
-      <View className="flex-1">
-        <Text className="font-semibold text-foreground">{title}</Text>
-        <Text className="text-sm text-muted">{description}</Text>
-      </View>
-    </View>
   );
 }
