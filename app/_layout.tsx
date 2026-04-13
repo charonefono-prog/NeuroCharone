@@ -35,6 +35,7 @@ function RootLayoutContent() {
 
   const [insets, setInsets] = useState<EdgeInsets>(initialInsets);
   const [frame, setFrame] = useState<Rect>(initialFrame);
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
@@ -87,8 +88,6 @@ function RootLayoutContent() {
     };
   }, [initialInsets, initialFrame]);
 
-  const { isAuthenticated, isLoading } = useAuth();
-
   // Show loading while checking auth state
   if (isLoading) {
     return (
@@ -105,7 +104,7 @@ function RootLayoutContent() {
           {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack screenOptions={{ headerShown: false }} key={isAuthenticated ? "authenticated" : "unauthenticated"}>
             {!isAuthenticated ? (
               <>
                 <Stack.Screen name="(auth)/login" />
