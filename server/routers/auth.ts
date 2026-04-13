@@ -207,6 +207,37 @@ export const authRouter = router({
     return { success: true, message: "Desconectado com sucesso" };
   }),
 
+  // Seed admin (apenas em desenvolvimento)
+  seedAdmin: publicProcedure.mutation(async () => {
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+
+    // Verificar se admin já existe
+    const existingAdmin = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, "charonejr@gmail.com"))
+      .limit(1);
+
+    if (existingAdmin[0]) {
+      return { success: true, message: "Admin já existe" };
+    }
+
+    // Inserir admin
+    await db.insert(users).values({
+      email: "charonejr@gmail.com",
+      password: hashPassword("admin123"),
+      name: "Admin",
+      role: "admin",
+      isActive: true,
+      approvedAt: new Date(),
+      approvedBy: "system",
+      loginMethod: "email",
+    });
+
+    return { success: true, message: "Admin criado com sucesso" };
+  }),
+
   // Atualizar perfil do usuário
   updateProfile: protectedProcedure
     .input(

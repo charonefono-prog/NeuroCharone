@@ -1,4 +1,6 @@
 -- Inserir usuário admin
+-- Senha: admin123
+-- Hash SHA256: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
 INSERT INTO users (
   email, 
   password, 
@@ -13,7 +15,7 @@ INSERT INTO users (
   lastSignedIn
 ) VALUES (
   'charonejr@gmail.com',
-  '8d969eef6ecad3c29a3a873fba2d9f7f3c9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d',
+  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
   'Admin',
   'admin',
   true,
@@ -29,4 +31,5 @@ ON DUPLICATE KEY UPDATE
   role = 'admin',
   isActive = true,
   approvedAt = NOW(),
+  password = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
   updatedAt = NOW();
