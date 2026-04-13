@@ -7,11 +7,15 @@ import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "d
  */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  openId: varchar("openId", { length: 64 }).unique(),
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
+  email: varchar("email", { length: 320 }).unique(),
+  password: varchar("password", { length: 255 }), // Hash de senha para email/senha auth
+  loginMethod: varchar("loginMethod", { length: 64 }), // 'oauth' ou 'email'
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  approvedAt: timestamp("approvedAt"), // Quando foi aprovado pelo admin
+  approvedBy: varchar("approvedBy", { length: 255 }), // Quem aprovou
   // Campos profissionais adicionais
   specialty: varchar("specialty", { length: 255 }),
   professionalId: varchar("professionalId", { length: 100 }), // CRM, CREFONO, etc
@@ -71,6 +75,18 @@ export const sessions = mysqlTable("sessions", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+// Tabela de convites para novos profissionais
+export const invitations = mysqlTable("invitations", {
+  id: int("id").autoincrement().primaryKey(),
+  code: varchar("code", { length: 64 }).notNull().unique(),
+  email: varchar("email", { length: 320 }).notNull(),
+  createdBy: int("createdBy").notNull(), // ID do admin que criou
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"), // Quando foi usado
+  usedBy: int("usedBy"), // ID do usuário que usou
+});
+
 // Relações
 export const usersRelations = relations(users, ({ many }) => ({
   patients: many(patients),
@@ -117,47 +133,5 @@ export type InsertTherapeuticPlan = typeof therapeuticPlans.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type InsertSession = typeof sessions.$inferInsert;
 
-/**
- * Access Control Table
- * Whitelist de usuários autorizados a usar o sistema
- */
-export const accessControl = mysqlTable("access_control", {
-  id: int("id").autoincrement().primaryKey(),
-  email: varchar("email", { length: 320 }).notNull().unique(),
-  name: varchar("name", { length: 255 }),
-  passwordHash: varchar("passwordHash", { length: 255 }),
-  isApproved: boolean("isApproved").notNull().default(false),
-  helmetSerialNumber: varchar("helmetSerialNumber", { length: 100 }),
-  helmetModel: varchar("helmetModel", { length: 100 }),
-  accessLevel: varchar("accessLevel", { length: 50 }).notNull().default("user"),
-  approvedAt: timestamp("approvedAt"),
-  expiresAt: timestamp("expiresAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  notes: text("notes"),
-  approvedBy: varchar("approvedBy", { length: 255 }),
-  denialReason: text("denialReason"),
-});
-
-/**
- * Access Request Log
- * Registro de tentativas de acesso
- */
-export const accessLog = mysqlTable("access_log", {
-  id: int("id").autoincrement().primaryKey(),
-  email: varchar("email", { length: 320 }).notNull(),
-  name: varchar("name", { length: 255 }),
-  status: varchar("status", { length: 50 }).notNull(),
-  reason: text("reason"),
-  ipAddress: varchar("ipAddress", { length: 45 }),
-  userAgent: text("userAgent"),
-  attemptedAt: timestamp("attemptedAt").defaultNow().notNull(),
-  processedAt: timestamp("processedAt"),
-});
-
-// Tipos
-export type AccessControl = typeof accessControl.$inferSelect;
-export type InsertAccessControl = typeof accessControl.$inferInsert;
-
-export type AccessLog = typeof accessLog.$inferSelect;
-export type InsertAccessLog = typeof accessLog.$inferInsert;
+export type Invitation = typeof invitations.$inferSelect;
+export type InsertInvitation = typeof invitations.$inferInsert;

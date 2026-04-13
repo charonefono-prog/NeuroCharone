@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { users, invitations } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { users, invitations } from "@/drizzle/schema";
+import { eq, and, gt } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import crypto from "crypto";
 
@@ -44,7 +44,7 @@ export const authRouter = router({
       }
 
       // Verificar senha
-      if (!verifyPassword(input.password, user[0].password)) {
+      if (!user[0].password || !verifyPassword(input.password, user[0].password)) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Email ou senha inválidos",
@@ -52,7 +52,7 @@ export const authRouter = router({
       }
 
       // Verificar se está aprovado
-      if (user[0].role === "pending") {
+      if (!user[0].approvedAt) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Sua conta está aguardando aprovação do administrador",
@@ -70,7 +70,7 @@ export const authRouter = router({
       return {
         id: user[0].id,
         email: user[0].email,
-        fullName: user[0].fullName,
+        name: user[0].name,
         role: user[0].role,
       };
     }),
@@ -81,7 +81,7 @@ export const authRouter = router({
       z.object({
         email: z.string().email(),
         password: z.string().min(6),
-        fullName: z.string().min(3),
+        name: z.string().min(3),
         specialty: z.string().optional(),
         professionalId: z.string().optional(),
         phone: z.string().optional(),
@@ -96,7 +96,7 @@ export const authRouter = router({
       const invite = await db
         .select()
         .from(invitations)
-        .where(eq(invitations.inviteCode, input.inviteCode))
+        .where(eq(invitations.code, input.inviteCode))
         .limit(1);
 
       if (!invite[0]) {
@@ -106,10 +106,10 @@ export const authRouter = router({
         });
       }
 
-      if (invite[0].status !== "active") {
+      if (invite[0].usedAt) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Este convite não está mais ativo",
+          message: "Este convite já foi utilizado",
         });
       }
 
@@ -135,15 +135,16 @@ export const authRouter = router({
       }
 
       // Criar novo usuário
-      await db.insert(users).values({
+      const result = await db.insert(users).values({
         email: input.email,
         password: hashPassword(input.password),
-        fullName: input.fullName,
+        name: input.name,
         specialty: input.specialty,
         professionalId: input.professionalId,
         phone: input.phone,
-        role: "pending", // Aguardando aprovação
+        role: "user",
         isActive: true,
+        loginMethod: "email",
       });
 
       // Buscar o novo usuário para obter o ID
@@ -158,7 +159,6 @@ export const authRouter = router({
         await db
           .update(invitations)
           .set({
-            status: "used",
             usedBy: newUserData[0].id,
             usedAt: new Date(),
           })
@@ -192,7 +192,7 @@ export const authRouter = router({
     return {
       id: user[0].id,
       email: user[0].email,
-      fullName: user[0].fullName,
+      name: user[0].name,
       specialty: user[0].specialty,
       professionalId: user[0].professionalId,
       phone: user[0].phone,
@@ -211,7 +211,7 @@ export const authRouter = router({
   updateProfile: protectedProcedure
     .input(
       z.object({
-        fullName: z.string().optional(),
+        name: z.string().optional(),
         specialty: z.string().optional(),
         phone: z.string().optional(),
       })
@@ -223,7 +223,7 @@ export const authRouter = router({
       await db
         .update(users)
         .set({
-          fullName: input.fullName,
+          name: input.name,
           specialty: input.specialty,
           phone: input.phone,
           updatedAt: new Date(),

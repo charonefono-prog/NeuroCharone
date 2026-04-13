@@ -59,12 +59,12 @@ async function syncUser(userInfo: {
   });
 
   return {
-    openId: user.openId,
-    name: user.name,
-    email: user.email,
-    loginMethod: user.loginMethod,
+    openId: user.openId ?? "",
+    name: user.name ?? "",
+    email: user.email ?? "",
+    loginMethod: user.loginMethod ?? "",
     lastSignedIn: user.lastSignedIn,
-    role: user.role as "pending" | "user" | "admin",
+    role: user.role as "user" | "admin",
   };
 }
 
