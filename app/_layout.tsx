@@ -108,8 +108,8 @@ function RootLayoutContent() {
           <Stack screenOptions={{ headerShown: false }}>
             {!isAuthenticated ? (
               <>
-                <Stack.Screen name="login" />
-                <Stack.Screen name="register" />
+                <Stack.Screen name="(auth)/login" />
+                <Stack.Screen name="(auth)/register" />
                 <Stack.Screen name="(auth)/pending-approval" />
               </>
             ) : (

@@ -3,10 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator 
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { trpc } from "@/lib/trpc";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "@/lib/auth-context";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,9 +30,8 @@ export default function LoginScreen() {
         password,
       });
 
-      // Salvar dados do usuário
-      await AsyncStorage.setItem("user", JSON.stringify(result));
-      await AsyncStorage.setItem("isAuthenticated", "true");
+      // Salvar dados do usuário via contexto
+      await login(result);
 
       // Redirecionar para home
       router.replace("/(tabs)");
