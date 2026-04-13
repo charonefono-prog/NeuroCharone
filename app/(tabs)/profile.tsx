@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pickImage, takePhoto, saveProfilePhoto, deleteProfilePhoto } from "@/lib/photo-picker";
 import { generateProfessionalSignature } from "@/lib/electronic-signature-generator";
 import { Image } from "react-native";
+import { useAuth } from "@/lib/auth-context";
 
 interface ProfessionalProfile {
   title: "Dr" | "Dra";
@@ -42,6 +43,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const colors = useColors();
   const { colorScheme, setColorScheme } = useThemeContext();
+  const { logout, user } = useAuth();
   const isDark = colorScheme === "dark";
   const [reminderAdvance, setReminderAdvanceState] = useState<number>(60);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -792,6 +794,69 @@ export default function ProfileScreen() {
                 </Text>
                 <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
                   Exportar todos os dados do aplicativo
+                </Text>
+              </View>
+              <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Logout */}
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+              Conta
+            </Text>
+            
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "Sair",
+                  "Tem certeza que deseja sair da sua conta?",
+                  [
+                    { text: "Cancelar", style: "cancel" },
+                    {
+                      text: "Sair",
+                      style: "destructive",
+                      onPress: async () => {
+                        try {
+                          await logout();
+                          router.replace("/(auth)/login");
+                        } catch (err) {
+                          Alert.alert("Erro", "Não foi possível fazer logout");
+                        }
+                      },
+                    },
+                  ]
+                );
+              }}
+              style={{
+                backgroundColor: colors.error + "10",
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.error,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.error + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 20 }}>🚪</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.error }}>
+                  Sair da Conta
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.muted, marginTop: 2 }}>
+                  {user?.email || "Desconectar"}
                 </Text>
               </View>
               <Text style={{ fontSize: 18, color: colors.muted }}>›</Text>
