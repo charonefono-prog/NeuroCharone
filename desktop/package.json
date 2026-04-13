@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "NeuroLaserMap - Desktop App",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neurolasermap/desktop"
+  },
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder --win --publish never"
   },
   "devDependencies": {
     "electron": "latest",
