@@ -1,5 +1,6 @@
+import "@/global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -34,19 +35,6 @@ function RootLayoutContent() {
 
   const [insets, setInsets] = useState<EdgeInsets>(initialInsets);
   const [frame, setFrame] = useState<Rect>(initialFrame);
-  const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
-  const segments = useSegments();
-
-  // Guard: Redirecionar para login quando logout
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated && segments?.[0] !== "(auth)") {
-        console.log('Guard: Nao autenticado, redirecionando para login');
-        router.replace("/(auth)/login");
-      }
-    }
-  }, [isAuthenticated, isLoading, segments, router]);
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
@@ -80,55 +68,83 @@ function RootLayoutContent() {
             refetchOnWindowFocus: false,
             // Retry failed requests once
             retry: 1,
-            // Stale time: 5 minutes
-            staleTime: 1000 * 60 * 5,
           },
         },
-      })
+      }),
+  );
+  const [trpcClient] = useState(() => createTRPCClient());
+
+  // Ensure minimum 8px padding for top and bottom on mobile
+  const providerInitialMetrics = useMemo(() => {
+    const metrics = initialWindowMetrics ?? { insets: initialInsets, frame: initialFrame };
+    return {
+      ...metrics,
+      insets: {
+        ...metrics.insets,
+        top: Math.max(metrics.insets.top, 16),
+        bottom: Math.max(metrics.insets.bottom, 12),
+      },
+    };
+  }, [initialInsets, initialFrame]);
+
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading while checking auth state
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
+        <Text style={{ color: "#0a7ea4", fontSize: 18 }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  const content = (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
+          {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
+          {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
+          <Stack screenOptions={{ headerShown: false }}>
+            {!isAuthenticated ? (
+              <>
+                <Stack.Screen name="login" />
+                <Stack.Screen name="register" />
+                <Stack.Screen name="(auth)/pending-approval" />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="oauth/callback" />
+              </>
+            )}
+          </Stack>
+          <StatusBar style="auto" />
+        </QueryClientProvider>
+      </trpc.Provider>
+    </GestureHandlerRootView>
   );
 
-  const [trpcClient] = useState(() =>
-    createTRPCClient({
-      url: Platform.OS === "web"
-        ? `${window.location.origin}/api/trpc`
-        : "http://localhost:3000/api/trpc",
-    })
-  );
+  const shouldOverrideSafeArea = Platform.OS === "web";
 
-  const trpcUtils = useMemo(
-    () => trpc.createClient({ links: [] }),
-    []
-  );
+  if (shouldOverrideSafeArea) {
+    return (
+      <ThemeProvider>
+        <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+          <SafeAreaFrameContext.Provider value={frame}>
+            <SafeAreaInsetsContext.Provider value={insets}>
+              {content}
+            </SafeAreaInsetsContext.Provider>
+          </SafeAreaFrameContext.Provider>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    );
+  }
 
   return (
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <SafeAreaFrameContext.Provider value={frame}>
-        <SafeAreaInsetsContext.Provider value={insets}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <ThemeProvider>
-              <QueryClientProvider client={queryClient}>
-                <trpc.Provider client={trpcClient} queryClient={queryClient}>
-                  <StatusBar barStyle="light-content" />
-                  <Stack
-                    key={isAuthenticated ? "authenticated" : "unauthenticated"}
-                    screenOptions={{
-                      headerShown: false,
-                      animationEnabled: true,
-                    }}
-                  >
-                    {isAuthenticated ? (
-                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    ) : (
-                      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                    )}
-                  </Stack>
-                </trpc.Provider>
-              </QueryClientProvider>
-            </ThemeProvider>
-          </GestureHandlerRootView>
-        </SafeAreaInsetsContext.Provider>
-      </SafeAreaFrameContext.Provider>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 

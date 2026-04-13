@@ -1,6 +1,8 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "../../shared/const.js";
 import type { Express, Request, Response } from "express";
 import { getDb, getUserByOpenId, upsertUser } from "../db";
+import { accessControl } from "../db/schema";
+import { eq } from "drizzle-orm";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 
@@ -39,18 +41,35 @@ async function syncUser(userInfo: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  if (existingUser) {
-    // Existing user, use their existing role
-    userRole = existingUser.role === "admin" ? "admin" : "user";
-  }
-  
-  // If it's the owner, ensure role is admin
-  if (userInfo.openId === process.env.OWNER_OPEN_ID) {
-    userRole = "admin";
+  if (!existingUser) {
+    // New user, create access control entry
+    await db.insert(accessControl).values({
+      email: userInfo.email || userInfo.openId,
+      isApproved: userRole === "admin",
+    });
+  } else {
+    // Existing user, get their role from access control
+    const [existingAccessControl] = await db
+      .select()
+      .from(accessControl)
+      .where(eq(accessControl.email, existingUser.email || existingUser.openId))
+      .limit(1);
+
+    if (existingAccessControl) {
+      if (existingAccessControl.isApproved) {
+        userRole = existingUser.role === "admin" ? "admin" : "user";
+      } else {
+        userRole = "pending";
+      }
+    }
+    // If it's the owner, ensure role is admin
+    if (userInfo.openId === process.env.OWNER_OPEN_ID) {
+      userRole = "admin";
+    }
   }
 
   const user = await upsertUser({
-    role: userRole === "pending" ? "user" : userRole,
+    role: userRole,
     openId: userInfo.openId,
     name: userInfo.name || null,
     email: userInfo.email ?? null,
@@ -59,12 +78,12 @@ async function syncUser(userInfo: {
   });
 
   return {
-    openId: user.openId ?? "",
-    name: user.name ?? "",
-    email: user.email ?? "",
-    loginMethod: user.loginMethod ?? "",
+    openId: user.openId,
+    name: user.name,
+    email: user.email,
+    loginMethod: user.loginMethod,
     lastSignedIn: user.lastSignedIn,
-    role: user.role as "user" | "admin",
+    role: user.role as "pending" | "user" | "admin",
   };
 }
 
