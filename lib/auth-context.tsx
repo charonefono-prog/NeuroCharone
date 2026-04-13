@@ -63,10 +63,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      console.log('AuthContext: Removendo dados do AsyncStorage...');
       await AsyncStorage.removeItem('user');
       await AsyncStorage.removeItem('isAuthenticated');
+      console.log('AuthContext: Limpando estado do usuário...');
       setUser(null);
       setError(null);
+      console.log('AuthContext: Logout concluído');
     } catch (err: any) {
       console.error('Erro ao fazer logout:', err);
       setError(err.message || 'Erro ao fazer logout');

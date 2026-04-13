@@ -1,6 +1,6 @@
 import "@/global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -36,6 +36,16 @@ function RootLayoutContent() {
   const [insets, setInsets] = useState<EdgeInsets>(initialInsets);
   const [frame, setFrame] = useState<Rect>(initialFrame);
   const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
+
+  // Guard: Redirecionar para login quando logout
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated && segments?.[0] === "(tabs)") {
+      console.log('Guard: Redirecionando para login porque nao esta autenticado');
+      router.replace("/(auth)/login");
+    }
+  }, [isAuthenticated, isLoading, segments, router]);
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {

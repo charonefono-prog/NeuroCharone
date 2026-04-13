@@ -818,9 +818,14 @@ export default function ProfileScreen() {
                       style: "destructive",
                       onPress: async () => {
                         try {
+                          console.log('Iniciando logout...');
                           await logout();
+                          console.log('Logout concluído, redirecionando...');
+                          // Aguardar um pouco para garantir que o contexto atualizou
+                          await new Promise(resolve => setTimeout(resolve, 500));
                           router.replace("/(auth)/login");
                         } catch (err) {
+                          console.error('Erro ao fazer logout:', err);
                           Alert.alert("Erro", "Não foi possível fazer logout");
                         }
                       },
