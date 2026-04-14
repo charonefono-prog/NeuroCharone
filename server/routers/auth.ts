@@ -6,6 +6,7 @@ import { eq, and } from "drizzle-orm";
 import crypto from "crypto";
 import { COOKIE_NAME } from "../../shared/const.js";
 import { getSessionCookieOptions } from "../_core/cookies";
+import { emailService } from "../_core/email";
 
 /**
  * Hash de senha com salt
@@ -136,6 +137,13 @@ export const authRouter = router({
           details: `User registered: ${input.email}`,
         });
       }
+
+      // Enviar email de boas-vindas
+      await emailService.sendWelcomeEmail(input.email, input.fullName);
+
+      // Enviar email de notificação ao admin
+      const adminEmail = process.env.ADMIN_EMAIL || "admin@neurolasermap.com";
+      await emailService.sendAdminNotificationEmail(adminEmail, input.fullName, input.email);
 
       return {
         success: true,
@@ -304,12 +312,40 @@ export const authRouter = router({
         })
         .where(eq(users.id, input.userId));
 
+      // Buscar usuario para obter email
+      const userList = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, input.userId))
+        .limit(1);
+
+      if (userList.length === 0) {
+        throw new Error("User not found");
+      }
+
+      const user = userList[0];
+
+      await db
+        .update(users)
+        .set({
+          isApproved: true,
+          approvedAt: new Date(),
+          approvedBy: ctx.user!.id,
+          role: "user",
+        })
+        .where(eq(users.id, input.userId));
+
       // Registrar no audit log
       await db.insert(auditLog).values({
         userId: ctx.user!.id,
         action: "user_approved",
         details: `User ${input.userId} approved by ${ctx.user!.email}`,
       });
+
+      // Enviar email de aprovacao
+      if (user.email && user.fullName) {
+        await emailService.sendApprovalEmail(user.email, user.fullName);
+      }
 
       return {
         success: true,

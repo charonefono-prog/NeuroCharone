@@ -20,8 +20,14 @@
 - [x] Criar APIs tRPC de autenticação (login, register, logout)
 - [x] Criar contexto de autenticação global (AuthProvider)
 - [x] Criar dashboard de admin para gerenciar usuários
-- [ ] Implementar sistema de notificações por email
-- [ ] Integrar convites com email
+- [x] Integrar Resend para notificações por email
+- [x] Implementar templates de email para aprovações
+- [x] Implementar templates de email para convites
+- [x] Enviar email ao registrar novo usuário
+- [x] Enviar email ao aprovar usuário
+- [x] Enviar email ao gerar convite
+- [x] Refatorar APIs para isolamento de dados por profissional
+- [x] Adicionar middleware de autorização nas rotas
 
 ## Dashboard/Home
 - [x] Criar tela de dashboard com estatísticas
@@ -98,6 +104,18 @@
 - [x] Atualizar app.config.ts com nome e informações do app
 - [x] Configurar splash screen
 - [x] Configurar favicondo aplicativo
+
+## Testes E2E
+- [x] Criar teste E2E para fluxo de registro
+- [x] Criar teste E2E para fluxo de login
+- [x] Criar teste E2E para aprovação de usuário (admin)
+- [x] Criar teste E2E para acesso ao dashboard
+- [x] Criar teste E2E para isolação de dados (profissional A não vê dados de B)
+- [x] Criar teste E2E para CRUD de pacientes
+- [x] Criar teste E2E para CRUD de planos terapêuticos
+- [x] Criar teste E2E para registro de sessão
+- [x] Executar suite completa de testes E2E (26/26 passando)
+- [x] Corrigir bugs encontrados nos testes
 
 ## Testes e Refinamentos
 - [ ] Testar fluxo completo de cadastro de paciente
