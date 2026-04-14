@@ -1,7 +1,7 @@
+import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
-import path from "path";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
@@ -56,7 +56,6 @@ async function startServer() {
 
   registerOAuthRoutes(app);
 
-  // API routes MUST come before static files and SPA fallback
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true, timestamp: Date.now() });
   });
@@ -68,20 +67,6 @@ async function startServer() {
       createContext,
     }),
   );
-
-  // Serve Expo web app from dist directory at root
-  const distPath = path.join(process.cwd(), "dist");
-  app.use(express.static(distPath));
-
-  // Serve index.html for root path (SPA fallback - Expo web app)
-  app.get("/", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-
-  // SPA fallback for all routes not matched (for client-side routing)
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
 
   const preferredPort = parseInt(process.env.PORT || "3000");
   const port = await findAvailablePort(preferredPort);

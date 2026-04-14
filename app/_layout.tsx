@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
-import { Platform, View, Text } from "react-native";
+import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import {
@@ -16,9 +16,8 @@ import {
 } from "react-native-safe-area-context";
 import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 
+import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
-import { useServiceWorker } from "@/hooks/use-service-worker";
-import { AuthProvider } from "@/lib/auth-context";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -27,7 +26,7 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-function RootLayoutContent() {
+export default function RootLayout() {
   const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
   const initialFrame = initialWindowMetrics?.frame ?? DEFAULT_WEB_FRAME;
 
@@ -38,9 +37,6 @@ function RootLayoutContent() {
   useEffect(() => {
     initManusRuntime();
   }, []);
-
-  // Register Service Worker for PWA (validation is inside the hook)
-  useServiceWorker();
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
     setInsets(metrics.insets);
@@ -59,55 +55,49 @@ function RootLayoutContent() {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Enable refetch on window focus only for web (PWA behavior)
-            refetchOnWindowFocus: Platform.OS === "web",
+            // Disable automatic refetching on window focus for mobile
+            refetchOnWindowFocus: false,
             // Retry failed requests once
             retry: 1,
-            // Add staleTime to reduce excessive requests on unstable networks (typical PWA)
-            staleTime: 1000 * 60 * 5,
           },
         },
       }),
   );
+  const [trpcClient] = useState(() => createTRPCClient());
 
-  // Optimize SafeArea for PWA: no forced padding on web, minimal on mobile
+  // Ensure minimum 8px padding for top and bottom on mobile
   const providerInitialMetrics = useMemo(() => {
     const metrics = initialWindowMetrics ?? { insets: initialInsets, frame: initialFrame };
-    const isWeb = Platform.OS === "web";
-    
     return {
       ...metrics,
       insets: {
         ...metrics.insets,
-        // On PWA (web), don't force unnecessary padding for notch/status bar
-        top: Math.max(metrics.insets.top, isWeb ? 0 : 16),
-        bottom: Math.max(metrics.insets.bottom, isWeb ? 0 : 12),
+        top: Math.max(metrics.insets.top, 16),
+        bottom: Math.max(metrics.insets.bottom, 12),
       },
     };
   }, [initialInsets, initialFrame]);
 
   const content = (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
-        {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
-        {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
-        {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
-        <Stack screenOptions={{
-          headerShown: false,
-          // Disable animations on web for natural browser feel
-          animation: Platform.OS === "web" ? "none" : "default",
-        }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="oauth/callback" />
-        </Stack>
-        <StatusBar style="auto" />
+          {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
+          {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
+          {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="oauth/callback" />
+          </Stack>
+          <StatusBar style="auto" />
         </QueryClientProvider>
-      </AuthProvider>
+      </trpc.Provider>
     </GestureHandlerRootView>
   );
 
-  if (Platform.OS === "web") {
+  const shouldOverrideSafeArea = Platform.OS === "web";
+
+  if (shouldOverrideSafeArea) {
     return (
       <ThemeProvider>
         <SafeAreaProvider initialMetrics={providerInitialMetrics}>
@@ -125,11 +115,5 @@ function RootLayoutContent() {
     <ThemeProvider>
       <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
     </ThemeProvider>
-  );
-}
-
-export default function RootLayout() {
-  return (
-    <RootLayoutContent />
   );
 }

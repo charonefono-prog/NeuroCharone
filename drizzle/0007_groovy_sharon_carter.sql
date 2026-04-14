@@ -1,1 +1,0 @@
-ALTER TABLE `access_control` ADD `passwordHash` varchar(255);
