@@ -41,11 +41,8 @@ function RootLayoutContent() {
     initManusRuntime();
   }, []);
 
-  // Register Service Worker for PWA (only on web)
-  if (Platform.OS === "web") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useServiceWorker();
-  }
+  // Register Service Worker for PWA (validation is inside the hook)
+  useServiceWorker();
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
     setInsets(metrics.insets);
@@ -64,25 +61,30 @@ function RootLayoutContent() {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Disable automatic refetching on window focus for mobile
-            refetchOnWindowFocus: false,
+            // Enable refetch on window focus only for web (PWA behavior)
+            refetchOnWindowFocus: Platform.OS === "web",
             // Retry failed requests once
             retry: 1,
+            // Add staleTime to reduce excessive requests on unstable networks (typical PWA)
+            staleTime: 1000 * 60 * 5,
           },
         },
       }),
   );
   const [trpcClient] = useState(() => createTRPCClient());
 
-  // Ensure minimum 8px padding for top and bottom on mobile
+  // Optimize SafeArea for PWA: no forced padding on web, minimal on mobile
   const providerInitialMetrics = useMemo(() => {
     const metrics = initialWindowMetrics ?? { insets: initialInsets, frame: initialFrame };
+    const isWeb = Platform.OS === "web";
+    
     return {
       ...metrics,
       insets: {
         ...metrics.insets,
-        top: Math.max(metrics.insets.top, 16),
-        bottom: Math.max(metrics.insets.bottom, 12),
+        // On PWA (web), don't force unnecessary padding for notch/status bar
+        top: Math.max(metrics.insets.top, isWeb ? 0 : 16),
+        bottom: Math.max(metrics.insets.bottom, isWeb ? 0 : 12),
       },
     };
   }, [initialInsets, initialFrame]);
@@ -105,7 +107,11 @@ function RootLayoutContent() {
           {/* Default to hiding native headers so raw route segments don't appear (e.g. "(tabs)", "products/[id]"). */}
           {/* If a screen needs the native header, explicitly enable it and set a human title via Stack.Screen options. */}
           {/* in order for ios apps tab switching to work properly, use presentation: "fullScreenModal" for login page, whenever you decide to use presentation: "modal*/}
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack screenOptions={{
+            headerShown: false,
+            // Disable animations on web for natural browser feel
+            animation: Platform.OS === "web" ? "none" : "default",
+          }}>
             {!isAuthenticated ? (
               <>
                 <Stack.Screen name="login" />
@@ -125,9 +131,7 @@ function RootLayoutContent() {
     </GestureHandlerRootView>
   );
 
-  const shouldOverrideSafeArea = Platform.OS === "web";
-
-  if (shouldOverrideSafeArea) {
+  if (Platform.OS === "web") {
     return (
       <ThemeProvider>
         <SafeAreaProvider initialMetrics={providerInitialMetrics}>

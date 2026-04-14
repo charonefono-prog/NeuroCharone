@@ -7,7 +7,7 @@ import { therapeuticPlansRouter } from "./routers/therapeutic-plans";
 import { sessionsRouter } from "./routers/sessions";
 import { accessControlRouter } from "./routers/access-control";
 import { registrationRouter } from "./routers/registration";
-import { adminRouter } from "./routers/users";
+
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -29,7 +29,7 @@ export const appRouter = router({
   sessions: sessionsRouter,
   accessControl: accessControlRouter,
   registration: registrationRouter,
-  admin: adminRouter,
+
 });
 
 export type AppRouter = typeof appRouter;

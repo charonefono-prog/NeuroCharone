@@ -1,16 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
-
-export interface ServiceWorkerStatus {
-  isSupported: boolean;
-  isRegistered: boolean;
-  isOnline: boolean;
-  updateAvailable: boolean;
-}
-
-export interface UseServiceWorkerReturn extends ServiceWorkerStatus {
-  promptUpdate: () => void;
-}
 
 /**
  * Hook para registrar e gerenciar o Service Worker
@@ -18,15 +7,10 @@ export interface UseServiceWorkerReturn extends ServiceWorkerStatus {
  *
  * Uso:
  * ```tsx
- * const { isRegistered, isOnline, updateAvailable, promptUpdate } = useServiceWorker();
+ * useServiceWorker();
  * ```
  */
-export function useServiceWorker(): UseServiceWorkerReturn {
-  const [isSupported, setIsSupported] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
-
+export function useServiceWorker() {
   useEffect(() => {
     // Only register on web platform
     if (Platform.OS !== 'web') {
@@ -39,9 +23,7 @@ export function useServiceWorker(): UseServiceWorkerReturn {
       return;
     }
 
-    setIsSupported(true);
-
-    // Register service worker
+      // Register service worker
     const registerServiceWorker = async () => {
       try {
         const registration = await navigator.serviceWorker.register('/service-worker.js', {
@@ -49,7 +31,6 @@ export function useServiceWorker(): UseServiceWorkerReturn {
         });
 
         console.log('[PWA] Service Worker registered:', registration);
-        setIsRegistered(true);
 
         // Check for updates periodically (every 1 hour)
         const updateCheckInterval = setInterval(() => {
@@ -65,7 +46,6 @@ export function useServiceWorker(): UseServiceWorkerReturn {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 console.log('[PWA] Update available');
-                setUpdateAvailable(true);
               }
             });
           }
@@ -79,37 +59,5 @@ export function useServiceWorker(): UseServiceWorkerReturn {
 
     registerServiceWorker();
 
-    // Monitor online/offline status
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
   }, []);
-
-  const promptUpdate = () => {
-    if (updateAvailable) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => {
-          if (registration.waiting) {
-            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-            setTimeout(() => window.location.reload(), 500);
-          }
-        });
-      });
-    }
-  };
-
-  return {
-    isSupported,
-    isRegistered,
-    isOnline,
-    updateAvailable,
-    promptUpdate,
-  };
 }
