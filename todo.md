@@ -12,11 +12,16 @@
 - [ ] Implementar APIs tRPC para CRUD de sessões
 
 ## Autenticação
-- [ ] Implementar tela de login
-- [ ] Implementar tela de cadastro de usuário
-- [ ] Implementar tela de recuperação de senha
-- [ ] Integrar autenticação com backend
-- [ ] Implementar proteção de rotas autenticadas
+- [x] Implementar tela de login
+- [x] Implementar tela de cadastro de usuário
+- [x] Implementar tela de recuperação de senha
+- [x] Integrar autenticação com backend
+- [x] Implementar proteção de rotas autenticadas
+- [x] Criar APIs tRPC de autenticação (login, register, logout)
+- [x] Criar contexto de autenticação global (AuthProvider)
+- [x] Criar dashboard de admin para gerenciar usuários
+- [ ] Implementar sistema de notificações por email
+- [ ] Integrar convites com email
 
 ## Dashboard/Home
 - [x] Criar tela de dashboard com estatísticas

@@ -7,19 +7,48 @@ import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "d
  */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  openId: varchar("openId", { length: 64 }).unique(),
   name: text("name"),
-  email: varchar("email", { length: 320 }),
+  fullName: text("fullName"),
+  email: varchar("email", { length: 320 }).unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["user", "admin", "pending"]).default("user").notNull(),
   // Campos profissionais adicionais
   specialty: varchar("specialty", { length: 255 }),
   professionalId: varchar("professionalId", { length: 100 }), // CRM, CREFONO, etc
   phone: varchar("phone", { length: 50 }),
   photoUrl: text("photoUrl"),
+  // Campos de autenticação
+  isApproved: boolean("isApproved").notNull().default(false),
+  approvedAt: timestamp("approvedAt"),
+  approvedBy: int("approvedBy"),
+  isBlocked: boolean("isBlocked").notNull().default(false),
+  blockedReason: text("blockedReason"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+});
+
+// Tabela de convites
+export const invites = mysqlTable("invites", {
+  id: int("id").autoincrement().primaryKey(),
+  code: varchar("code", { length: 255 }).notNull().unique(),
+  email: varchar("email", { length: 320 }),
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  usedAt: timestamp("usedAt"),
+  usedBy: int("usedBy"),
+  expiresAt: timestamp("expiresAt").notNull(),
+});
+
+// Tabela de audit log
+export const auditLog = mysqlTable("audit_log", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  action: varchar("action", { length: 255 }).notNull(),
+  details: text("details"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 // Tabela de pacientes
@@ -72,8 +101,33 @@ export const sessions = mysqlTable("sessions", {
 });
 
 // Relações
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   patients: many(patients),
+  invitesCreated: many(invites),
+  auditLogs: many(auditLog),
+  approver: one(users, {
+    fields: [users.approvedBy],
+    references: [users.id],
+    relationName: "approver",
+  }),
+}));
+
+export const invitesRelations = relations(invites, ({ one }) => ({
+  creator: one(users, {
+    fields: [invites.createdBy],
+    references: [users.id],
+  }),
+  usedByUser: one(users, {
+    fields: [invites.usedBy],
+    references: [users.id],
+  }),
+}));
+
+export const auditLogRelations = relations(auditLog, ({ one }) => ({
+  user: one(users, {
+    fields: [auditLog.userId],
+    references: [users.id],
+  }),
 }));
 
 export const patientsRelations = relations(patients, ({ one, many }) => ({
@@ -104,9 +158,15 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   }),
 }));
 
-// Tipos TypeScript
+// Tipos
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+export type Invite = typeof invites.$inferSelect;
+export type InsertInvite = typeof invites.$inferInsert;
+
+export type AuditLog = typeof auditLog.$inferSelect;
+export type InsertAuditLog = typeof auditLog.$inferInsert;
 
 export type Patient = typeof patients.$inferSelect;
 export type InsertPatient = typeof patients.$inferInsert;

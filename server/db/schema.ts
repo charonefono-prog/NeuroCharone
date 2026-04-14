@@ -5,7 +5,8 @@ import { boolean, int, mysqlTable, text, timestamp, varchar } from "drizzle-orm/
 export const users = mysqlTable("users", {
   id: int("id").primaryKey().autoincrement(),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
+  password: varchar("password", { length: 255 }),
+  passwordHash: varchar("password_hash", { length: 255 }),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   specialty: varchar("specialty", { length: 255 }),
   professionalId: varchar("professional_id", { length: 100 }), // CRM, CREFONO, etc
@@ -14,6 +15,33 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
   role: varchar("role", { length: 50, enum: ["pending", "user", "admin"] }).notNull().default("pending"),
+  // Campos de autenticação
+  isApproved: boolean("is_approved").notNull().default(false),
+  approvedAt: timestamp("approved_at"),
+  approvedBy: int("approved_by"),
+  isBlocked: boolean("is_blocked").notNull().default(false),
+  blockedReason: text("blocked_reason"),
+});
+
+// Tabela de convites
+export const invites = mysqlTable("invites", {
+  id: int("id").primaryKey().autoincrement(),
+  code: varchar("code", { length: 255 }).notNull().unique(),
+  email: varchar("email", { length: 255 }),
+  createdBy: int("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  usedAt: timestamp("used_at"),
+  usedBy: int("used_by"),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
+// Tabela de audit log
+export const auditLog = mysqlTable("audit_log", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("user_id"),
+  action: varchar("action", { length: 255 }).notNull(),
+  details: text("details"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Tabela de pacientes
@@ -76,8 +104,33 @@ export const accessControl = mysqlTable("access_control", {
 });
 
 // Relações
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   patients: many(patients),
+  invitesCreated: many(invites),
+  auditLogs: many(auditLog),
+  approver: one(users, {
+    fields: [users.approvedBy],
+    references: [users.id],
+    relationName: "approver",
+  }),
+}));
+
+export const invitesRelations = relations(invites, ({ one }) => ({
+  creator: one(users, {
+    fields: [invites.createdBy],
+    references: [users.id],
+  }),
+  usedByUser: one(users, {
+    fields: [invites.usedBy],
+    references: [users.id],
+  }),
+}));
+
+export const auditLogRelations = relations(auditLog, ({ one }) => ({
+  user: one(users, {
+    fields: [auditLog.userId],
+    references: [users.id],
+  }),
 }));
 
 export const patientsRelations = relations(patients, ({ one, many }) => ({
@@ -123,6 +176,12 @@ export const accessControlRelations = relations(accessControl, ({ one }) => ({
 // Tipos TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+
+export type Invite = typeof invites.$inferSelect;
+export type NewInvite = typeof invites.$inferInsert;
+
+export type AuditLog = typeof auditLog.$inferSelect;
+export type NewAuditLog = typeof auditLog.$inferInsert;
 
 export type Patient = typeof patients.$inferSelect;
 export type NewPatient = typeof patients.$inferInsert;
