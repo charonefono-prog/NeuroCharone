@@ -1,17 +1,22 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { trpc } from './trpc';
-import { User } from '@/@types/user';
-import { getSessionToken, removeSessionToken, setSessionToken } from './_core/auth';
+
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: 'user' | 'admin' | 'pending';
+}
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  refresh: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
-  startOAuthLogin: (provider: 'google' | 'microsoft' | 'apple') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,65 +25,85 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Get tRPC client - this will be available inside the provider
-  let trpcClient: any = null;
-  try {
-    trpcClient = trpc.useContext();
-  } catch (err) {
-    // Context not available yet, will be handled in useEffect
-  }
 
-  const fetchUser = async () => {
-    if (!trpcClient) return;
+  // Load user from AsyncStorage on mount
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const savedUser = await AsyncStorage.getItem('user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      } catch (err) {
+        console.error('Failed to load user:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
+    setError(null);
     try {
-      const fetchedUser = await trpcClient.auth.me.query();
-      setUser(fetchedUser);
-      setError(null);
+      const result = await trpc.auth.login.mutate({ email, password });
+      if (result.success && result.user) {
+        setUser(result.user);
+        await AsyncStorage.setItem('user', JSON.stringify(result.user));
+      }
     } catch (err: any) {
-      setUser(null);
-      setError(err.message || 'Failed to fetch user');
-      removeSessionToken();
+      const errorMessage = err.message || 'Login failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (trpcClient) {
-      fetchUser();
-    } else {
+  const register = async (email: string, password: string, name: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await trpc.auth.register.mutate({ email, password, name });
+      if (result.success) {
+        // After registration, auto-login
+        await login(email, password);
+      }
+    } catch (err: any) {
+      const errorMessage = err.message || 'Registration failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
       setIsLoading(false);
     }
-  }, [trpcClient]);
-
-  const refresh = async () => {
-    await fetchUser();
   };
 
   const logout = async () => {
     try {
-      await trpcClient.auth.logout.mutate();
       setUser(null);
-      removeSessionToken();
-      // Optionally redirect to login page
-      // router.replace('/login');
+      await AsyncStorage.removeItem('user');
+      setError(null);
     } catch (err: any) {
-      setError(err.message || 'Failed to logout');
+      const errorMessage = err.message || 'Logout failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
-  const startOAuthLogin = (provider: 'google' | 'microsoft' | 'apple') => {
-    // This is a placeholder. In a real app, you'd construct the OAuth URL
-    // and redirect the user's browser to it. For Expo, this often involves
-    // `expo-auth-session` or `expo-web-browser`.
-    console.warn(`OAuth login for ${provider} not fully implemented yet.`);
-    // Example: window.location.href = `/api/auth/oauth/login?provider=${provider}`;
-  };
-
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, error, refresh, logout, startOAuthLogin }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        isAuthenticated: !!user, 
+        isLoading, 
+        error, 
+        login,
+        register,
+        logout 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

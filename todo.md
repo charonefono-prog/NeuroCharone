@@ -1082,3 +1082,24 @@ export default function MyScreen() {
 - [ ] Testar atualização automática do app
 - [ ] Adicionar suporte a notificações push (opcional)
 - [ ] Implementar background sync (opcional)
+
+
+## Sistema de Acesso por Email (sem login/logout)
+
+- [ ] Atualizar schema para acesso por email
+- [ ] Criar APIs tRPC para validação de email
+- [ ] Implementar tela de acesso por email
+- [ ] Configurar notificações por email para charonejr@gmail.com
+- [ ] Criar dashboard de controle de acessos
+- [ ] Testar fluxo completo
+
+
+## Sistema de Múltiplos Profissionais
+
+- [ ] Atualizar schema para suportar múltiplos profissionais
+- [ ] Criar APIs tRPC para cadastro e autenticação por email
+- [ ] Implementar tela de cadastro/login
+- [ ] Criar dashboard de controle (admin)
+- [ ] Implementar isolamento de dados por profissional
+- [ ] Configurar notificações por email
+- [ ] Testar fluxo completo de múltiplos profissionais

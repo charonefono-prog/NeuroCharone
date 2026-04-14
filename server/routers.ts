@@ -5,31 +5,19 @@ import { publicProcedure, router } from "./_core/trpc";
 import { patientsRouter } from "./routers/patients";
 import { therapeuticPlansRouter } from "./routers/therapeutic-plans";
 import { sessionsRouter } from "./routers/sessions";
-import { accessControlRouter } from "./routers/access-control";
-import { registrationRouter } from "./routers/registration";
-import { adminRouter } from "./routers/users";
+import { authRouter } from "./routers/auth";
+
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
-  auth: router({
-    me: publicProcedure.query((opts) => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
-    }),
-  }),
+  auth: authRouter,
 
   // Feature routers
   patients: patientsRouter,
   therapeuticPlans: therapeuticPlansRouter,
   sessions: sessionsRouter,
-  accessControl: accessControlRouter,
-  registration: registrationRouter,
-  admin: adminRouter,
+
 });
 
 export type AppRouter = typeof appRouter;
