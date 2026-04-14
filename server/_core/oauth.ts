@@ -1,7 +1,7 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "../../shared/const.js";
 import type { Express, Request, Response } from "express";
 import { getDb, getUserByOpenId, upsertUser } from "../db";
-
+import { accessControl } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
@@ -41,17 +41,35 @@ async function syncUser(userInfo: {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  if (existingUser) {
+  if (!existingUser) {
+    // New user, create access control entry
+    await db.insert(accessControl).values({
+      email: userInfo.email || userInfo.openId,
+      isApproved: userRole === "admin",
+    });
+  } else {
+    // Existing user, get their role from access control
+    const [existingAccessControl] = await db
+      .select()
+      .from(accessControl)
+      .where(eq(accessControl.email, existingUser.email || existingUser.openId))
+      .limit(1);
+
+    if (existingAccessControl) {
+      if (existingAccessControl.isApproved) {
+        userRole = existingUser.role === "admin" ? "admin" : "user";
+      } else {
+        userRole = "pending";
+      }
+    }
     // If it's the owner, ensure role is admin
     if (userInfo.openId === process.env.OWNER_OPEN_ID) {
       userRole = "admin";
-    } else {
-      userRole = existingUser.role === "admin" ? "admin" : "user";
     }
   }
 
   const user = await upsertUser({
-    role: userRole === "pending" ? "user" : userRole,
+    role: userRole,
     openId: userInfo.openId,
     name: userInfo.name || null,
     email: userInfo.email ?? null,
